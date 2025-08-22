@@ -120,7 +120,7 @@ export default function HomeHeroSection() {
               </span>
               <br />
               <span className="text-gray-900">
-                パーソナライズAI
+                Lival AI
               </span>
               <motion.span
                 className="inline-block ml-2"

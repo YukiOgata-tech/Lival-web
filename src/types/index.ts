@@ -3,15 +3,15 @@
 import { Timestamp } from 'firebase/firestore'
 
 /**
- * 学習者タイプ
+ * 学習者タイプ（6つの診断タイプ）
  */
 export type StudentType = 
-  | 'strategist'  // 戦略家
-  | 'explorer'    // 探求家
-  | 'achiever'    // 努力家
-  | 'challenger'  // 挑戦家
-  | 'partner'     // 伴走者
-  | 'pragmatist'  // 効率家
+  | 'strategist'   // 戦略家：効率と納得感を重視
+  | 'explorer'     // 探求家：発見と好奇心重視
+  | 'achiever'     // 努力家：承認と積み上げ重視
+  | 'challenger'   // 挑戦家：競争と困難克服重視
+  | 'partner'      // 伴走者：共感とサポート重視
+  | 'pragmatist'   // 効率家：実用性と結果重視
 
 /**
  * AIエージェントタイプ
@@ -21,15 +21,130 @@ export type AgentType =
   | 'counselor'   // 進路カウンセラーAI
   | 'planner'     // 学習計画AI
 
-/**ユーザー情報（仮） */
-export interface User {
-  uid: string
+/**
+ * 性別
+ */
+export type Gender = 'male' | 'female'
+
+/**
+ * サブスクリプションプラン
+ */
+export type SubscriptionPlan = 'free_web' | 'premium'
+
+/**
+ * サブスクリプション状態
+ */
+export type SubscriptionStatus = 'active' | 'canceled' | 'past_due' | 'trial'
+
+/**
+ * テーマタイプ
+ */
+export type Theme = 'light' | 'dark'
+
+/**
+ * 言語タイプ
+ */
+export type Language = 'ja' | 'en'
+
+/**
+ * サブスクリプション情報
+ */
+export interface UserSubscription {
+  plan: SubscriptionPlan
+  status: SubscriptionStatus
+  currentPeriodStart: Timestamp
+  currentPeriodEnd: Timestamp | null
+  stripeCustomerId?: string
+  stripeSubscriptionId?: string
+}
+
+/**
+ * Web版ユーザー設定
+ */
+export interface WebUserPreferences {
+  theme: Theme
+  notifications: boolean
+  language: Language
+}
+
+/**
+ * Web版プロフィール
+ */
+export interface WebProfile {
+  lastWebLogin: Timestamp
+  isWebUser: boolean
+  preferences: WebUserPreferences
+}
+
+/**
+ * 診断情報（今後実装）
+ */
+export interface UserDiagnostics {
+  studentType?: StudentType
+  completedAt?: Timestamp
+}
+
+/**
+ * 既存Firestoreデータ構造と完全互換のユーザー型定義
+ */
+export interface LivalUser {
+  // 基本プロフィール（モバイルアプリと共通）
+  bio: string
+  birthday: Timestamp | null
+  displayName: string
   email: string
-  displayName?: string
-  photoURL?: string
-  role: 'student' | 'admin' | 'instructor'
+  emailVerified: boolean
+  gender: Gender | null
+  photoURL: string
+  
+  // ゲーミフィケーション要素（モバイルアプリと共通）
+  coins: number
+  xp: number
+  level: number
+  currentMonsterId: string
+  
+  // 学習データ（モバイルアプリと共通）
+  groupSessionCount: number
+  groupTotalMinutes: number
+  individualSessionCount: number
+  individualTotalMinutes: number
+  
+  // システム情報（モバイルアプリと共通）
   createdAt: Timestamp
-  lastLoginAt?: Timestamp
+  updatedAt: Timestamp
+  
+  // Web版拡張フィールド
+  subscription: UserSubscription
+  webProfile: WebProfile
+  
+  // 今後の診断機能用（未実装）
+  diagnostics?: UserDiagnostics
+}
+
+/**
+ * Firebase Authentication User 拡張
+ */
+export interface AuthUser {
+  uid: string
+  email: string | null
+  displayName: string | null
+  photoURL: string | null
+  emailVerified: boolean
+}
+
+/**
+ * サブスクリプションプラン定義
+ */
+export interface PricingPlanDetail {
+  id: SubscriptionPlan
+  name: string
+  price: number
+  currency: string
+  interval: 'month' | null
+  description: string
+  features: string[]
+  restrictions?: string[]
+  isPopular?: boolean
 }
 
 /** 学生プロファイル */

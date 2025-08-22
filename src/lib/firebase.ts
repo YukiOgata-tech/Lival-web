@@ -14,6 +14,24 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
+// Firebase設定の検証
+const validateFirebaseConfig = () => {
+  const requiredKeys = ['apiKey', 'authDomain', 'projectId']
+  const missingKeys = requiredKeys.filter(key => !firebaseConfig[key as keyof typeof firebaseConfig])
+  
+  if (missingKeys.length > 0) {
+    console.error('🚨 Missing Firebase configuration:', missingKeys)
+    console.error('Please check your .env.local file')
+    return false
+  }
+  
+  console.log('✅ Firebase configuration is valid')
+  console.log('📋 Project ID:', firebaseConfig.projectId)
+  return true
+}
+
+validateFirebaseConfig()
+
 // Firebase App の初期化（重複初期化を防ぐ）
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0]
 
@@ -64,8 +82,9 @@ export const isEmulatorMode = () => {
 }
 
 // エラーハンドリング用ヘルパー
-export const getFirebaseErrorMessage = (error: any): string => {
-  switch (error.code) {
+export const getFirebaseErrorMessage = (error: unknown): string => {
+  const errorCode = (error as { code?: string }).code
+  switch (errorCode) {
     case 'auth/user-not-found':
       return 'ユーザーが見つかりません'
     case 'auth/wrong-password':
@@ -83,6 +102,6 @@ export const getFirebaseErrorMessage = (error: any): string => {
     case 'already-exists':
       return 'データが既に存在します'
     default:
-      return error.message || '予期しないエラーが発生しました'
+      return (error as { message?: string }).message || '予期しないエラーが発生しました'
   }
 }

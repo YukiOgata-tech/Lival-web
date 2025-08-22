@@ -4,6 +4,7 @@ import HomeHeroSection from '@/components/sections/HomeHeroSection'
 import HomeStatsSection from '@/components/sections/HomeStatsSection'
 import HomeStudentTypesSection from '@/components/sections/HomeStudentTypesSection'
 import HomeFeaturesSection from '@/components/sections/HomeFeaturesSection'
+import HomeCredibilitySection from '@/components/sections/HomeCredibilitySection'
 import HomeTestimonialsSection from '@/components/sections/HomeTestimonialsSection'
 import HomeCTASection from '@/components/sections/HomeCTASection'
 import ScrollToTop from '@/components/ui/ScrollToTop'
@@ -23,6 +24,9 @@ export default function HomePage() {
 
       {/* Features Section */}
       <HomeFeaturesSection />
+
+      {/* Credibility Section */}
+      <HomeCredibilitySection />
 
       {/* Testimonials Section */}
       <HomeTestimonialsSection />
