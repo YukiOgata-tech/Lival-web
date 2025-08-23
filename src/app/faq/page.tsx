@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { 
   Search, 
@@ -14,7 +15,7 @@ import {
   MessageCircle,
   ChevronRight,
   TrendingUp,
-  Clock,Eye,
+  Eye,
   Star
 } from 'lucide-react'
 
@@ -29,7 +30,7 @@ const faqCategories = [
       {
         id: 'account-creation',
         title: 'アカウントの作成方法',
-        preview: 'LIVAL AIでアカウントを作成する手順を詳しく説明します...',
+        preview: 'アカウントを作成する手順を詳しく説明します...',
         isPopular: true
       },
       {
@@ -185,6 +186,39 @@ const faqCategories = [
     ]
   },
   {
+    id: 'blog',
+    title: '教育ブログ',
+    description: '教育特化コンテンツプラットフォーム',
+    icon: BookOpen,
+    color: 'from-indigo-500 to-blue-600',
+    articles: [
+      {
+        id: 'blog-about',
+        title: 'ブログの仕組みと価値',
+        preview: '教育に特化した専門ブログプラットフォームの特徴と品質管理システム...',
+        isPopular: true
+      },
+      {
+        id: 'blog-access-levels',
+        title: 'アクセスレベルについて',
+        preview: '無料記事・ティザー記事・プレミアム記事の違いとアクセス権限...',
+        isPopular: true
+      },
+      {
+        id: 'blog-quality',
+        title: '記事の品質管理',
+        preview: '厳格な審査システムと専門家による執筆・編集プロセス...',
+        isPopular: false
+      },
+      {
+        id: 'blog-benefits',
+        title: 'ブログ読者の価値',
+        preview: '学習効果向上・時間節約・専門性獲得のメリット...',
+        isPopular: false
+      }
+    ]
+  },
+  {
     id: 'contact',
     title: 'お問い合わせ',
     description: 'サポートへの連絡方法',
@@ -243,6 +277,12 @@ const popularArticles = [
     title: '性格診断の受け方',
     category: 'はじめに',
     views: 445
+  },
+  {
+    id: 'blog-about',
+    title: 'ブログの仕組みと価値',
+    category: '教育ブログ',
+    views: 387
   }
 ]
 
@@ -276,8 +316,15 @@ export default function FAQPage() {
             <h1 className="text-4xl lg:text-5xl font-bold mb-4">
               よくあるご質問
             </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-              LIVAL AIに関するよくあるご質問と回答を掲載しています
+            <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8 flex items-center justify-center">
+              <Image
+                src="/images/header-livalAI.png"
+                alt="Lival AI"
+                width={100}
+                height={28}
+                className="h-6 w-auto brightness-0 invert mr-2"
+              />
+              に関するよくあるご質問と回答を掲載しています
             </p>
 
             {/* Search Box */}
@@ -436,12 +483,83 @@ export default function FAQPage() {
             </motion.div>
           )}
 
+          {/* Diagnosis CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mt-12 bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-8 text-center border border-purple-100"
+          >
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              まずは学習タイプ診断から始めませんか？
+            </h3>
+            <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
+              わずか5-8分の診断で、あなたに最適化されたAIコーチング体験を開始できます。
+              6つの学習タイプから、あなたの特性を科学的に分析します。
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/diagnosis"
+                className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-full hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+              >
+                <HelpCircle className="w-5 h-5 mr-2" />
+                無料診断を始める
+              </Link>
+              
+              <Link
+                href="/diagnosis/types"
+                className="inline-flex items-center px-8 py-3 border border-purple-300 text-purple-700 font-semibold rounded-full hover:border-purple-400 hover:bg-purple-50 transition-all duration-300"
+              >
+                6つのタイプを見る
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Blog CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mt-8 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-8 text-center border border-indigo-100"
+          >
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center">
+                <BookOpen className="w-8 h-8 text-indigo-600" />
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              教育の専門知識をもっと深く学びませんか？
+            </h3>
+            <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
+              Lival AIブログでは、教育・学習の専門家が厳選した高品質なコンテンツを提供しています。
+              実践的な学習法から最新の教育研究まで、あなたの成長をサポートします。
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/blog"
+                className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-semibold rounded-full hover:from-indigo-700 hover:to-blue-700 transition-all duration-300"
+              >
+                <BookOpen className="w-5 h-5 mr-2" />
+                ブログを読む
+              </Link>
+              
+              <Link
+                href="/blog/about"
+                className="inline-flex items-center px-8 py-3 border border-indigo-300 text-indigo-700 font-semibold rounded-full hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-300"
+              >
+                ブログについて詳しく
+              </Link>
+            </div>
+          </motion.div>
+
           {/* Contact CTA */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 text-center border border-blue-100"
+            className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 text-center border border-blue-100"
           >
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
               解決しない問題がありますか？

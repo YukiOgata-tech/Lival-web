@@ -2,6 +2,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { 
   Brain, 
   Sparkles, 
@@ -119,16 +120,23 @@ export default function HomeHeroSection() {
                 あなただけの
               </span>
               <br />
-              <span className="text-gray-900">
-                Lival AI
-              </span>
-              <motion.span
-                className="inline-block ml-2"
-                animate={{ rotate: [0, 10, 0] }}
-                transition={{ duration: 1, repeat: Infinity, delay: 1 }}
-              >
-                ✨
-              </motion.span>
+              <div className="flex items-center justify-center lg:justify-start">
+                <Image
+                  src="/images/header-livalAI.png"
+                  alt="Lival AI"
+                  width={300}
+                  height={80}
+                  className="h-12 md:h-16 lg:h-20 w-auto"
+                  priority
+                />
+                <motion.span
+                  className="inline-block ml-4"
+                  animate={{ rotate: [0, 10, 0] }}
+                  transition={{ duration: 1, repeat: Infinity, delay: 1 }}
+                >
+                  ✨
+                </motion.span>
+              </div>
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">

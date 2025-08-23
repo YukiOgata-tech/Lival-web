@@ -39,16 +39,12 @@ export const SUBSCRIPTION_PLANS: Record<string, PricingPlanDetail> = {
   }
 }
 
-/**
- * プラン情報を取得
- */
+/** プラン情報を取得 */
 export const getPlanInfo = (planId: string): PricingPlanDetail | null => {
   return SUBSCRIPTION_PLANS[planId] || null
 }
 
-/**
- * 価格をフォーマット
- */
+/** 価格をフォーマット */
 export const formatPrice = (price: number, currency: string = 'JPY'): string => {
   if (price === 0) return '無料'
   
@@ -61,9 +57,7 @@ export const formatPrice = (price: number, currency: string = 'JPY'): string => 
   return formatter.format(price)
 }
 
-/**
- * プラン比較用データ
- */
+/** プラン比較用データ */
 export const PLAN_COMPARISON_FEATURES = [
   {
     feature: 'Web版基本機能',

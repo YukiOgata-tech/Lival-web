@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { 
   GraduationCap, 
   Microscope, 
@@ -8,21 +9,30 @@ import {
   Users, 
   Mail, 
   Github,
-  ArrowRight
+  ArrowRight,
+  BookOpen,
+  Crown,
+  Info
 } from 'lucide-react'
 
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* プロダクト情報 */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <GraduationCap className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold">Lival AI</span>
+              <Image
+                src="/images/header-livalAI.png"
+                alt="Lival AI"
+                width={100}
+                height={28}
+                className="h-6 w-auto brightness-0 invert"
+              />
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
               科学的根拠に基づく中高生向けパーソナルAIコーチング。
@@ -50,6 +60,31 @@ export default function Footer() {
                 <Link href="/diagnosis" className="text-gray-300 hover:text-white transition-colors flex items-center">
                   <ArrowRight className="w-4 h-4 mr-2" />
                   診断を始める
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* ブログ */}
+          <div>
+            <h3 className="font-semibold mb-4 text-lg">ブログ</h3>
+            <ul className="space-y-3 text-sm">
+              <li>
+                <Link href="/blog" className="text-gray-300 hover:text-white transition-colors flex items-center">
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  教育特化ブログ
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog/about" className="text-gray-300 hover:text-white transition-colors flex items-center">
+                  <Info className="w-4 h-4 mr-2" />
+                  ブログについて
+                </Link>
+              </li>
+              <li>
+                <Link href="/subscription" className="text-gray-300 hover:text-white transition-colors flex items-center">
+                  <Crown className="w-4 h-4 mr-2" />
+                  プレミアム記事
                 </Link>
               </li>
             </ul>
@@ -108,7 +143,17 @@ export default function Footer() {
         <div className="border-t border-gray-700 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
             <div className="mb-4 md:mb-0">
-              <p>&copy; 2024 Lival AI. All rights reserved.</p>
+              <div className="flex items-center space-x-2">
+                <span>&copy; 2024</span>
+                <Image
+                  src="/images/header-livalAI.png"
+                  alt="Lival AI"
+                  width={80}
+                  height={20}
+                  className="h-4 w-auto brightness-0 invert opacity-70"
+                />
+                <span>All rights reserved.</span>
+              </div>
             </div>
             <div className="flex items-center space-x-6">
               <Link href="/about/science" className="hover:text-white transition-colors flex items-center">

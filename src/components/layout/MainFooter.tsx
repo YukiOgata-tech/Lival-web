@@ -1,6 +1,7 @@
 // src/components/layout/MainFooter.tsx
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { 
   Brain, 
@@ -105,9 +106,13 @@ export default function MainFooter() {
                 </motion.div>
               </div>
               <div>
-                <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  LIVAL AI
-                </div>
+                <Image
+                  src="/images/header-livalAI.png"
+                  alt="Lival AI"
+                  width={120}
+                  height={32}
+                  className="h-8 w-auto mb-1 brightness-0 invert"
+                />
                 <div className="text-sm text-gray-400">
                   パーソナルAIコーチング
                 </div>
@@ -187,8 +192,16 @@ export default function MainFooter() {
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             
             {/* コピーライト */}
-            <div className="text-gray-400 text-sm">
-              <p>&copy; 2025 LIVAL AI. All rights reserved.</p>
+            <div className="text-gray-400 text-sm flex items-center space-x-2">
+              <span>&copy; 2025</span>
+              <Image
+                src="/images/header-livalAI.png"
+                alt="Lival AI"
+                width={80}
+                height={20}
+                className="h-4 w-auto brightness-0 invert opacity-70"
+              />
+              <span>All rights reserved.</span>
             </div>
 
             {/* 法的リンク */}

@@ -60,14 +60,24 @@ export default function HomeStudentTypesSection() {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <Link
-            href="/diagnosis"
-            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
-          >
-            <Lightbulb className="w-5 h-5 mr-2" />
-            2分で診断スタート
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Link>
+          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <Link
+              href="/diagnosis"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              <Lightbulb className="w-5 h-5 mr-2" />
+              2分で診断スタート
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Link>
+            
+            <Link
+              href="/diagnosis/types"
+              className="inline-flex items-center px-6 py-3 border-2 border-purple-600 text-purple-600 text-base font-semibold rounded-full hover:bg-purple-50 transition-all duration-300 transform hover:scale-105"
+            >
+              タイプ詳細を見る
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
+          </div>
         </motion.div>
       </div>
     </section>

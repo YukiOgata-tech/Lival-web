@@ -12,7 +12,9 @@ import {
   Calendar,
   ArrowRight,
   Crown,
-  Star
+  Star,
+  PenTool,
+  Eye
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -261,6 +263,24 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 </Link>
+
+                {/* Blog posting for premium users */}
+                {!isFreePlan && (
+                  <Link
+                    href="/submit"
+                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+                        <PenTool className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">記事投稿</h3>
+                        <p className="text-sm text-gray-600">ブログ記事を書いて共有</p>
+                      </div>
+                    </div>
+                  </Link>
+                )}
               </div>
             </motion.div>
           </div>

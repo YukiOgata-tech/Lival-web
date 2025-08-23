@@ -26,6 +26,8 @@ service cloud.firestore {
           'displayName', 'bio', 'photoURL', 'gender', 'birthday',
           'expoPushTokens', 'updatedAt',
         ]);
+      // Admin can update role and subscription fields
+      allow update: if isAdmin() && request.auth.uid != userId;
       // Functions専用
       match /xpLedger/{entryId} {
         allow read: if isSigned() && request.auth.uid == userId;
@@ -35,7 +37,6 @@ service cloud.firestore {
         allow read:  if isSigned() && request.auth.uid == userId;
         allow write: if false;
       }
-
       match /friendRequests/{senderId} {
         function isSender()   { return isSigned() && request.auth.uid == senderId; }
         function isReceiver() { return isSigned() && request.auth.uid == userId; }
@@ -194,6 +195,57 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false; // 管理者のみが更新
     }
+
+    // Blog system helper functions
+    function isAdmin() {
+      return isSigned() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isSubscriber() {
+      return isSigned() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['subscriber', 'admin'];
+    }
+    
+    function isFreeUser() {
+      return isSigned() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['free', 'subscriber', 'admin'];
+    }
+    
+    function isAuthor(authorId) {
+      return isSigned() && request.auth.uid == authorId;
+    }
+
+    // Blog system collections
+    match /blogs/{blogId} {
+      allow read: if true; // All users can read blogs
+      allow write: if true; // Temporary: allow all writes for development
+    }
+
+    match /blogSubmissions/{submissionId} {
+      allow read, write: if true; // Temporary: allow all for development
+    }
+
+    match /reviewTemplates/{templateId} {
+      allow read, write: if true; // Temporary: allow all for development
+    }
+
+    match /auditLogs/{logId} {
+      allow read, write: if true; // Temporary: allow all for development
+    }
+
+    match /viewCounts/{blogId} {
+      allow read, write: if true; // Allow all view count operations
+    }
+
+    match /categories/{categoryId} {
+      allow read, write: if true; // Allow all category operations
+    }
+
+    match /imageUploads/{uploadId} {
+      allow read, write: if true; // Temporary: allow all for development
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

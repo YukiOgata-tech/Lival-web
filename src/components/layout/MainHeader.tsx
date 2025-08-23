@@ -2,6 +2,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Brain, Sparkles, User, LogOut } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
@@ -36,15 +37,15 @@ export default function MainHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200/20 bg-white/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-gray-900 via-slate-900 to-gray-900 border-b border-gray-700/50 backdrop-blur-md">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 lg:h-20 items-center justify-between">
           
           {/* ロゴセクション */}
-          <Link href="/" className="flex items-center space-x-2 group">
+          <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
-              <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Brain className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <Brain className="w-6 h-6 text-white" />
               </div>
               <motion.div
                 className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"
@@ -62,10 +63,15 @@ export default function MainHeader() {
               </motion.div>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                LIVAL AI
-              </span>
-              <span className="text-xs text-gray-500 hidden sm:block">
+              <Image
+                src="/images/header-livalAI.png"
+                alt="Lival AI"
+                width={120}
+                height={32}
+                className="h-6 lg:h-8 w-auto brightness-0 invert"
+                priority
+              />
+              <span className="text-xs text-gray-400 hidden sm:block">
                 パーソナルAIコーチング
               </span>
             </div>
@@ -77,11 +83,11 @@ export default function MainHeader() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="relative text-gray-700 hover:text-blue-600 transition-colors duration-200 font-medium group"
+                className="relative text-gray-300 hover:text-blue-400 transition-colors duration-200 font-medium group"
               >
                 {item.name}
                 <motion.div
-                  className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"
+                  className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"
                   initial={{ width: 0 }}
                   whileHover={{ width: '100%' }}
                   transition={{ duration: 0.2 }}
@@ -97,12 +103,12 @@ export default function MainHeader() {
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                   >
                     <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
                       <User className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-gray-700 font-medium">
+                    <span className="text-gray-300 font-medium">
                       {user.displayName || user.email?.split('@')[0]}
                     </span>
                   </button>
@@ -113,26 +119,26 @@ export default function MainHeader() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1"
+                        className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl border border-gray-600 py-1"
                       >
                         <Link
                           href="/dashboard"
-                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                          className="block px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                           onClick={() => setShowUserMenu(false)}
                         >
                           ダッシュボード
                         </Link>
                         <Link
                           href="/profile"
-                          className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                          className="block px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                           onClick={() => setShowUserMenu(false)}
                         >
                           プロフィール
                         </Link>
-                        <hr className="my-1" />
+                        <hr className="my-1 border-gray-600" />
                         <button
                           onClick={handleSignOut}
-                          className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors flex items-center space-x-2"
+                          className="w-full text-left px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors flex items-center space-x-2"
                         >
                           <LogOut className="w-4 h-4" />
                           <span>ログアウト</span>
@@ -145,7 +151,7 @@ export default function MainHeader() {
                 <>
                   <Link
                     href="/login"
-                    className="px-4 py-2 rounded-lg font-medium transition-all duration-200 border border-blue-600 text-blue-600 hover:bg-blue-50"
+                    className="px-4 py-2 rounded-lg font-medium transition-all duration-200 border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white"
                   >
                     ログイン
                   </Link>
@@ -156,8 +162,8 @@ export default function MainHeader() {
                       className={`
                         px-4 py-2 rounded-lg font-medium transition-all duration-200 transform hover:scale-105
                         ${button.variant === 'outline'
-                          ? 'border border-blue-600 text-blue-600 hover:bg-blue-50'
-                          : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl'
+                          ? 'border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white'
+                          : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 shadow-lg hover:shadow-xl'
                         }
                       `}
                     >
@@ -172,13 +178,13 @@ export default function MainHeader() {
           {/* モバイルメニューボタン */}
           <button
             onClick={toggleMenu}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-800 transition-colors duration-200"
             aria-label="メニューを開く"
           >
             {isMenuOpen ? (
-              <X className="w-6 h-6 text-gray-700" />
+              <X className="w-6 h-6 text-gray-300" />
             ) : (
-              <Menu className="w-6 h-6 text-gray-700" />
+              <Menu className="w-6 h-6 text-gray-300" />
             )}
           </button>
         </div>
@@ -191,7 +197,7 @@ export default function MainHeader() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className="lg:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md"
+              className="lg:hidden border-t border-gray-700 bg-gray-900/95 backdrop-blur-md"
             >
               <div className="py-4 space-y-1">
                 {navigationItems.map((item, index) => (
@@ -204,7 +210,7 @@ export default function MainHeader() {
                     <Link
                       href={item.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="block px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-200"
+                      className="block px-4 py-3 text-gray-300 hover:text-blue-400 hover:bg-gray-800 rounded-lg font-medium transition-colors duration-200"
                     >
                       {item.name}
                     </Link>
@@ -212,7 +218,7 @@ export default function MainHeader() {
                 ))}
                 
                 {/* モバイル CTA ボタン */}
-                <div className="pt-4 space-y-2 border-t border-gray-200">
+                <div className="pt-4 space-y-2 border-t border-gray-700">
                   {!loading && (
                     user ? (
                       <>
@@ -221,12 +227,12 @@ export default function MainHeader() {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.2, delay: navigationItems.length * 0.05 }}
                         >
-                          <div className="mx-4 p-3 bg-gray-50 rounded-lg">
+                          <div className="mx-4 p-3 bg-gray-800 rounded-lg">
                             <div className="flex items-center space-x-2">
                               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
                                 <User className="w-4 h-4 text-white" />
                               </div>
-                              <span className="text-gray-700 font-medium">
+                              <span className="text-gray-300 font-medium">
                                 {user.displayName || user.email?.split('@')[0]}
                               </span>
                             </div>
@@ -240,7 +246,7 @@ export default function MainHeader() {
                           <Link
                             href="/dashboard"
                             onClick={() => setIsMenuOpen(false)}
-                            className="block mx-4 px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-200"
+                            className="block mx-4 px-4 py-3 text-gray-300 hover:text-blue-400 hover:bg-gray-800 rounded-lg font-medium transition-colors duration-200"
                           >
                             ダッシュボード
                           </Link>
@@ -255,7 +261,7 @@ export default function MainHeader() {
                               handleSignOut()
                               setIsMenuOpen(false)
                             }}
-                            className="block w-full text-left mx-4 px-4 py-3 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors duration-200"
+                            className="block w-full text-left mx-4 px-4 py-3 text-gray-300 hover:text-red-400 hover:bg-gray-800 rounded-lg font-medium transition-colors duration-200"
                           >
                             ログアウト
                           </button>
@@ -271,7 +277,7 @@ export default function MainHeader() {
                           <Link
                             href="/login"
                             onClick={() => setIsMenuOpen(false)}
-                            className="block mx-4 px-4 py-3 rounded-lg font-medium text-center transition-all duration-200 border border-blue-600 text-blue-600 hover:bg-blue-50"
+                            className="block mx-4 px-4 py-3 rounded-lg font-medium text-center transition-all duration-200 border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white"
                           >
                             ログイン
                           </Link>
@@ -289,8 +295,8 @@ export default function MainHeader() {
                               className={`
                                 block mx-4 px-4 py-3 rounded-lg font-medium text-center transition-all duration-200
                                 ${button.variant === 'outline'
-                                  ? 'border border-blue-600 text-blue-600 hover:bg-blue-50'
-                                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 shadow-lg'
+                                  ? 'border border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white'
+                                  : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 shadow-lg'
                                 }
                               `}
                             >
