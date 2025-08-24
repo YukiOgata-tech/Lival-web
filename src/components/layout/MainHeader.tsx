@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Brain, Sparkles, User, LogOut } from 'lucide-react'
+import { Menu, X, Brain, Sparkles, User, LogOut, Settings, Shield } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
 const navigationItems = [
@@ -12,6 +12,7 @@ const navigationItems = [
   { name: '機能', href: '/features' },
   { name: '料金', href: '/subscription' },
   { name: 'ブログ', href: '/blog' },
+  { name: 'お知らせ', href: '/news' },
   { name: '会社概要', href: '/about' },
 ]
 
@@ -23,7 +24,7 @@ const ctaButtons = [
 export default function MainHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
-  const { user, loading, signOut } = useAuth()
+  const { user, loading, signOut, isAdmin } = useAuth()
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -72,7 +73,7 @@ export default function MainHeader() {
                 priority
               />
               <span className="text-xs text-gray-400 hidden sm:block">
-                パーソナルAIコーチング
+                パーソナル教育AI
               </span>
             </div>
           </Link>
@@ -129,12 +130,41 @@ export default function MainHeader() {
                           ダッシュボード
                         </Link>
                         <Link
-                          href="/profile"
+                          href="/account"
                           className="block px-4 py-2 text-gray-300 hover:bg-gray-700 transition-colors"
                           onClick={() => setShowUserMenu(false)}
                         >
-                          プロフィール
+                          アカウント
                         </Link>
+                        
+                        {/* 管理者専用メニュー */}
+                        {isAdmin && (
+                          <>
+                            <hr className="my-1 border-gray-600" />
+                            <div className="px-3 py-1">
+                              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                管理者メニュー
+                              </span>
+                            </div>
+                            <Link
+                              href="/admin"
+                              className="block px-4 py-2 text-orange-300 hover:bg-gray-700 transition-colors flex items-center space-x-2"
+                              onClick={() => setShowUserMenu(false)}
+                            >
+                              <Shield className="w-4 h-4" />
+                              <span>管理ダッシュボード</span>
+                            </Link>
+                            <Link
+                              href="/admin/news"
+                              className="block px-4 py-2 text-orange-300 hover:bg-gray-700 transition-colors flex items-center space-x-2"
+                              onClick={() => setShowUserMenu(false)}
+                            >
+                              <Settings className="w-4 h-4" />
+                              <span>お知らせ管理</span>
+                            </Link>
+                          </>
+                        )}
+                        
                         <hr className="my-1 border-gray-600" />
                         <button
                           onClick={handleSignOut}

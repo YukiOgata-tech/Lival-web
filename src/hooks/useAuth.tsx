@@ -16,6 +16,8 @@ interface AuthContextType {
   user: FirebaseUser | null
   userData: LivalUser | null
   loading: boolean
+  isAdmin: boolean
+  isModerator: boolean
   signOut: () => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, displayName?: string) => Promise<void>
@@ -175,10 +177,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await createUserInFirestore(result.user)
   }
 
+  // 管理者権限の判定
+  const isAdmin = userData?.role === 'admin' || userData?.email === 'admin@lival.ai' // 管理者メールアドレス
+  const isModerator = userData?.role === 'moderator' || userData?.role === 'admin' || isAdmin
+
   const value = {
     user,
     userData,
     loading,
+    isAdmin,
+    isModerator,
     signOut,
     signIn,
     signUp,

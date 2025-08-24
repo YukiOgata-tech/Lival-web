@@ -14,7 +14,8 @@ import {
   CheckCircle,
   Clock,
   Eye,
-  Plus
+  Plus,
+  Megaphone
 } from 'lucide-react'
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   robots: 'noindex'
 }
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
   // Mock statistics data
   const stats = {
     totalBlogs: 127,
@@ -50,6 +51,14 @@ export default function AdminDashboard() {
       href: '/admin/review',
       count: stats.pendingReviews,
       color: 'bg-yellow-50 text-yellow-600 border-yellow-200'
+    },
+    {
+      title: 'お知らせ管理',
+      description: 'お知らせの作成・編集・管理',
+      icon: Megaphone,
+      href: '/admin/news',
+      count: '12件',
+      color: 'bg-red-50 text-red-600 border-red-200'
     },
     {
       title: 'ユーザー管理',
@@ -91,7 +100,7 @@ export default function AdminDashboard() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-6">
@@ -285,4 +294,8 @@ export default function AdminDashboard() {
       </div>
     </div>
   )
+}
+
+export default function AdminDashboard() {
+  return <AdminDashboardContent />
 }

@@ -14,12 +14,15 @@ import {
   Crown,
   Star,
   PenTool,
-  Eye
+  Eye,
+  Shield,
+  Settings,
+  Megaphone
 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DashboardPage() {
-  const { user, userData, loading } = useAuth()
+  const { user, userData, loading, isAdmin } = useAuth()
 
   if (loading) {
     return (
@@ -352,6 +355,96 @@ export default function DashboardPage() {
                 </div>
               </div>
             </motion.div>
+
+            {/* 管理者セクション */}
+            {isAdmin && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl shadow-sm border border-orange-200 p-6"
+              >
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">管理者メニュー</h3>
+                    <p className="text-sm text-gray-600">システム管理機能</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Link
+                    href="/admin"
+                    className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-orange-200 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 group"
+                  >
+                    <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center group-hover:bg-red-200 transition-colors">
+                      <Shield className="w-4 h-4 text-red-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">管理ダッシュボード</p>
+                      <p className="text-xs text-gray-600">システム統計・管理</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                  </Link>
+
+                  <Link
+                    href="/admin/news"
+                    className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-orange-200 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 group"
+                  >
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                      <Megaphone className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">お知らせ管理</p>
+                      <p className="text-xs text-gray-600">お知らせの作成・編集</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                  </Link>
+
+                  <Link
+                    href="/admin/review"
+                    className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-orange-200 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 group"
+                  >
+                    <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
+                      <PenTool className="w-4 h-4 text-yellow-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">記事審査</p>
+                      <p className="text-xs text-gray-600">ブログ記事の審査・管理</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                  </Link>
+
+                  <Link
+                    href="/admin/users"
+                    className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-orange-200 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 group"
+                  >
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                      <Users className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">ユーザー管理</p>
+                      <p className="text-xs text-gray-600">アカウント・権限管理</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                  </Link>
+                </div>
+
+                <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className="flex items-center space-x-2">
+                    <Crown className="w-4 h-4 text-amber-600" />
+                    <span className="text-sm font-medium text-amber-800">
+                      管理者権限でログイン中
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-700 mt-1">
+                    システムの重要な機能にアクセスできます
+                  </p>
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>

@@ -85,6 +85,11 @@ export interface UserDiagnostics {
 }
 
 /**
+ * ユーザーロール
+ */
+export type UserRole = 'user' | 'admin' | 'moderator'
+
+/**
  * 既存Firestoreデータ構造と完全互換のユーザー型定義
  */
 export interface LivalUser {
@@ -96,6 +101,7 @@ export interface LivalUser {
   emailVerified: boolean
   gender: Gender | null
   photoURL: string
+  role?: UserRole  // 管理者権限（デフォルト: 'user'）
   
   // ゲーミフィケーション要素（モバイルアプリと共通）
   coins: number
