@@ -283,13 +283,13 @@ export interface SystemStats {
 /**
  * API レスポンス型
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
   error?: {
     code: string
     message: string
-    details?: any
+    details?: unknown
   }
   pagination?: {
     page: number
@@ -315,7 +315,7 @@ export interface PaginationOptions {
   limit: number
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
-  filters?: Record<string, any>
+  filters?: Record<string, unknown>
 }
 
 /**
@@ -389,4 +389,5 @@ export interface PricingPlan {
   isActive: boolean
 }
 
-export default {}
+const indexTypes = {}
+export default indexTypes

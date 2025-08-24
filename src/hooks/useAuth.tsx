@@ -83,16 +83,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           groupTotalMinutes: 0,
           individualSessionCount: 0,
           individualTotalMinutes: 0,
-          createdAt: new Date() as any,
-          updatedAt: new Date() as any,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           subscription: {
             plan: 'free_web' as const,
             status: 'active' as const,
-            currentPeriodStart: new Date() as any,
+            currentPeriodStart: new Date(),
             currentPeriodEnd: null
           },
           webProfile: {
-            lastWebLogin: new Date() as any,
+            lastWebLogin: new Date(),
             isWebUser: true,
             preferences: {
               theme: 'light' as const,

@@ -369,7 +369,7 @@ async function drawDiagnosisResult(
       ctx.font = '15px Arial, sans-serif'
       const wrappedFeature = wrapText(ctx, feature, width - 140)
       
-      let textY = boxY + 18
+      const textY = boxY + 18
       for (let j = 0; j < Math.min(wrappedFeature.length, 2); j++) {
         ctx.fillText(wrappedFeature[j], 85, textY + (j * 18))
       }

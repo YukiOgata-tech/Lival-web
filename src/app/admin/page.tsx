@@ -9,7 +9,6 @@ import {
   BarChart3, 
   Settings, 
   MessageSquare,
-  Calendar,
   TrendingUp,
   AlertCircle,
   CheckCircle,

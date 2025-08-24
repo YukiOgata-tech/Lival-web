@@ -7,6 +7,7 @@ import { User, Edit3, Save, X, Camera, Mail, Calendar, Users, Trophy, Coins, Zap
 import { formatPrice, getPlanInfo } from '@/data/subscriptions'
 import { LivalUser, Gender } from '@/types'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function AccountPage() {
   const { user, userData, loading, refreshUserData } = useAuth()
@@ -205,7 +206,7 @@ export default function AccountPage() {
                   <div className="relative">
                     <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
                       {userData.photoURL ? (
-                        <img src={userData.photoURL} alt="Profile" className="w-20 h-20 rounded-full object-cover" />
+                        <Image src={userData.photoURL} alt="Profile" className="w-20 h-20 rounded-full object-cover" width={80} height={80} />
                       ) : (
                         <User className="w-10 h-10 text-white" />
                       )}

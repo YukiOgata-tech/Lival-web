@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
 }
 
 // Helper function to check content access
-function canAccessFullContent(blog: any, userRole: string): boolean {
+function canAccessFullContent(blog: { visibility: string }, userRole: string): boolean {
   switch (blog.visibility) {
     case 'public':
       return true

@@ -255,7 +255,7 @@ export class BlogService {
 
   // Helper: Generate unique slug
   static async generateUniqueSlug(title: string): Promise<string> {
-    let baseSlug = title
+    const baseSlug = title
       .toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
       .replace(/\s+/g, '-')
@@ -306,8 +306,8 @@ export class BlogService {
     actorId: string,
     action: string,
     blogId: string,
-    oldValue?: any,
-    newValue?: any,
+    oldValue?: unknown,
+    newValue?: unknown,
     comments?: string
   ): Promise<void> {
     const logRef = doc(auditLogsCollection)

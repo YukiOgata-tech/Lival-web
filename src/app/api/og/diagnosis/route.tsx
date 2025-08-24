@@ -190,8 +190,8 @@ export async function GET(request: NextRequest) {
         height: 630,
       }
     )
-  } catch (e: any) {
-    console.log(`Failed to generate OG image: ${e.message}`)
+  } catch (e: unknown) {
+    console.log(`Failed to generate OG image: ${e instanceof Error ? e.message : 'Unknown error'}`)
     return new Response(`Failed to generate the image`, {
       status: 500,
     })

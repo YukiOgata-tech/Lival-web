@@ -143,4 +143,5 @@ export interface DiagnosisSessionState {
   error: string | null
 }
 
-export default {}
+const diagnosisTypes = {}
+export default diagnosisTypes

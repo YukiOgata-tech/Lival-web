@@ -87,7 +87,7 @@ export async function GET(
     const isTeaser = blog.visibility === 'teaser' || (blog.visibility === 'premium' && !canAccessFull)
 
     // Prepare response based on access level
-    let responseData = {
+    const responseData = {
       ...blog,
       isTeaser,
       canAccess: canAccessFull,
@@ -111,7 +111,7 @@ export async function GET(
 }
 
 // Helper function to check content access
-function canAccessFullContent(blog: any, userRole: string): boolean {
+function canAccessFullContent(blog: { visibility: string }, userRole: string): boolean {
   switch (blog.visibility) {
     case 'public':
       return true
@@ -130,9 +130,6 @@ export async function PUT(
   { params }: { params: { slug: string } }
 ) {
   try {
-    const { slug } = params
-    const body = await request.json()
-
     return NextResponse.json({ 
       success: true, 
       message: 'Blog update not implemented in mock version' 
@@ -148,10 +145,7 @@ export async function PUT(
 }
 
 // DELETE /api/blogs/[slug] - Delete blog (simplified)
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { slug: string } }
-) {
+export async function DELETE() {
   try {
     return NextResponse.json({ 
       success: true, 

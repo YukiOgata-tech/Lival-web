@@ -48,8 +48,8 @@ export interface AuditLog {
   action: string
   blogId: string
   timestamp: Date
-  oldValue?: any
-  newValue?: any
+  oldValue?: unknown
+  newValue?: unknown
   comments?: string
 }
 
@@ -131,7 +131,7 @@ export const blogConverter = {
     createdAt: blog.createdAt || new Date(),
     updatedAt: new Date(),
   }),
-  fromFirestore: (snapshot: any) => {
+  fromFirestore: (snapshot: { id: string; data: () => unknown }) => {
     const data = snapshot.data()
     return {
       id: snapshot.id,
@@ -148,7 +148,7 @@ export const auditLogConverter = {
     ...log,
     timestamp: log.timestamp || new Date(),
   }),
-  fromFirestore: (snapshot: any) => {
+  fromFirestore: (snapshot: { id: string; data: () => unknown }) => {
     const data = snapshot.data()
     return {
       id: snapshot.id,

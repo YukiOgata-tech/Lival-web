@@ -27,7 +27,7 @@ import { DIAGNOSIS_TYPES, SCORING_FORMULAS } from '@/data/diagnosis/types'
  * 診断セッションを開始
  */
 export const startDiagnosisSession = async (userId?: string): Promise<string> => {
-  const now = serverTimestamp() as any
+  const now = serverTimestamp()
   const sessionData: Omit<DiagnosisSession, 'id'> = {
     userId: userId || null,
     startedAt: now,
@@ -103,7 +103,7 @@ export const submitAnswer = async (
       questionId,
       answer,
       responseTime,
-      answeredAt: new Date() as any // serverTimestamp()ではなくnew Date()を使用
+      answeredAt: new Date() // serverTimestamp()ではなくnew Date()を使用
     }
 
     const updatedResponses = [...session.responses, response]
@@ -113,8 +113,8 @@ export const submitAnswer = async (
     const updateData: Partial<DiagnosisSession> = {
       responses: updatedResponses,
       currentQuestionIndex: nextQuestionIndex,
-      updatedAt: serverTimestamp() as any,
-      lastActiveAt: serverTimestamp() as any
+      updatedAt: serverTimestamp(),
+      lastActiveAt: serverTimestamp()
     }
 
     // フォローアップ質問の総数を動的に更新

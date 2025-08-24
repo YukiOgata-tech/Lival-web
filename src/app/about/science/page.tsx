@@ -3,11 +3,8 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { 
   ArrowLeft, 
-  GraduationCap, 
   Brain, 
-  TrendingUp, 
   Users, 
-  Award, 
   BookOpen,
   CheckCircle,
   BarChart3,
@@ -872,9 +869,9 @@ export default function SciencePage() {
                   <div className="bg-white rounded-lg p-4">
                     <h4 className="font-semibold text-green-900 mb-3">固定的思考の回避</h4>
                     <div className="bg-gray-100 rounded p-3 text-center text-sm">
-                      <div className="text-red-600 mb-2">診断結果 = "あなたは○○タイプです"（固定的）</div>
+                      <div className="text-red-600 mb-2">診断結果 = &ldquo;あなたは○○タイプです&rdquo;（固定的）</div>
                       <div className="text-gray-500 mb-2">↓</div>
-                      <div className="text-green-600">"現在の学習傾向は○○の特徴があります"（成長的）</div>
+                      <div className="text-green-600">&ldquo;現在の学習傾向は○○の特徴があります&rdquo;（成長的）</div>
                     </div>
                     <div className="text-xs text-green-700 mt-2 italic">
                       根拠: Dweck (2006) の成長思考研究
@@ -907,10 +904,10 @@ export default function SciencePage() {
               <h3 className="text-xl font-semibold text-gray-900 mb-4 border-b-2 border-blue-200 pb-2">主要理論文献</h3>
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-lg p-4 text-sm">
-                  <strong>Deci, E. L., & Ryan, R. M.</strong> (2000). The "what" and "why" of goal pursuits: Human needs and the self-determination of behavior. <em>Psychological Inquiry, 11</em>(4), 227-268.
+                  <strong>Deci, E. L., &amp; Ryan, R. M.</strong> (2000). The &ldquo;what&rdquo; and &ldquo;why&rdquo; of goal pursuits: Human needs and the self-determination of behavior. <em>Psychological Inquiry, 11</em>(4), 227-268.
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4 text-sm">
-                  <strong>Pashler, H., McDaniel, M., Rohrer, D., & Bjork, R.</strong> (2009). Learning styles: Concepts and evidence. <em>Psychological Science in the Public Interest, 9</em>(3), 105-119.
+                  <strong>Pashler, H., McDaniel, M., Rohrer, D., &amp; Bjork, R.</strong> (2009). Learning styles: Concepts and evidence. <em>Psychological Science in the Public Interest, 9</em>(3), 105-119.
                 </div>
                 <div className="bg-gray-50 rounded-lg p-4 text-sm">
                   <strong>John, O. P., Naumann, L. P., & Soto, C. J.</strong> (2008). Paradigm shift to the integrative big five trait taxonomy. <em>Handbook of Personality, 3</em>, 114-158.

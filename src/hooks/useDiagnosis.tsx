@@ -57,7 +57,7 @@ export function useDiagnosis() {
       const newSession: DiagnosisSession = {
         id: sessionId,
         userId: user?.uid || null,
-        startedAt: new Date() as any,
+        startedAt: new Date(),
         rawScores: {},
         status: 'active',
         currentQuestionIndex: 0,
