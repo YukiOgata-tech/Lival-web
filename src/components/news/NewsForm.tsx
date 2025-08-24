@@ -33,11 +33,116 @@ interface NewsFormProps {
   mode: 'create' | 'edit'
 }
 
+interface NewsPreviewProps {
+  title: string
+  content: string
+  priority: NewsPriority
+  type: NewsType
+}
+
+function NewsPreview({ title, content, priority, type }: NewsPreviewProps) {
+  const priorityConfig = NEWS_PRIORITY_CONFIG[priority]
+  const typeConfig = NEWS_TYPE_CONFIG[type]
+  
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('ja-JP', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  return (
+    <article className="max-w-none">
+      {/* プレビューヘッダー */}
+      <div className="mb-6 pb-4 border-b border-gray-200">
+        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-2">
+          <Eye className="w-4 h-4" />
+          <span>プレビューモード</span>
+        </div>
+        <p className="text-sm text-gray-500">
+          実際の表示に近い形でお知らせの内容を確認できます
+        </p>
+      </div>
+      
+      {/* ニュース表示 */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        {/* ヘッダー部分 */}
+        <div className={`border-l-4 ${priorityConfig.borderColor} ${priorityConfig.bgColor} px-6 py-4`}>
+          <div className="flex items-center space-x-3 mb-3">
+            {/* 優先度バッジ */}
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${priorityConfig.textColor} bg-white`}>
+              {priorityConfig.label}
+            </span>
+            
+            {/* タイプバッジ */}
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white text-gray-700">
+              <span className="mr-2">{typeConfig.icon}</span>
+              {typeConfig.label}
+            </span>
+            
+            {/* 新着バッジ */}
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-500 text-white">
+              New
+            </span>
+          </div>
+
+          {/* 緊急・重要メッセージ */}
+          {(priority === 'urgent' || priority === 'high') && (
+            <div className="flex items-center mb-3">
+              <AlertTriangle className={`w-4 h-4 mr-2 ${priorityConfig.textColor}`} />
+              <span className={`text-sm font-medium ${priorityConfig.textColor}`}>
+                {priority === 'urgent' ? '至急ご確認ください' : '重要なお知らせです'}
+              </span>
+            </div>
+          )}
+
+          {/* タイトル */}
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            {title || 'タイトルが入力されていません'}
+          </h1>
+        </div>
+
+        {/* メタ情報 */}
+        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+          <div className="flex flex-wrap items-center space-x-6 text-sm text-gray-600">
+            <div className="flex items-center">
+              <CheckCircle className="w-4 h-4 mr-2" />
+              <span>プレビュー: {formatDate(new Date())}</span>
+            </div>
+            <div className="flex items-center">
+              <FileText className="w-4 h-4 mr-2" />
+              <span>投稿者: 管理者</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 本文 */}
+        <div className="px-6 py-8">
+          {content ? (
+            <div 
+              className="prose prose-lg max-w-none text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-900 prose-ol:text-gray-900 prose-li:text-gray-900 prose-blockquote:text-gray-700"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          ) : (
+            <div className="text-gray-500 italic">
+              内容が入力されていません
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
+  )
+}
+
 export default function NewsForm({ initialData, mode }: NewsFormProps) {
   const router = useRouter()
   const { user } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isPreviewMode, setIsPreviewMode] = useState(false)
 
   const [formData, setFormData] = useState<NewsFormData>({
     title: initialData?.title || '',
@@ -89,7 +194,13 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
       )
 
       if (!response.ok) {
-        throw new Error('保存に失敗しました')
+        const errorText = await response.text()
+        console.error('API Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        })
+        throw new Error(`保存に失敗しました (${response.status}: ${response.statusText})`)
       }
 
       const result = await response.json()
@@ -108,12 +219,6 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
     }
   }
 
-  // プレビュー機能
-  const handlePreview = () => {
-    if (!validateForm()) return
-    // TODO: プレビューモーダルの実装
-    alert('プレビュー機能は実装予定です')
-  }
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
@@ -131,6 +236,32 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
               {mode === 'create' ? 'お知らせを作成' : 'お知らせを編集'}
             </h1>
           </div>
+          
+          {/* プレビュー切り替えボタン */}
+          <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setIsPreviewMode(false)}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                !isPreviewMode 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <FileText className="w-4 h-4 mr-1.5 inline" />
+              編集
+            </button>
+            <button
+              onClick={() => setIsPreviewMode(true)}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                isPreviewMode 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Eye className="w-4 h-4 mr-1.5 inline" />
+              プレビュー
+            </button>
+          </div>
         </div>
       </div>
 
@@ -142,6 +273,17 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
           >
+            {isPreviewMode ? (
+              /* プレビューモード */
+              <NewsPreview 
+                title={formData.title}
+                content={formData.content}
+                priority={formData.priority}
+                type={formData.type}
+              />
+            ) : (
+              /* 編集モード */
+              <>
             {/* タイトル入力 */}
             <div className="mb-6">
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -217,14 +359,9 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
                 公開する
               </button>
 
-              <button
-                onClick={handlePreview}
-                className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                プレビュー
-              </button>
             </div>
+            </>
+            )}
           </motion.div>
         </div>
 

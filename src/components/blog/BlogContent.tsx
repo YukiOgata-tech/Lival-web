@@ -293,7 +293,7 @@ export default function BlogContent({ slug }: BlogContentProps) {
               className="p-8"
             >
               <div 
-                className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed"
+                className="prose prose-lg max-w-none text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-900 prose-ol:text-gray-900 prose-li:text-gray-900 prose-blockquote:text-gray-700"
                 dangerouslySetInnerHTML={formatContent(blog.content || blog.excerpt)}
               />
             </motion.div>

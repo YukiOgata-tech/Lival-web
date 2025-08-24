@@ -35,8 +35,9 @@ export default function NewsDetail({ news }: NewsDetailProps) {
     incrementViewCount()
   }, [news.id])
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('ja-JP', {
+  const formatDate = (date: Date | string) => {
+    const dateObj = date instanceof Date ? date : new Date(date)
+    return dateObj.toLocaleDateString('ja-JP', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -75,7 +76,12 @@ export default function NewsDetail({ news }: NewsDetailProps) {
             </span>
 
             {/* 新着バッジ */}
-            {news.publishedAt && new Date().getTime() - news.publishedAt.getTime() < 7 * 24 * 60 * 60 * 1000 && (
+            {news.publishedAt && (() => {
+              const publishedDate = news.publishedAt instanceof Date 
+                ? news.publishedAt 
+                : new Date(news.publishedAt);
+              return new Date().getTime() - publishedDate.getTime() < 7 * 24 * 60 * 60 * 1000;
+            })() && (
               <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-500 text-white">
                 New
               </span>
@@ -119,7 +125,7 @@ export default function NewsDetail({ news }: NewsDetailProps) {
         {/* 本文 */}
         <div className="px-6 py-8">
           <div 
-            className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700"
+            className="prose prose-lg max-w-none text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-900 prose-ol:text-gray-900 prose-li:text-gray-900 prose-blockquote:text-gray-700"
             dangerouslySetInnerHTML={{ __html: news.content }}
           />
         </div>

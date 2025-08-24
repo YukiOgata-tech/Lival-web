@@ -29,16 +29,25 @@ const newsCollection = collection(db, 'news').withConverter(newsConverter)
  */
 export async function getNewsList(
   filters: NewsFilter = {},
-  limitCount = 10,
-  lastDoc?: QueryDocumentSnapshot<DocumentData>
+  page = 1,
+  limitCount = 10
 ): Promise<NewsListResponse> {
   try {
-    let q = query(newsCollection)
-
-    // フィルター適用
-    if (filters.status) {
+    console.log('getNewsList called with:', { filters, page, limitCount })
+    
+    // 基本的なクエリから始める
+    let q = query(newsCollection, orderBy('createdAt', 'desc'))
+    
+    // ステータスフィルター
+    if (filters.status && filters.status !== 'all') {
       q = query(q, where('status', '==', filters.status))
+    } else if (!filters.status) {
+      // デフォルトでは公開済みのみ
+      q = query(q, where('status', '==', 'published'))
     }
+    // filters.status === 'all' の場合はフィルターを適用しない（全て取得）
+
+    // その他のフィルター
     if (filters.type) {
       q = query(q, where('type', '==', filters.type))
     }
@@ -46,19 +55,18 @@ export async function getNewsList(
       q = query(q, where('priority', '==', filters.priority))
     }
 
-    // 並び順（優先度 > 公開日時）
-    q = query(q, orderBy('priority', 'desc'), orderBy('publishedAt', 'desc'))
+    // 取得制限
+    q = query(q, limit(limitCount))
 
-    // ページネーション
-    if (lastDoc) {
-      q = query(q, startAfter(lastDoc))
-    }
-    
-    q = query(q, limit(limitCount + 1)) // +1で次ページ有無を確認
-
+    console.log('Executing Firestore query...')
     const snapshot = await getDocs(q)
-    const news = snapshot.docs.slice(0, limitCount).map(doc => doc.data())
-    const hasMore = snapshot.docs.length > limitCount
+    console.log('Query result:', snapshot.size, 'documents')
+    
+    const news = snapshot.docs.map(doc => {
+      const data = doc.data()
+      console.log('Document data:', { id: doc.id, title: data.title, status: data.status })
+      return data
+    })
 
     // 検索フィルター（クライアント側）
     let filteredNews = news
@@ -70,11 +78,14 @@ export async function getNewsList(
       )
     }
 
-    return {
+    const result = {
       news: filteredNews,
       total: filteredNews.length,
-      hasMore
+      hasMore: false // 簡単のため一旦false
     }
+    
+    console.log('getNewsList result:', result)
+    return result
   } catch (error) {
     console.error('Error fetching news list:', error)
     throw new Error('お知らせの取得に失敗しました')
@@ -148,7 +159,13 @@ export async function createNews(
     return docRef.id
   } catch (error) {
     console.error('Error creating news:', error)
-    throw new Error('お知らせの作成に失敗しました')
+    console.error('Error details:', {
+      code: (error as any).code,
+      message: (error as any).message,
+      authState: !!authorId,
+      newsData: newsData
+    })
+    throw error // 元のエラーをそのまま投げる
   }
 }
 

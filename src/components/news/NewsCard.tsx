@@ -65,7 +65,12 @@ export default function NewsCard({ news }: NewsCardProps) {
             </span>
 
             {/* 新着バッジ */}
-            {news.publishedAt && new Date().getTime() - news.publishedAt.getTime() < 7 * 24 * 60 * 60 * 1000 && (
+            {news.publishedAt && (() => {
+              const publishedDate = news.publishedAt instanceof Date 
+                ? news.publishedAt 
+                : new Date(news.publishedAt);
+              return new Date().getTime() - publishedDate.getTime() < 7 * 24 * 60 * 60 * 1000;
+            })() && (
               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                 New
               </span>
@@ -86,7 +91,7 @@ export default function NewsCard({ news }: NewsCardProps) {
           <div className="flex items-center space-x-6 text-xs text-gray-500">
             <span className="flex items-center">
               <Calendar className="w-3 h-3 mr-1" />
-              {news.publishedAt ? timeAgo(news.publishedAt) : formatDate(news.createdAt)}
+              {news.publishedAt ? timeAgo(news.publishedAt instanceof Date ? news.publishedAt : new Date(news.publishedAt)) : formatDate(news.createdAt)}
             </span>
             <span className="flex items-center">
               <Eye className="w-3 h-3 mr-1" />

@@ -36,6 +36,8 @@ export default function NewsList() {
 
       if (filters.type) params.append('type', filters.type)
       if (searchTerm) params.append('search', searchTerm)
+      // デバッグのためすべてのstatusを取得
+      params.append('status', 'all')
 
       console.log('Fetching news with params:', params.toString())
       const response = await fetch(`/api/news?${params}`)

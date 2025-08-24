@@ -24,9 +24,9 @@ service cloud.firestore {
       allow update: if isSigned() && request.auth.uid == userId
         && request.resource.data.diff(resource.data).changedKeys().hasOnly([
           'displayName', 'bio', 'photoURL', 'gender', 'birthday',
-          'expoPushTokens', 'updatedAt',
+          'expoPushTokens', 'updatedAt','subscription','webProfile',
+            'diagnostics','emailVerified','currentMonsterId'
         ]);
-      // Admin can update role and subscription fields
       allow update: if isAdmin() && request.auth.uid != userId;
       // Functions専用
       match /xpLedger/{entryId} {
@@ -94,8 +94,7 @@ service cloud.firestore {
         (isHost(roomId) &&
           request.resource.data.diff(resource.data).changedKeys().hasOnly([
             'segmentMode','segmentMinutes','segmentStartedAt','segmentIndex',
-            'status','sessionForceEndedAt','updatedAt','subscription','webProfile',
-            'diagnostics','emailVerified','currentMonsterId'
+            'status','sessionForceEndedAt','updatedAt',
           ]))
          ||
          // 自分の既読フラグだけは本人が付けられる
@@ -103,6 +102,7 @@ service cloud.firestore {
          request.resource.data.seenBy[request.auth.uid] == true)
         );
       allow write: if isSigned();
+      
       
       match /_settlements/{sid} {
         // ルームメンバーなら誰でも作成可
@@ -195,57 +195,78 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false; // 管理者のみが更新
     }
-
-    // Blog system helper functions
+    
+     // Blog system helper functions
     function isAdmin() {
       return isSigned() && 
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
-    
     function isSubscriber() {
       return isSigned() && 
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['subscriber', 'admin'];
     }
-    
     function isFreeUser() {
       return isSigned() && 
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['free', 'subscriber', 'admin'];
     }
-    
     function isAuthor(authorId) {
       return isSigned() && request.auth.uid == authorId;
     }
-
     // Blog system collections
     match /blogs/{blogId} {
-      allow read: if true; // All users can read blogs
-      allow write: if true; // Temporary: allow all writes for development
+      allow read: if true;
+      
+      allow create: if isSigned() &&
+                    request.auth.uid == resource.data.authorId &&
+                    resource.data.status == 'pending';
+      
+      allow update: if (isAuthor(resource.data.authorId) && 
+                       resource.data.status in ['draft', 'pending']) ||
+                       isAdmin();
+      
+      allow delete: if isAdmin();
     }
-
     match /blogSubmissions/{submissionId} {
-      allow read, write: if true; // Temporary: allow all for development
+      allow read: if isAuthor(resource.data.authorId) || isAdmin();
+      
+      allow create: if isSigned() &&
+                    request.auth.uid == resource.data.authorId;
+      
+      allow update: if isAuthor(resource.data.authorId) || isAdmin();
+      
+      allow delete: if isAuthor(resource.data.authorId) || isAdmin();
     }
-
     match /reviewTemplates/{templateId} {
-      allow read, write: if true; // Temporary: allow all for development
+      allow read, write: if isAdmin();
     }
-
     match /auditLogs/{logId} {
-      allow read, write: if true; // Temporary: allow all for development
+      allow read: if isAdmin();
+      allow create: if isAdmin();
     }
 
     match /viewCounts/{blogId} {
-      allow read, write: if true; // Allow all view count operations
+      allow read: if true;
+      allow create, update: if true;
     }
 
     match /categories/{categoryId} {
-      allow read, write: if true; // Allow all category operations
+      allow read: if true;
+      allow write: if isAdmin();
     }
-
     match /imageUploads/{uploadId} {
-      allow read, write: if true; // Temporary: allow all for development
+      allow read: if true;
+      allow create, update: if isSigned() &&
+                            request.auth.uid == resource.data.uploaderId;
+      allow delete: if isAdmin() ||
+                    (isSigned() && 
+                     request.auth.uid == resource.data.uploaderId);
     }
-
+    // News system
+    match /news/{newsId} {
+      allow read: if true; // All users can read news
+      allow create, update: if isAdmin(); // Only admins can create/update news
+      allow delete: if isAdmin(); // Only admins can delete news
+    }
     match /{document=**} {
       allow read, write: if false;
     }

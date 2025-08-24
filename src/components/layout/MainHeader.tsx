@@ -148,7 +148,7 @@ export default function MainHeader() {
                             </div>
                             <Link
                               href="/admin"
-                              className="block px-4 py-2 text-orange-300 hover:bg-gray-700 transition-colors flex items-center space-x-2"
+                              className="block px-4 py-2 text-orange-300 hover:bg-gray-700 transition-colors items-center space-x-2"
                               onClick={() => setShowUserMenu(false)}
                             >
                               <Shield className="w-4 h-4" />
@@ -156,7 +156,7 @@ export default function MainHeader() {
                             </Link>
                             <Link
                               href="/admin/news"
-                              className="block px-4 py-2 text-orange-300 hover:bg-gray-700 transition-colors flex items-center space-x-2"
+                              className="block px-4 py-2 text-orange-300 hover:bg-gray-700 transition-colors items-center space-x-2"
                               onClick={() => setShowUserMenu(false)}
                             >
                               <Settings className="w-4 h-4" />

@@ -130,7 +130,7 @@ export default function TiptapEditor({ content, onChange, preview = false, uploa
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-lg max-w-none focus:outline-none p-6 min-h-[400px]',
+        class: 'prose prose-lg max-w-none focus:outline-none p-6 min-h-[400px] text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-strong:text-gray-900 prose-em:text-gray-900',
       },
     },
   })
@@ -181,7 +181,7 @@ export default function TiptapEditor({ content, onChange, preview = false, uploa
           プレビューモード
         </div>
         <div 
-          className="prose prose-lg max-w-none p-6 min-h-[400px]"
+          className="prose prose-lg max-w-none p-6 min-h-[400px] text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-strong:text-gray-900 prose-em:text-gray-900"
           dangerouslySetInnerHTML={{ __html: content }}
         />
       </div>

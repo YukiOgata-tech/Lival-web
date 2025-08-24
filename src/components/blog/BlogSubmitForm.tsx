@@ -33,6 +33,131 @@ interface FormData {
   coverPath: string
 }
 
+interface BlogPreviewProps {
+  title: string
+  content: string
+  categories: string[]
+  tags: string[]
+  visibility: 'public' | 'teaser' | 'premium'
+  coverPath: string
+}
+
+function BlogPreview({ title, content, categories, tags, visibility, coverPath }: BlogPreviewProps) {
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('ja-JP', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  const visibilityConfig = {
+    public: { label: '完全公開', color: 'bg-green-100 text-green-700', icon: '🌍' },
+    teaser: { label: 'ティザー記事', color: 'bg-yellow-100 text-yellow-700', icon: '👀' },
+    premium: { label: 'プレミアム限定', color: 'bg-purple-100 text-purple-700', icon: '⭐' }
+  }
+
+  return (
+    <article className="max-w-none p-6">
+      {/* プレビューヘッダー */}
+      <div className="mb-6 pb-4 border-b border-gray-200">
+        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-2">
+          <Eye className="w-4 h-4" />
+          <span>プレビューモード</span>
+        </div>
+        <p className="text-sm text-gray-500">
+          実際の表示に近い形でブログ記事の内容を確認できます
+        </p>
+      </div>
+
+      {/* ブログ記事表示 */}
+      <div className="bg-white">
+        {/* カバー画像 */}
+        {coverPath && (
+          <div className="mb-6">
+            <img 
+              src={coverPath} 
+              alt={title || 'カバー画像'} 
+              className="w-full h-64 object-cover rounded-lg"
+            />
+          </div>
+        )}
+
+        {/* ヘッダー情報 */}
+        <div className="mb-6">
+          {/* カテゴリとタグ */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            {/* 公開設定バッジ */}
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${visibilityConfig[visibility].color}`}>
+              <span className="mr-1">{visibilityConfig[visibility].icon}</span>
+              {visibilityConfig[visibility].label}
+            </span>
+            
+            {/* カテゴリ */}
+            {categories.length > 0 && categories.map((category, index) => (
+              <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-sm bg-blue-100 text-blue-700">
+                <Folder className="w-3 h-3 mr-1" />
+                {category}
+              </span>
+            ))}
+            
+            {/* タグ */}
+            {tags.length > 0 && tags.map((tag, index) => (
+              <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-sm bg-gray-100 text-gray-700">
+                <Tag className="w-3 h-3 mr-1" />
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {/* タイトル */}
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            {title || 'タイトルが入力されていません'}
+          </h1>
+
+          {/* メタ情報 */}
+          <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex items-center">
+              <CheckCircle className="w-4 h-4 mr-1" />
+              <span>プレビュー: {formatDate(new Date())}</span>
+            </div>
+            <div className="flex items-center">
+              <FileText className="w-4 h-4 mr-1" />
+              <span>執筆者: あなた</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 記事本文 */}
+        <div className="prose prose-lg max-w-none text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-900 prose-ol:text-gray-900 prose-li:text-gray-900 prose-blockquote:text-gray-700">
+          {content ? (
+            <div dangerouslySetInnerHTML={{ __html: content }} />
+          ) : (
+            <div className="text-gray-500 italic p-8 text-center">
+              記事の内容が入力されていません
+            </div>
+          )}
+        </div>
+
+        {/* ティザーモードの場合は区切り線を表示 */}
+        {visibility === 'teaser' && content && content.length > 300 && (
+          <div className="mt-8 pt-6 border-t-2 border-dashed border-gray-300">
+            <div className="text-center bg-yellow-50 p-6 rounded-lg">
+              <AlertCircle className="w-6 h-6 mx-auto text-yellow-600 mb-2" />
+              <p className="text-sm text-yellow-800 font-medium">ティザー記事設定</p>
+              <p className="text-xs text-yellow-700 mt-1">
+                ここから下の内容は有料会員のみ閲覧可能になります
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </article>
+  )
+}
+
 const visibilityOptions = [
   {
     value: 'public' as const,
@@ -401,23 +526,52 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
               <FileText className="inline w-4 h-4 mr-1" />
               記事コンテンツ *
             </label>
-            <button
-              type="button"
-              onClick={() => setPreviewMode(!previewMode)}
-              className="flex items-center space-x-1 px-3 py-1 text-sm text-gray-600 hover:text-blue-600 border border-gray-300 rounded-lg hover:border-blue-300"
-            >
-              <Eye className="w-4 h-4" />
-              <span>{previewMode ? 'エディタ' : 'プレビュー'}</span>
-            </button>
+            {/* プレビュー切り替えボタン */}
+            <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+              <button
+                type="button"
+                onClick={() => setPreviewMode(false)}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  !previewMode 
+                    ? 'bg-white text-gray-900 shadow-sm' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <FileText className="w-4 h-4 mr-1.5 inline" />
+                編集
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode(true)}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  previewMode 
+                    ? 'bg-white text-gray-900 shadow-sm' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <Eye className="w-4 h-4 mr-1.5 inline" />
+                プレビュー
+              </button>
+            </div>
           </div>
           
           <div className="border border-gray-300 rounded-lg overflow-hidden">
-            <TiptapEditor
-              content={formData.content}
-              onChange={handleInputChange('content')}
-              preview={previewMode}
-              uploaderId={mockUserId}
-            />
+            {previewMode ? (
+              <BlogPreview 
+                title={formData.title}
+                content={formData.content}
+                categories={formData.categories}
+                tags={formData.tags}
+                visibility={formData.visibility}
+                coverPath={formData.coverPath}
+              />
+            ) : (
+              <TiptapEditor
+                content={formData.content}
+                onChange={handleInputChange('content')}
+                uploaderId={mockUserId}
+              />
+            )}
           </div>
           
           <div className="mt-2 text-sm text-gray-500">
