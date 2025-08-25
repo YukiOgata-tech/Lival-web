@@ -1,6 +1,5 @@
 // src/app/blog/page.tsx
 'use client'
-import { Metadata } from 'next'
 import { Suspense, use } from 'react'
 import BlogList from '@/components/blog/BlogList'
 import BlogFilters from '@/components/blog/BlogFilters'

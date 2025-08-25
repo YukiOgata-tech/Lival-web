@@ -1,54 +1,12 @@
 // src/lib/user.ts
-import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { updateProfile, User as FirebaseUser } from 'firebase/auth'
 import { db } from './firebase'
 import { LivalUser, UserSubscription, WebProfile } from '@/types'
+import { initializeUserData } from './firebase/user-initialization'
 
 /**
- * Web版新規登録時のデフォルトユーザーデータ作成
- */
-export const createDefaultUserData = (email: string, displayName?: string): Omit<LivalUser, 'createdAt' | 'updatedAt'> => ({
-  // 基本プロフィール
-  bio: '',
-  birthday: null,
-  displayName: displayName || email.split('@')[0],
-  email,
-  emailVerified: false,
-  gender: null,
-  photoURL: '',
-  
-  // ゲーミフィケーション要素
-  coins: 0,
-  xp: 0,
-  level: 1,
-  currentMonsterId: 'monster-01', // デフォルトキャラクター
-  
-  // 学習データ
-  groupSessionCount: 0,
-  groupTotalMinutes: 0,
-  individualSessionCount: 0,
-  individualTotalMinutes: 0,
-  
-  // Web版拡張フィールド
-  subscription: {
-    plan: 'free_web',
-    status: 'active',
-    currentPeriodStart: serverTimestamp() as unknown as Timestamp,
-    currentPeriodEnd: null
-  },
-  webProfile: {
-    lastWebLogin: serverTimestamp() as unknown as Timestamp,
-    isWebUser: true,
-    preferences: {
-      theme: 'light',
-      notifications: true,
-      language: 'ja'
-    }
-  }
-})
-
-/**
- * 新規ユーザーをFirestoreに作成または更新
+ * 新規ユーザーをFirebase Functions経由で作成または更新
  */
 export const createUserInFirestore = async (
   firebaseUser: FirebaseUser,
@@ -58,67 +16,27 @@ export const createUserInFirestore = async (
     throw new Error('ユーザーのメールアドレスが取得できません')
   }
 
-  const userRef = doc(db, 'users', firebaseUser.uid)
-  
   try {
-    // 既存ユーザーの確認
-    const userSnap = await getDoc(userRef)
+    // Firebase Functions経由でユーザー初期化
+    const result = await initializeUserData({ platform: 'web' })
     
-    if (userSnap.exists()) {
-      const existingData = userSnap.data() as LivalUser
+    if (result.success) {
+      console.log('User initialized via Firebase Functions:', result.userData)
       
-      // 既存ユーザーでもWeb版フィールドがない場合は追加
-      const hasWebProfile = existingData.webProfile && existingData.subscription
-      
-      if (!hasWebProfile) {
-        console.log('Existing user without web profile, adding web fields...')
-        const webFields = {
-          subscription: {
-            plan: 'free_web' as const,
-            status: 'active' as const,
-            currentPeriodStart: serverTimestamp() as unknown as Timestamp,
-            currentPeriodEnd: null
-          },
-          webProfile: {
-            lastWebLogin: serverTimestamp() as unknown as Timestamp,
-            isWebUser: true,
-            preferences: {
-              theme: 'light' as const,
-              notifications: true,
-              language: 'ja' as const
-            }
-          },
-          updatedAt: serverTimestamp()
-        }
-        
-        await updateDoc(userRef, webFields)
-      } else {
-        // Web版ログイン時刻のみ更新
+      // 既存ユーザーの場合、Web版ログイン時刻のみ更新
+      if (result.message === 'User already initialized') {
+        const userRef = doc(db, 'users', firebaseUser.uid)
         await updateDoc(userRef, {
           'webProfile.lastWebLogin': serverTimestamp(),
           updatedAt: serverTimestamp(),
           emailVerified: firebaseUser.emailVerified
         })
       }
-      return
+    } else {
+      throw new Error(`Failed to initialize user: ${result.message}`)
     }
-
-    // 新規ユーザーの場合はデフォルトデータで作成
-    console.log('Creating new user in Firestore...')
-    const defaultData = createDefaultUserData(firebaseUser.email, firebaseUser.displayName || undefined)
-    const userData: LivalUser = {
-      ...defaultData,
-      ...additionalData,
-      createdAt: serverTimestamp() as unknown as Timestamp,
-      updatedAt: serverTimestamp() as unknown as Timestamp,
-      email: firebaseUser.email,
-      emailVerified: firebaseUser.emailVerified
-    }
-
-    await setDoc(userRef, userData)
-    console.log('New user created successfully in Firestore')
   } catch (error) {
-    console.error('Error creating/updating user in Firestore:', error)
+    console.error('Error creating/updating user via Functions:', error)
     throw error
   }
 }

@@ -8,7 +8,8 @@ import {
   createUserWithEmailAndPassword,
   updateProfile
 } from 'firebase/auth'
-import { auth } from '@/lib/firebase'
+import { httpsCallable } from 'firebase/functions'
+import { auth, functions } from '@/lib/firebase'
 import { LivalUser } from '@/types'
 import { createUserInFirestore, getUserData } from '@/lib/user'
 
@@ -22,6 +23,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, displayName?: string) => Promise<void>
   refreshUserData: () => Promise<void>
+  migrateUserData: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -30,6 +32,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<FirebaseUser | null>(null)
   const [userData, setUserData] = useState<LivalUser | null>(null)
   const [loading, setLoading] = useState(true)
+
+  const migrateUserData = async (): Promise<void> => {
+    if (!user) return
+
+    try {
+      const migrateUser = httpsCallable(functions, 'migrateExistingUsers')
+      await migrateUser()
+      console.log('✅ User data migrated successfully')
+    } catch (error) {
+      console.error('🚨 Failed to migrate user data:', error)
+    }
+  }
 
   const refreshUserData = async (retryCount = 0): Promise<void> => {
     if (!user) {
@@ -44,7 +58,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await getUserData(user.uid)
       if (data) {
         console.log('✅ User data found and set')
-        setUserData(data)
+        
+        // 既存ユーザーのマイグレーション確認
+        if (!data.role || !data.hasOwnProperty('mobileProfile')) {
+          console.log('🔄 Migrating existing user data...')
+          await migrateUserData()
+          
+          // マイグレーション後に再取得
+          const updatedData = await getUserData(user.uid)
+          setUserData(updatedData || data)
+        } else {
+          setUserData(data)
+        }
         return
       }
 
@@ -52,60 +77,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('❌ User data not found in Firestore')
       
       if (retryCount < 2) {
-        console.log(`🔄 Retrying user creation... (${retryCount + 1}/2)`)
+        console.log(`🔄 Retrying user creation via Functions... (${retryCount + 1}/2)`)
         
         try {
           await createUserInFirestore(user)
-          console.log('✅ User created in Firestore, retrying data fetch...')
+          console.log('✅ User created via Functions, retrying data fetch...')
           
           // 短い待機時間で再試行
           setTimeout(() => {
             refreshUserData(retryCount + 1)
           }, 1500)
         } catch (error) {
-          console.error('🚨 Failed to create user in Firestore:', error)
+          console.error('🚨 Failed to create user via Functions:', error)
           setUserData(null)
         }
       } else {
         console.error('🚨 Failed to get user data after all retries')
-        // 最終的にフォールバック: 基本的なユーザーデータを作成
-        const fallbackData = {
-          email: user.email || '',
-          displayName: user.displayName || user.email?.split('@')[0] || 'ユーザー',
-          bio: '',
-          birthday: null,
-          gender: null,
-          photoURL: user.photoURL || '',
-          emailVerified: user.emailVerified,
-          coins: 0,
-          xp: 0,
-          level: 1,
-          currentMonsterId: 'monster-01',
-          groupSessionCount: 0,
-          groupTotalMinutes: 0,
-          individualSessionCount: 0,
-          individualTotalMinutes: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          subscription: {
-            plan: 'free_web' as const,
-            status: 'active' as const,
-            currentPeriodStart: new Date(),
-            currentPeriodEnd: null
-          },
-          webProfile: {
-            lastWebLogin: new Date(),
-            isWebUser: true,
-            preferences: {
-              theme: 'light' as const,
-              notifications: true,
-              language: 'ja' as const
-            }
-          }
-        } as LivalUser
-        
-        console.log('🆘 Using fallback user data')
-        setUserData(fallbackData)
+        setUserData(null)
       }
     } catch (error) {
       console.error('🚨 Error in refreshUserData:', error)
@@ -190,7 +178,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut,
     signIn,
     signUp,
-    refreshUserData
+    refreshUserData,
+    migrateUserData
   }
 
   return (
