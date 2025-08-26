@@ -10,8 +10,8 @@ export const metadata: Metadata = {
     default: 'Lival AI - 中高生向け教育特化AIサービス',
     template: '%s | Lival AI'
   },
-  description: 'Lival AIは中高生向けの教育特化AIサービスです。学習プランナーAI、家庭教師AI、進路カウンセラーAIの3つの専門AIコーチがあなたの学習スタイルに合わせて個別最適化された指導を提供します。学習タイプ診断で自分に合った学習方法を見つけましょう。',
-  keywords: ['Lival AI', '教育AI', '学習支援', '中学生', '高校生', '学習プランナー', '家庭教師AI', '進路カウンセラー', '学習タイプ診断', '個別学習', 'AIコーチング', 'パーソナライズ学習'],
+  description: 'Lival AIは塾や予備校に代わる新しい学習体験を提供する中高生向け教育特化AIサービスです。月額4,980円で24時間365日、3つの専門AIコーチ（学習プランナー・家庭教師・進路カウンセラー）があなたの学習スタイルに完全適応。高額な塾費用の心配なく、科学的根拠に基づく個別最適化された学習サポートを受けられます。',
+  keywords: ['Lival AI', '塾代わり', '予備校代わり', '教育AI', '学習支援', '中学生', '高校生', 'オンライン家庭教師', '個別指導', '学習プランナー', '進路カウンセラー', '学習タイプ診断', 'AIコーチング', 'パーソナライズ学習', '塾費用削減', 'コスト効率', '24時間学習サポート'],
   authors: [{ name: 'Lival AI' }],
   creator: 'Lival AI',
   publisher: 'Lival AI',
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     locale: 'ja_JP',
     url: 'https://lival.ai',
     siteName: 'Lival AI',
-    title: 'Lival AI - 中高生向け教育特化AIサービス',
-    description: '3種の専門AIコーチがあなたの学習スタイルに合わせて個別最適化された指導を提供。学習タイプ診断で自分に合った学習方法を見つけましょう。',
+    title: 'Lival AI - 塾・予備校に代わる中高生向けAI学習サービス',
+    description: '月額4,980円で塾・予備校費用の1/10以下。24時間365日、3つの専門AIコーチがあなた専用の学習サポートを提供。高額な塾費用の心配なく、科学的根拠に基づく個別最適化された学習を実現。',
     images: [
       {
         url: '/og-image-default.png',
@@ -38,8 +38,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lival AI - 中高生向け教育特化AIサービス',
-    description: '3種の専門AIコーチがあなたの学習を完全サポート。無料の学習タイプ診断から始めよう。',
+    title: 'Lival AI - 塾・予備校に代わるAI学習サービス',
+    description: '月額4,980円で塾費用の1/10以下。24時間365日のAI学習サポートで塾通いは不要。無料診断から始めよう。',
     images: ['/og-image-default.png']
   },
   robots: {
@@ -75,6 +75,12 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#2563eb" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Kiwi+Maru:wght@300;400;500&family=Kosugi+Maru&family=Sawarabi+Gothic&family=Dela+Gothic+One&family=Rampart+One&display=swap"
+          rel="stylesheet"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -84,7 +90,7 @@ export default function RootLayout({
               "name": "Lival AI",
               "url": "https://lival.ai",
               "logo": "https://lival.ai/logo.png",
-              "description": "中高生向け教育特化AIサービス。3つの専門AIコーチが学習をサポート。",
+              "description": "塾・予備校に代わる中高生向けAI学習サービス。月額4,980円で24時間365日の個別指導を提供。",
               "sameAs": [
                 "https://twitter.com/lival_ai"
               ],

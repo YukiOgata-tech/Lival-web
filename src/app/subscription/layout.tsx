@@ -1,12 +1,12 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'プレミアムプラン - 学習効果を最大化するサブスクリプション',
-  description: 'Lival AIのプレミアムプランで学習効果を最大化しましょう。月額4,980円でAI機能フル活用、モバイルアプリ対応、専用サポートを利用できます。フリープランとの比較、料金詳細、よくある質問まで詳しくご紹介。いつでもキャンセル可能で安心です。',
-  keywords: ['Lival AI', 'プレミアムプラン', 'サブスクリプション', '料金プラン', 'AIコーチング', 'モバイルアプリ', '学習支援', '月額料金', '教育サービス'],
+  title: 'プレミアムプラン - 塾・予備校費用の1/10以下で24時間学習サポート',
+  description: '塾・予備校に通う必要なし！月額4,980円で従来の塾費用の1/10以下を実現。24時間365日のAI個別指導で、高額な塾代・予備校代を大幅削減しながら学習効果を最大化。通塾時間も不要で効率的な学習環境を提供します。',
+  keywords: ['Lival AI', '塾代削減', '予備校代削減', 'プレミアムプラン', 'サブスクリプション', '料金比較', 'コスト効率', '24時間指導', '個別指導', 'オンライン学習', '通塾不要', '学習費用', '教育費節約'],
   openGraph: {
-    title: 'プレミアムプラン - 学習効果を最大化 | Lival AI',
-    description: '月額4,980円でAI機能フル活用、モバイルアプリ対応。学習効果を最大化するプレミアムプランの詳細をご紹介。',
+    title: 'プレミアムプラン - 塾費用の1/10以下で24時間学習サポート | Lival AI',
+    description: '塾・予備校の代わりに月額4,980円で24時間365日のAI個別指導。高額な塾費用を大幅削減し、通塾不要の効率的学習を実現。',
     type: 'website',
     url: 'https://lival.ai/subscription',
     images: [
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'プレミアムプラン - 学習効果を最大化 | Lival AI',
-    description: 'AI機能フル活用、モバイルアプリ対応で学習効果を最大化。プレミアムプランの詳細をチェック。',
+    title: 'プレミアムプラン - 塾費用の1/10以下 | Lival AI',
+    description: '塾・予備校代わりの24時間AI学習サポート。月額4,980円で高額な塾費用を大幅削減。',
     images: ['/og-image-subscription.png']
   },
   alternates: {
@@ -43,7 +43,7 @@ export default function SubscriptionLayout({
             "@context": "https://schema.org",
             "@type": "Service",
             "name": "Lival AI プレミアムプラン",
-            "description": "中高生向け教育特化AIサービスのプレミアムプラン",
+            "description": "塾・予備校に代わる中高生向けAI学習サービスのプレミアムプラン。月額4,980円で24時間365日の個別指導",
             "provider": {
               "@type": "Organization",
               "name": "Lival AI"
@@ -63,7 +63,7 @@ export default function SubscriptionLayout({
                   "price": "4980",
                   "priceCurrency": "JPY",
                   "billingPeriod": "P1M",
-                  "description": "AI機能フル活用、モバイルアプリ対応、専用サポート"
+                  "description": "塾・予備校代わりの24時間AI学習サポート、モバイルアプリ対応、専用サポート"
                 },
                 {
                   "@type": "Offer",

@@ -9,17 +9,15 @@ import {
   Coins, 
   BookOpen, 
   Users, 
-  Calendar,
   ArrowRight,
   Crown,
   Star,
   PenTool,
-  Eye,
   Shield,
-  Settings,
   Megaphone
 } from 'lucide-react'
 import Link from 'next/link'
+import StudySummaryCard from '@/components/study/StudySummaryCard'
 
 export default function DashboardPage() {
   const { user, userData, loading, isAdmin } = useAuth()
@@ -290,11 +288,20 @@ export default function DashboardPage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Current Plan */}
+            {/* Study Summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
+            >
+              <StudySummaryCard userId={user.uid} />
+            </motion.div>
+
+            {/* Current Plan */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
               className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
             >
               <h3 className="text-lg font-semibold text-gray-900 mb-4">現在のプラン</h3>
@@ -329,7 +336,7 @@ export default function DashboardPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
+              transition={{ delay: 0.8 }}
               className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
             >
               <h3 className="text-lg font-semibold text-gray-900 mb-4">最近のアクティビティ</h3>
@@ -361,7 +368,7 @@ export default function DashboardPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
+                transition={{ delay: 0.9 }}
                 className="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl shadow-sm border border-orange-200 p-6"
               >
                 <div className="flex items-center space-x-3 mb-4">

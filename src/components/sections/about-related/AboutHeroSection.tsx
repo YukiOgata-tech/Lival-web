@@ -97,15 +97,15 @@ export default function AboutHeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-white">
-              若い力で
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent block">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl mb-6 text-white">
+              <span className="font-display font-bold">若い力で</span>
+              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent block text-hero">
                 教育を革新
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto">
-              大学生を中心とした若いチームと、現場を知る教育者たちが手を取り合い、
+            <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto font-soft">
+              <span className="font-playful text-blue-200">大学生を中心とした若いチーム</span>と、<span className="font-accent text-purple-200">現場を知る教育者たち</span>が手を取り合い、
               次世代の学習体験を創造しています。
             </p>
 

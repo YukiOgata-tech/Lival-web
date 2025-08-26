@@ -1,0 +1,142 @@
+// src/app/study/page.tsx
+'use client'
+
+import { useState, useEffect } from 'react';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../../lib/firebase';
+import { StudyStats } from '../../types/study';
+import StudyLogList from '../../components/study/StudyLogList';
+import StudyStatsCard from '../../components/study/StudyStatsCard';
+import { getStudyStats, testSupabaseConnection, checkTableExists } from '../../lib/api/studyLogService';
+
+export default function StudyPage() {
+  const [user, loading, error] = useAuthState(auth);
+  const [stats, setStats] = useState<StudyStats | null>(null);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      loadStudyStats();
+    }
+  }, [user]);
+
+  const loadStudyStats = async () => {
+    if (!user) return;
+
+    setIsLoadingStats(true);
+    try {
+      // デバッグ: Supabase接続テスト
+      console.log('Testing Supabase connection...');
+      const connectionTest = await testSupabaseConnection();
+      console.log('Connection test result:', connectionTest);
+
+      const tableCheck = await checkTableExists();
+      console.log('Table exists check:', tableCheck);
+
+      const studyStats = await getStudyStats(user.uid);
+      setStats(studyStats);
+    } catch (error) {
+      console.error('Error loading study stats:', error);
+    }
+    setIsLoadingStats(false);
+  };
+
+  // 認証チェック
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 mb-4">認証エラーが発生しました</div>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            再試行
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            ログインが必要です
+          </h2>
+          <p className="text-gray-600 mb-6">
+            学習記録を利用するにはログインしてください
+          </p>
+          <a
+            href="/login"
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            ログイン
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* ヘッダー */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="py-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">学習記録</h1>
+                <p className="mt-1 text-gray-600">
+                  学習の記録と振り返りで継続的な成長を
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-sm text-gray-500">
+                  {user.displayName || user.email}
+                </div>
+                {user.photoURL && (
+                  <img
+                    src={user.photoURL}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* メインコンテンツ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
+          {/* 統計セクション */}
+          {stats && (
+            <StudyStatsCard 
+              stats={stats} 
+              isLoading={isLoadingStats} 
+            />
+          )}
+
+          {/* 学習記録リスト */}
+          <StudyLogList userId={user.uid} />
+        </div>
+      </div>
+    </div>
+  );
+}

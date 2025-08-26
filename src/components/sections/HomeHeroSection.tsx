@@ -115,8 +115,8 @@ export default function HomeHeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-8"
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl mb-6">
+              <span className="font-bold text-hero bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 あなただけの
               </span>
               <br />
@@ -130,7 +130,7 @@ export default function HomeHeroSection() {
                   priority
                 />
                 <motion.span
-                  className="inline-block ml-4"
+                  className="inline-block ml-4 text-stylish text-3xl md:text-4xl lg:text-5xl"
                   animate={{ rotate: [0, 10, 0] }}
                   transition={{ duration: 1, repeat: Infinity, delay: 1 }}
                 >
@@ -139,9 +139,9 @@ export default function HomeHeroSection() {
               </div>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
-              6つの学習タイプ別に最適化された<br />
-              教育特化AIコーチングで、学習効果を最大化
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed font-soft">
+              <span className="font-playful text-blue-700">6つの学習タイプ別</span>に最適化された<br />
+              <span className="font-accent text-purple-700">教育特化AIコーチング</span>で、学習効果を最大化
             </p>
           </motion.div>
 
@@ -154,7 +154,7 @@ export default function HomeHeroSection() {
           >
             <Link
               href="/diagnosis"
-              className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-cta"
             >
               <span className="flex items-center justify-center">
                 <Sparkles className="w-5 h-5 mr-2" />
@@ -163,7 +163,7 @@ export default function HomeHeroSection() {
               </span>
             </Link>
             
-            <button className="group flex items-center justify-center px-8 py-4 border-2 border-gray-300 text-gray-700 text-lg font-semibold rounded-full hover:border-gray-400 transition-all duration-300">
+            <button className="group flex items-center justify-center px-8 py-4 border-2 border-gray-300 text-gray-700 text-lg font-semibold rounded-full hover:border-gray-400 transition-all duration-300 text-accent">
               <Play className="w-5 h-5 mr-2" />
               デモ動画を見る
             </button>

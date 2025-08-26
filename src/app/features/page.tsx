@@ -128,26 +128,26 @@ export default function FeaturesPage() {
       {/* ヒーローセクション */}
       <section className="relative py-20 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center space-x-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm font-medium mb-6">
+          <div className="inline-flex items-center space-x-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm font-medium mb-6 text-accent">
             <Brain className="w-4 h-4" />
             <span>3種の専門AIコーチ</span>
           </div>
           
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+          <h1 className="text-5xl md:text-6xl text-gray-900 mb-6">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 text-hero">
               AIチャット機能
             </span>
           </h1>
           
-          <p className="text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto mb-12">
-            学習プランナーAI、家庭教師AI、進路カウンセラーAIの3つの専門AIが、<br />
-            あなたの学習スタイルに完全適応して、個別最適化された指導を提供します
+          <p className="text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto mb-12 font-soft">
+            <span className="font-playful text-blue-700">学習プランナーAI</span>、<span className="font-playful text-green-700">家庭教師AI</span>、<span className="font-playful text-purple-700">進路カウンセラーAI</span>の3つの専門AIが、<br />
+            あなたの学習スタイルに<span className="font-accent text-orange-600">完全適応</span>して、個別最適化された指導を提供します
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
             <Link
               href="/diagnosis"
-              className="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 font-semibold text-lg"
+              className="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 font-semibold text-lg text-cta"
             >
               <Target className="w-6 h-6 mr-2" />
               まずは学習タイプ診断
@@ -155,7 +155,7 @@ export default function FeaturesPage() {
             
             <Link
               href="/signup"
-              className="inline-flex items-center border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg hover:bg-blue-50 transition-colors font-semibold text-lg"
+              className="inline-flex items-center border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg hover:bg-blue-50 transition-colors font-semibold text-lg text-accent"
             >
               <Sparkles className="w-6 h-6 mr-2" />
               無料で始める
@@ -168,7 +168,7 @@ export default function FeaturesPage() {
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl text-gray-900 mb-4 font-display font-bold">
               3つの専門AIコーチ
             </h2>
             <p className="text-xl text-gray-600">
