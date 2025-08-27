@@ -6,6 +6,7 @@ import { StudyLog, StudyLogInput } from '../../types/study';
 import StudyLogCard from './StudyLogCard';
 import StudyLogModal from './StudyLogModal';
 import { createStudyLog, updateStudyLog, deleteStudyLog, getStudyLogs } from '../../lib/api/studyLogService';
+import { StudyLogLoading } from '../ui/LoadingAnimation';
 
 interface StudyLogListProps {
   userId: string;
@@ -105,7 +106,7 @@ export default function StudyLogList({
     if (!editingLog) return undefined;
 
     return {
-      book_isbn: editingLog.book_isbn || '',
+      book_id: editingLog.book_id ?? null,
       manual_book_title: editingLog.manual_book_title || '',
       duration_minutes: editingLog.duration_minutes,
       memo: editingLog.memo || '',
@@ -178,7 +179,14 @@ export default function StudyLogList({
       </div>
 
       {/* 学習記録一覧 */}
-      {groupedLogs.length === 0 ? (
+      {isLoading ? (
+        <div className="text-center py-16 bg-white rounded-lg border border-gray-200">
+          <StudyLogLoading 
+            message="学習記録を読み込んでいます..." 
+            size="lg"
+          />
+        </div>
+      ) : groupedLogs.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
           <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
             <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

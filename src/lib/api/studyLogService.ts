@@ -1,8 +1,11 @@
 // src/lib/api/studyLogService.ts
-import { createClient } from '../supabase/supabaseClient';
+import { supabase } from '../supabase/supabaseClient';
 import { StudyLog, StudyLogInput, StudyStats } from '../../types/study';
 
-const supabase = createClient();
+const sanitizeNullable = (s?: string | null) => {
+  const t = (s ?? '').trim()
+  return t.length ? t : null
+}
 
 // Supabase接続テスト関数
 export async function testSupabaseConnection(): Promise<boolean> {
@@ -30,7 +33,6 @@ export async function testSupabaseConnection(): Promise<boolean> {
     return false;
   }
 }
-
 // テーブル存在確認関数（シンプルな直接アクセス）
 export async function checkTableExists(): Promise<boolean> {
   try {
@@ -58,173 +60,137 @@ export async function checkTableExists(): Promise<boolean> {
   }
 }
 
-/**
- * 学習記録を作成
- */
+/** 学習記録を作成 */
 export async function createStudyLog(
-  userId: string, 
+  userId: string,
   input: StudyLogInput
 ): Promise<StudyLog | null> {
   try {
-    console.log('Creating study log for user:', userId);
-    console.log('Study log input:', input);
-    
+    // 事前バリデーション
+    const hasBook = Boolean(input.book_id)
+    const manualTitle = sanitizeNullable(input.manual_book_title)
+    const isFree = Boolean(input.free_mode)
+    if (!isFree && !hasBook && !manualTitle) {
+      console.error('Validation failed: either book_id or manual_book_title or free_mode is required.')
+      return null
+    }
     const { data, error } = await supabase
       .from('study_logs')
       .insert({
-        user_id: userId,
-        book_isbn: input.book_isbn || null,
-        manual_book_title: input.manual_book_title || null,
+        // user_id は送らない（RLS/trigger想定）
+        book_id: hasBook ? input.book_id! : null,
+        manual_book_title: manualTitle,
         duration_minutes: input.duration_minutes,
-        memo: input.memo || null,
+        memo: sanitizeNullable(input.memo),
         studied_at: input.studied_at,
-        created_at: new Date().toISOString()
+        free_mode: isFree,  
+        created_at: new Date().toISOString(),
       })
-      .select(`
-        *,
-        book:books(*)
-      `)
+      .select(`*, book:books(*)`)
       .single();
 
     if (error) {
-      console.error('Error creating study log:', {
-        error,
-        errorMessage: error?.message,
-        errorDetails: error?.details,
-        errorHint: error?.hint,
-        errorCode: error?.code
-      });
+      console.error('Error creating study log:', error);
       return null;
     }
-
     return data as StudyLog;
-  } catch (error) {
-    console.error('Error creating study log:', error);
+  } catch (e) {
+    console.error('Error creating study log:', e);
     return null;
   }
 }
 
-/**
- * ユーザーの学習記録一覧を取得
- */
 export async function getStudyLogs(
   userId: string,
-  limit: number = 50,
-  offset: number = 0
+  limit = 50,
+  offset = 0
 ): Promise<StudyLog[]> {
   try {
-    console.log('Fetching study logs for user:', userId);
-    console.log('Query params:', { limit, offset });
-    
-    // Supabase認証状態を確認
-    const { data: sessionData } = await supabase.auth.getSession();
-    console.log('Supabase session:', sessionData);
-    
     const { data, error } = await supabase
       .from('study_logs')
-      .select(`
-        *,
-        book:books(*)
-      `)
+      .select(`*, book:books(*)`)
       .eq('user_id', userId)
       .order('studied_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) {
-      console.error('Error fetching study logs:', {
-        error,
-        errorMessage: error?.message,
-        errorDetails: error?.details,
-        errorHint: error?.hint
-      });
+      console.error('Error fetching study logs:', error);
       return [];
     }
-
     return data as StudyLog[];
-  } catch (error) {
-    console.error('Error fetching study logs:', error);
+  } catch (e) {
+    console.error('Error fetching study logs:', e);
     return [];
   }
 }
 
-/**
- * 特定の学習記録を取得
- */
+/** 特定の学習記録を取得 */
 export async function getStudyLog(
-  userId: string, 
+  userId: string,
   logId: number
 ): Promise<StudyLog | null> {
   try {
     const { data, error } = await supabase
       .from('study_logs')
-      .select(`
-        *,
-        book:books(*)
-      `)
+      .select(`*, book:books(*)`)
       .eq('user_id', userId)
       .eq('id', logId)
       .single();
 
     if (error) {
-      console.error('Error fetching study log:', {
-        error,
-        errorMessage: error?.message,
-        errorDetails: error?.details,
-        errorHint: error?.hint
-      });
+      console.error('Error fetching study log:', error);
       return null;
     }
-
     return data as StudyLog;
-  } catch (error) {
-    console.error('Error fetching study log:', error);
+  } catch (e) {
+    console.error('Error fetching study log:', e);
     return null;
   }
 }
 
-/**
- * 学習記録を更新
- */
+/** 学習記録を更新 */
 export async function updateStudyLog(
   userId: string,
   logId: number,
   input: StudyLogInput
 ): Promise<StudyLog | null> {
   try {
+    const hasBook = Boolean(input.book_id)
+    const manualTitle = sanitizeNullable(input.manual_book_title)
+    const isFree = Boolean(input.free_mode)
+    if (!isFree && !hasBook && !manualTitle) {
+      console.error('Validation failed: either book_id or manual_book_title or free_mode is required.')
+      return null
+    }
     const { data, error } = await supabase
       .from('study_logs')
       .update({
-        book_isbn: input.book_isbn || null,
-        manual_book_title: input.manual_book_title || null,
+        book_id: hasBook ? input.book_id! : null,
+        manual_book_title: manualTitle,
         duration_minutes: input.duration_minutes,
-        memo: input.memo || null,
+        memo: sanitizeNullable(input.memo),
+        free_mode: isFree,
         studied_at: input.studied_at
       })
       .eq('user_id', userId)
       .eq('id', logId)
-      .select(`
-        *,
-        book:books(*)
-      `)
+      .select(`*, book:books(*)`)
       .single();
 
     if (error) {
       console.error('Error updating study log:', error);
       return null;
     }
-
     return data as StudyLog;
-  } catch (error) {
-    console.error('Error updating study log:', error);
+  } catch (e) {
+    console.error('Error updating study log:', e);
     return null;
   }
 }
 
-/**
- * 学習記録を削除
- */
+/** 学習記録を削除 */
 export async function deleteStudyLog(
-  userId: string, 
+  userId: string,
   logId: number
 ): Promise<boolean> {
   try {
@@ -238,17 +204,14 @@ export async function deleteStudyLog(
       console.error('Error deleting study log:', error);
       return false;
     }
-
     return true;
-  } catch (error) {
-    console.error('Error deleting study log:', error);
+  } catch (e) {
+    console.error('Error deleting study log:', e);
     return false;
   }
 }
 
-/**
- * ユーザーの学習統計を取得
- */
+/** ユーザーの学習統計を取得 */
 export async function getStudyStats(userId: string): Promise<StudyStats> {
   try {
     console.log('Getting study stats for user:', userId);
@@ -388,9 +351,7 @@ export async function getStudyStats(userId: string): Promise<StudyStats> {
   }
 }
 
-/**
- * 日別の学習記録を取得
- */
+/** 日別の学習記録を取得 */
 export async function getDailyStudyLogs(
   userId: string, 
   startDate: string, 

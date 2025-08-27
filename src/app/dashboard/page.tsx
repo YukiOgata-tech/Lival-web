@@ -236,7 +236,7 @@ export default function DashboardPage() {
                 </Link>
 
                 <Link
-                  href="/study"
+                  href="/dashboard/study"
                   className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
                 >
                   <div className="flex items-center space-x-3">

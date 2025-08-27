@@ -1,3 +1,4 @@
+// 実際はこのレポジトリでfunctionsの管理は行っていないため、仮のモノであり実際の関数とは異なります。
 import {onCall, CallableRequest} from "firebase-functions/v2/https";
 import {getFirestore, FieldValue} from "firebase-admin/firestore";
 import {logger} from "firebase-functions";

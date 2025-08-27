@@ -1,272 +1,241 @@
 // src/lib/api/bookService.ts
-import { createClient } from '../supabase/supabaseClient';
-import { BookSearchResult, GoogleBooksItem } from '../../types/study';
-
-const supabase = createClient();
+import { supabase } from '../supabase/supabaseClient'
+import { BookSearchResult, GoogleBooksItem } from '../../types/study'
+import { normalizeIsbn } from '@/lib/utils/isbn'
 
 /**
- * ISBNで書籍情報を検索
- * フォールバック戦略: Supabase → openBD → Google Books API
+ * ISBNで検索 → Supabase / openBD / Google の順でフォールバック。
+ * 見つかった本は Supabase に保存し、保存後（id 付き）のレコード情報を返す。
  */
 export async function searchBookByISBN(isbn: string): Promise<BookSearchResult | null> {
   try {
-    // 1. まずSupabaseから検索
-    const supabaseResult = await searchBookFromSupabase(isbn);
-    if (supabaseResult) {
-      return supabaseResult;
-    }
+    const norm = normalizeIsbn(isbn) || isbn
 
-    // 2. openBD APIから検索
-    const openBDResult = await searchBookFromOpenBD(isbn);
-    if (openBDResult) {
-      // Supabaseに保存
-      await saveBookToSupabase(openBDResult);
-      return openBDResult;
-    }
+    // 1) Supabase
+    const sb = await searchBookFromSupabaseByIsbn(norm)
+    if (sb) return sb
 
-    // 3. Google Books APIから検索
-    const googleResult = await searchBookFromGoogleBooks(isbn);
-    if (googleResult) {
-      // Supabaseに保存
-      await saveBookToSupabase(googleResult);
-      return googleResult;
-    }
+    // 2) openBD
+    const ob = await searchBookFromOpenBD(norm)
+    if (ob) return await saveBookToSupabase(ob)
 
-    return null;
+    // 3) Google
+    const gg = await searchBookFromGoogleBooksByIsbn(norm)
+    if (gg) return await saveBookToSupabase(gg)
+
+    return null
   } catch (error) {
-    console.error('Book search error:', error);
-    return null;
+    console.error('Book search error:', error)
+    return null
   }
 }
 
 /**
- * 書籍名で書籍情報を検索
+ * タイトルで検索。
+ * - まず Supabase を検索
+ * - Google で補完（重複排除）
+ * - 新規は Supabase に保存し、保存後（id 付き）で返す
  */
 export async function searchBookByTitle(title: string): Promise<BookSearchResult[]> {
   try {
-    const results: BookSearchResult[] = [];
+    const results: BookSearchResult[] = []
 
-    // Supabaseから検索
-    const supabaseResults = await searchBooksByTitleFromSupabase(title);
-    results.push(...supabaseResults);
+    // 1) Supabase
+    const sbList = await searchBooksByTitleFromSupabase(title)
+    results.push(...sbList)
 
-    // Google Books APIから検索（タイトル検索の場合）
-    const googleResults = await searchBooksByTitleFromGoogleBooks(title);
-    
-    // 重複を避けるためISBNでフィルタリング
-    const existingIsbns = new Set(results.map(r => r.isbn));
-    const newGoogleResults = googleResults.filter(r => !existingIsbns.has(r.isbn));
-    
-    results.push(...newGoogleResults);
+    // 2) Google
+    const ggList = await searchBooksByTitleFromGoogleBooks(title)
 
-    // 新しい結果をSupabaseに保存
-    for (const book of newGoogleResults) {
-      await saveBookToSupabase(book);
+    // 既存重複チェック（ISBN or volumeId を優先キーに）
+    const seen = new Set<string>()
+    for (const r of results) {
+      if (r.isbn) seen.add(`isbn:${r.isbn}`)
+      else if (r.googleVolumeId) seen.add(`vid:${r.googleVolumeId}`)
+      else seen.add(`t:${r.title}:${r.author}`)
     }
 
-    return results.slice(0, 10); // 最大10件まで
+    const toSave = ggList.filter(g => {
+      const key = g.isbn ? `isbn:${g.isbn}` : g.googleVolumeId ? `vid:${g.googleVolumeId}` : `t:${g.title}:${g.author}`
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+
+    // Googleの新規を保存（idを付与）
+    for (const g of toSave) {
+      const saved = await saveBookToSupabase(g)
+      results.push(saved)
+    }
+
+    return results.slice(0, 10)
   } catch (error) {
-    console.error('Book title search error:', error);
-    return [];
+    console.error('Book title search error:', error)
+    return []
   }
 }
 
-/**
- * Supabaseから書籍検索（ISBN）
- */
-async function searchBookFromSupabase(isbn: string): Promise<BookSearchResult | null> {
+/* =========================
+ * Supabase 検索
+ * ========================= */
+
+async function searchBookFromSupabaseByIsbn(isbn: string): Promise<BookSearchResult | null> {
   const { data, error } = await supabase
     .from('books')
-    .select('*')
+    .select('id, isbn, title, author, company, cover_image_url')
     .eq('isbn', isbn)
-    .single();
+    .maybeSingle()
 
-  if (error || !data) {
-    return null;
-  }
+  if (error || !data) return null
 
   return {
-    isbn: data.isbn,
+    id: data.id,
+    isbn: data.isbn || undefined,
     title: data.title,
     author: data.author,
     publisher: data.company,
     coverImageUrl: data.cover_image_url || undefined,
-    source: 'supabase'
-  };
+    source: 'supabase',
+  }
 }
 
-/**
- * Supabaseから書籍検索（タイトル）
- */
 async function searchBooksByTitleFromSupabase(title: string): Promise<BookSearchResult[]> {
   const { data, error } = await supabase
     .from('books')
-    .select('*')
+    .select('id, isbn, title, author, company, cover_image_url')
     .ilike('title', `%${title}%`)
-    .limit(5);
+    .limit(5)
 
-  if (error || !data) {
-    return [];
-  }
+  if (error || !data) return []
 
-  return data.map(book => ({
-    isbn: book.isbn,
-    title: book.title,
-    author: book.author,
-    publisher: book.company,
-    coverImageUrl: book.cover_image_url || undefined,
-    source: 'supabase' as const
-  }));
+  return data.map(b => ({
+    id: b.id,
+    isbn: b.isbn || undefined,
+    title: b.title,
+    author: b.author,
+    publisher: b.company,
+    coverImageUrl: b.cover_image_url || undefined,
+    source: 'supabase' as const,
+  }))
 }
 
-/**
- * openBD APIから書籍検索
- */
+/* =========================
+ * 外部API（openBD / Google）
+ * ========================= */
+
 async function searchBookFromOpenBD(isbn: string): Promise<BookSearchResult | null> {
   try {
-    const response = await fetch(`https://api.openbd.jp/v1/get?isbn=${isbn}`);
-    
-    if (!response.ok) {
-      return null;
-    }
+    const norm = normalizeIsbn(isbn) || isbn
+    const res = await fetch(`https://api.openbd.jp/v1/get?isbn=${norm}`)
+    if (!res.ok) return null
+    const json = await res.json()
+    const sum = json?.[0]?.summary
+    if (!sum) return null
 
-    const data = await response.json();
-    
-    if (!data || !data[0] || !data[0].summary) {
-      return null;
-    }
-
-    const bookData = data[0].summary;
-    
     return {
-      isbn: isbn,
-      title: bookData.title || '',
-      author: bookData.author || '',
-      publisher: bookData.publisher || '',
-      coverImageUrl: bookData.cover || undefined,
-      source: 'openbd'
-    };
+      isbn: normalizeIsbn(norm) || norm,
+      title: sum.title || '',
+      author: sum.author || '',
+      publisher: sum.publisher || '',
+      coverImageUrl: sum.cover || undefined,
+      source: 'openbd',
+    }
   } catch (error) {
-    console.error('OpenBD API error:', error);
-    return null;
+    console.error('OpenBD API error:', error)
+    return null
   }
 }
 
-/**
- * Google Books APIから書籍検索（ISBN）
- */
-async function searchBookFromGoogleBooks(isbn: string): Promise<BookSearchResult | null> {
+async function fetchGoogleVolumes(q: string): Promise<GoogleBooksItem[] | null> {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_BOOKS_API_KEY
+  if (!apiKey) return null
+  const res = await fetch(
+    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5&key=${apiKey}`
+  )
+  if (!res.ok) return null
+  const data = await res.json()
+  return data?.items || null
+}
+
+function mapGoogleItemToResult(item: GoogleBooksItem): BookSearchResult {
+  const v = item.volumeInfo
+  const isbn13 = v.industryIdentifiers?.find(x => x.type === 'ISBN_13')?.identifier
+  const isbn10 = v.industryIdentifiers?.find(x => x.type === 'ISBN_10')?.identifier
+  const normalized = normalizeIsbn(isbn13 || isbn10 || '')
+
+  return {
+    // ISBNが取れない場合は undefined のまま（DB側では google_volume_id で一意化）
+    isbn: normalized || undefined,
+    title: v.title || '',
+    author: v.authors?.join(', ') || '',
+    publisher: v.publisher || '',
+    coverImageUrl: v.imageLinks?.thumbnail || v.imageLinks?.smallThumbnail || undefined,
+    googleVolumeId: item.id,  // 型に追加して使う
+    source: 'google',
+  }
+}
+
+async function searchBookFromGoogleBooksByIsbn(isbn: string): Promise<BookSearchResult | null> {
   try {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_BOOKS_API_KEY;
-    if (!apiKey) {
-      console.warn('Google Books API key not found');
-      return null;
-    }
-
-    const response = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=${apiKey}`
-    );
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    
-    if (!data.items || data.items.length === 0) {
-      return null;
-    }
-
-    const book = data.items[0];
-    const volumeInfo = book.volumeInfo;
-
-    // ISBNを取得
-    const isbnData = volumeInfo.industryIdentifiers?.find(
-      (id: { type: string; identifier: string }) => id.type === 'ISBN_13' || id.type === 'ISBN_10'
-    );
-
-    return {
-      isbn: isbnData?.identifier || isbn,
-      title: volumeInfo.title || '',
-      author: volumeInfo.authors?.join(', ') || '',
-      publisher: volumeInfo.publisher || '',
-      coverImageUrl: volumeInfo.imageLinks?.thumbnail || undefined,
-      source: 'google'
-    };
+    const items = await fetchGoogleVolumes(`isbn:${isbn}`)
+    if (!items || items.length === 0) return null
+    return mapGoogleItemToResult(items[0])
   } catch (error) {
-    console.error('Google Books API error:', error);
-    return null;
+    console.error('Google Books (ISBN) error:', error)
+    return null
   }
 }
 
-/**
- * Google Books APIから書籍検索（タイトル）
- */
 async function searchBooksByTitleFromGoogleBooks(title: string): Promise<BookSearchResult[]> {
   try {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_BOOKS_API_KEY;
-    if (!apiKey) {
-      console.warn('Google Books API key not found');
-      return [];
-    }
-
-    const response = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}&maxResults=5&key=${apiKey}`
-    );
-
-    if (!response.ok) {
-      return [];
-    }
-
-    const data = await response.json();
-    
-    if (!data.items) {
-      return [];
-    }
-
-    return data.items.map((book: GoogleBooksItem) => {
-      const volumeInfo = book.volumeInfo;
-      
-      // ISBNを取得
-      const isbnData = volumeInfo.industryIdentifiers?.find(
-        (id: { type: string; identifier: string }) => id.type === 'ISBN_13' || id.type === 'ISBN_10'
-      );
-
-      return {
-        isbn: isbnData?.identifier || book.id,
-        title: volumeInfo.title || '',
-        author: volumeInfo.authors?.join(', ') || '',
-        publisher: volumeInfo.publisher || '',
-        coverImageUrl: volumeInfo.imageLinks?.thumbnail || undefined,
-        source: 'google' as const
-      };
-    }).filter(book => book.isbn); // ISBNがあるもののみ
+    const items = await fetchGoogleVolumes(title)
+    if (!items) return []
+    return items.map(mapGoogleItemToResult)
   } catch (error) {
-    console.error('Google Books API title search error:', error);
-    return [];
+    console.error('Google Books (title) error:', error)
+    return []
   }
 }
 
-/**
- * Supabaseに書籍データを保存
- */
-async function saveBookToSupabase(book: BookSearchResult): Promise<void> {
-  try {
-    const { error } = await supabase
-      .from('books')
-      .upsert({
-        isbn: book.isbn,
-        title: book.title,
-        author: book.author,
-        company: book.publisher,
-        cover_image_url: book.coverImageUrl || null,
-        created_at: new Date().toISOString()
-      });
+/*  保存（id 返す）*/
 
-    if (error) {
-      console.error('Error saving book to Supabase:', error);
-    }
-  } catch (error) {
-    console.error('Error saving book to Supabase:', error);
+/**
+ * Supabase に upsert して保存後の行を返す（id 付き）。
+ * - ISBN があれば onConflict = 'isbn'
+ * - ISBN がなければ onConflict = 'google_volume_id'
+ *   （DB 側にそれぞれ UNIQUE 制約がある前提）
+ */
+async function saveBookToSupabase(book: BookSearchResult): Promise<BookSearchResult> {
+  const payload = {
+    isbn: book.isbn ?? null,
+    google_volume_id: book.googleVolumeId ?? null,
+    title: book.title,
+    author: book.author,
+    company: book.publisher,
+    cover_image_url: book.coverImageUrl ?? null,
+    created_at: new Date().toISOString(),
+  }
+
+  const conflictTarget = book.isbn ? 'isbn' : 'google_volume_id'
+
+  const { data, error } = await supabase
+    .from('books')
+    .upsert(payload, { onConflict: conflictTarget })
+    .select('id, isbn, title, author, company, cover_image_url')
+    .single()
+
+  if (error || !data) {
+    console.error('Error saving book to Supabase:', error)
+    throw error || new Error('saveBookToSupabase failed')
+  }
+
+  return {
+    id: data.id,
+    isbn: data.isbn || undefined,
+    title: data.title,
+    author: data.author,
+    publisher: data.company,
+    coverImageUrl: data.cover_image_url || undefined,
+    source: book.source,
   }
 }

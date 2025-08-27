@@ -1,17 +1,20 @@
-// src/app/study/page.tsx
+// src/app/dashboard/study/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../../lib/firebase';
-import { StudyStats } from '../../types/study';
-import StudyLogList from '../../components/study/StudyLogList';
-import StudyStatsCard from '../../components/study/StudyStatsCard';
-import { getStudyStats, testSupabaseConnection, checkTableExists } from '../../lib/api/studyLogService';
+import { auth } from '../../../lib/firebase';
+import { StudyStats, StudyLog } from '../../../types/study';
+import StudyLogList from '../../../components/study/StudyLogList';
+import StudyStatsCard from '../../../components/study/StudyStatsCard';
+import StudyTimeChart from '../../../components/study/StudyTimeChart';
+import { getStudyStats, testSupabaseConnection, checkTableExists, getStudyLogs } from '../../../lib/api/studyLogService';
+import { StudyLogLoading } from '../../../components/ui/LoadingAnimation';
 
 export default function StudyPage() {
   const [user, loading, error] = useAuthState(auth);
   const [stats, setStats] = useState<StudyStats | null>(null);
+  const [logs, setLogs] = useState<StudyLog[]>([]);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
 
   useEffect(() => {
@@ -35,6 +38,10 @@ export default function StudyPage() {
 
       const studyStats = await getStudyStats(user.uid);
       setStats(studyStats);
+
+      // ログデータも取得（チャート用）
+      const studyLogs = await getStudyLogs(user.uid);
+      setLogs(studyLogs);
     } catch (error) {
       console.error('Error loading study stats:', error);
     }
@@ -126,10 +133,25 @@ export default function StudyPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           {/* 統計セクション */}
-          {stats && (
+          {isLoadingStats ? (
+            <div className="bg-white rounded-lg border border-gray-200 p-8">
+              <StudyLogLoading 
+                message="学習統計を読み込んでいます..." 
+                size="lg"
+              />
+            </div>
+          ) : stats && (
             <StudyStatsCard 
               stats={stats} 
               isLoading={isLoadingStats} 
+            />
+          )}
+
+          {/* 学習時間チャート */}
+          {!isLoadingStats && logs.length > 0 && (
+            <StudyTimeChart 
+              logs={logs}
+              userId={user.uid}
             />
           )}
 

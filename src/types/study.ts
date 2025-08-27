@@ -1,11 +1,12 @@
 // src/types/study.ts
 
 export interface Book {
-  isbn: string;
+  id: string;                 // ← 追加: books.id (uuid)
+  isbn?: string | null;       // ← null許容
   created_at: string;
   title: string;
   author: string;
-  cover_image_url?: string;
+  cover_image_url?: string | null;
   company: string;
 }
 
@@ -13,21 +14,22 @@ export interface StudyLog {
   id: number;
   created_at: string;
   user_id: string;
-  book_isbn?: string;
-  manual_book_title?: string;
+  book_id?: string | null;          // ← 置換: book_isbn → book_id
+  manual_book_title?: string | null;
   duration_minutes: number;
-  memo?: string;
+  memo?: string | null;
   studied_at: string;
-  // リレーション
-  book?: Book;
+  book?: Book;                      // リレーション
+  free_mode?: boolean;
 }
 
 export interface StudyLogInput {
-  book_isbn?: string;
-  manual_book_title?: string;
+  book_id?: string | null;          // ← 置換
+  manual_book_title?: string | null;
   duration_minutes: number;
-  memo?: string;
+  memo?: string | null;
   studied_at: string;
+  free_mode?: boolean;
 }
 
 export interface StudyStats {
@@ -40,11 +42,13 @@ export interface StudyStats {
 }
 
 export interface BookSearchResult {
-  isbn: string;
+  id?: string;                      // ← 追加（保存後に返す）
+  isbn?: string;                    // 取得できたら入る
   title: string;
   author: string;
   publisher: string;
   coverImageUrl?: string;
+  googleVolumeId?: string;          // ← 追加（ISBN無ケースを識別）
   source: 'supabase' | 'openbd' | 'google';
 }
 
@@ -62,13 +66,7 @@ export interface GoogleBooksItem {
     title: string;
     authors?: string[];
     publisher?: string;
-    industryIdentifiers?: Array<{
-      type: string;
-      identifier: string;
-    }>;
-    imageLinks?: {
-      thumbnail?: string;
-      smallThumbnail?: string;
-    };
+    industryIdentifiers?: Array<{ type: string; identifier: string }>;
+    imageLinks?: { thumbnail?: string; smallThumbnail?: string };
   };
 }

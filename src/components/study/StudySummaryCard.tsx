@@ -75,7 +75,7 @@ export default function StudySummaryCard({ userId }: StudySummaryCardProps) {
           <h3 className="text-lg font-semibold text-gray-900">学習記録</h3>
         </div>
         <Link
-          href="/study"
+          href="/dashboard/study"
           className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1"
         >
           <span>詳細を見る</span>
@@ -164,7 +164,7 @@ export default function StudySummaryCard({ userId }: StudySummaryCardProps) {
           {/* アクションボタン */}
           <div className="pt-4 border-t border-gray-100">
             <Link
-              href="/study"
+              href="/dashboard/study"
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors text-center block"
             >
               学習記録を見る
@@ -178,7 +178,7 @@ export default function StudySummaryCard({ userId }: StudySummaryCardProps) {
           </div>
           <p className="text-gray-500 mb-4">まだ学習記録がありません</p>
           <Link
-            href="/study"
+            href="/dashboard/study"
             className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <BookOpen className="w-4 h-4" />

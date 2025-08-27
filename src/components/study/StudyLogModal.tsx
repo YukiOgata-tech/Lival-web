@@ -1,139 +1,200 @@
 // src/components/study/StudyLogModal.tsx
 'use client'
-
-import { useState, useEffect } from 'react';
-import { StudyLogInput, BookSearchResult } from '../../types/study';
-import { searchBookByISBN, searchBookByTitle } from '../../lib/api/bookService';
+import { useState, useEffect } from 'react'
+import { StudyLogInput, BookSearchResult } from '../../types/study'
+import { searchBookByISBN, searchBookByTitle } from '../../lib/api/bookService'
+import { BookSearchLoading } from '../ui/LoadingAnimation'
 
 interface StudyLogModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: StudyLogInput) => void;
-  initialData?: StudyLogInput;
-  mode: 'create' | 'edit';
+  isOpen: boolean
+  onClose: () => void
+  onSubmit: (data: StudyLogInput) => void
+  initialData?: StudyLogInput
+  mode: 'create' | 'edit'
 }
-
+/**
+ * 4モード:
+ * - 'isbn'   : ISBN検索 → 選択で book_id を確定
+ * - 'title'  : 書籍名検索 → 選択で book_id を確定
+ * - 'manual' : 手入力タイトルで登録（book_id は null）
+ * - 'none'   : 書籍なし（free_mode = true、book_id も手入力タイトルも無しでOK）
+ */
 export default function StudyLogModal({
   isOpen,
   onClose,
   onSubmit,
   initialData,
-  mode
+  mode,
 }: StudyLogModalProps) {
   const [formData, setFormData] = useState<StudyLogInput>({
-    book_isbn: '',
+    book_id: null,
     manual_book_title: '',
     duration_minutes: 30,
     memo: '',
-    studied_at: new Date().toISOString().slice(0, 16)
-  });
+    studied_at: new Date().toISOString().slice(0, 16),
+    free_mode: false,
+  })
 
-  const [bookSearchType, setBookSearchType] = useState<'isbn' | 'title' | 'manual' | 'none'>('none');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<BookSearchResult[]>([]);
-  const [selectedBook, setSelectedBook] = useState<BookSearchResult | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bookSearchType, setBookSearchType] = useState<'isbn' | 'title' | 'manual' | 'none'>('none')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<BookSearchResult[]>([])
+  const [selectedBook, setSelectedBook] = useState<BookSearchResult | null>(null)
+  const [isSearching, setIsSearching] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // モーダルが開かれた時の初期化
+  // 空文字/空白のみを null に変換（DB制約/RLSに優しい形へ）
+  const sanitizeNullable = (s?: string | null) => {
+    const t = (s ?? '').trim()
+    return t.length ? t : null
+  }
+
+  // モーダル初期化
   useEffect(() => {
-    if (isOpen) {
-      if (initialData) {
-        setFormData(initialData);
-        if (initialData.book_isbn) {
-          setBookSearchType('isbn');
-        } else if (initialData.manual_book_title) {
-          setBookSearchType('manual');
-        } else {
-          setBookSearchType('none');
-        }
-      } else {
-        // 新規作成時は現在時刻に設定
-        setFormData({
-          book_isbn: '',
-          manual_book_title: '',
-          duration_minutes: 30,
-          memo: '',
-          studied_at: new Date().toISOString().slice(0, 16)
-        });
-        setBookSearchType('none');
-      }
-      setSearchQuery('');
-      setSearchResults([]);
-      setSelectedBook(null);
+    if (!isOpen) return
+
+    if (initialData) {
+      const hasBook = Boolean(initialData.book_id)
+      const hasManual = Boolean(sanitizeNullable(initialData.manual_book_title))
+      const isFree = Boolean(initialData.free_mode)
+
+      setFormData({
+        book_id: hasBook ? initialData.book_id! : null,
+        manual_book_title: hasManual ? initialData.manual_book_title! : '',
+        duration_minutes: initialData.duration_minutes,
+        memo: initialData.memo ?? '',
+        studied_at: initialData.studied_at,
+        free_mode: isFree,
+      })
+
+      // 既存データからモード推定
+      if (hasBook) setBookSearchType('isbn')
+      else if (hasManual) setBookSearchType('manual')
+      else if (isFree) setBookSearchType('none')
+      else setBookSearchType('none')
+    } else {
+      setFormData({
+        book_id: null,
+        manual_book_title: '',
+        duration_minutes: 30,
+        memo: '',
+        studied_at: new Date().toISOString().slice(0, 16),
+        free_mode: false,
+      })
+      setBookSearchType('none')
     }
-  }, [isOpen, initialData]);
 
+    setSearchQuery('')
+    setSearchResults([])
+    setSelectedBook(null)
+  }, [isOpen, initialData])
+
+  // モード切替時の副作用：各モードに不要な値をクリア
+  useEffect(() => {
+    if (!isOpen) return
+    if (bookSearchType === 'isbn' || bookSearchType === 'title') {
+      setFormData(prev => ({ ...prev, free_mode: false, manual_book_title: '' }))
+    } else if (bookSearchType === 'manual') {
+      setFormData(prev => ({ ...prev, free_mode: false, book_id: null }))
+      setSelectedBook(null)
+    } else if (bookSearchType === 'none') {
+      setFormData(prev => ({ ...prev, free_mode: true, book_id: null, manual_book_title: '' }))
+      setSelectedBook(null)
+      setSearchQuery('')
+      setSearchResults([])
+    }
+  }, [bookSearchType, isOpen])
+
+  // 検索
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-
-    setIsSearching(true);
+    if (!searchQuery.trim()) return
+    setIsSearching(true)
     try {
       if (bookSearchType === 'isbn') {
-        const result = await searchBookByISBN(searchQuery);
-        setSearchResults(result ? [result] : []);
+        const r = await searchBookByISBN(searchQuery.trim())
+        setSearchResults(r ? [r] : [])
       } else if (bookSearchType === 'title') {
-        const results = await searchBookByTitle(searchQuery);
-        setSearchResults(results);
+        const rs = await searchBookByTitle(searchQuery.trim())
+        setSearchResults(rs)
       }
-    } catch (error) {
-      console.error('Search error:', error);
-      setSearchResults([]);
+    } finally {
+      setIsSearching(false)
     }
-    setIsSearching(false);
-  };
+  }
 
+  // 書籍選択：book_id を確定、手入力/フリーモードは解除
   const handleBookSelect = (book: BookSearchResult) => {
-    setSelectedBook(book);
+    setSelectedBook(book)
     setFormData(prev => ({
       ...prev,
-      book_isbn: book.isbn,
-      manual_book_title: ''
-    }));
-  };
+      book_id: book.id ?? null, // ← books.id(UUID) を格納
+      manual_book_title: '',
+      free_mode: false,
+    }))
+  }
 
+  // 送信
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
+    e.preventDefault()
+    setIsSubmitting(true)
     try {
-      let submitData: StudyLogInput;
+      const resolvedBookId = formData.book_id ?? selectedBook?.id ?? null
+      const resolvedManual = sanitizeNullable(formData.manual_book_title)
+      const isFree = !!formData.free_mode || bookSearchType === 'none'
 
+      // モード別の最小要件を満たす payload を組み立て
+      let payload: StudyLogInput
       if (bookSearchType === 'isbn' || bookSearchType === 'title') {
-        submitData = {
-          book_isbn: formData.book_isbn || selectedBook?.isbn,
+        payload = {
+          book_id: resolvedBookId,       // 選書時は book_id 必須
           manual_book_title: '',
           duration_minutes: formData.duration_minutes,
-          memo: formData.memo,
-          studied_at: formData.studied_at
-        };
+          memo: sanitizeNullable(formData.memo) ?? '',
+          studied_at: formData.studied_at,
+          free_mode: false,
+        }
       } else if (bookSearchType === 'manual') {
-        submitData = {
-          book_isbn: '',
-          manual_book_title: formData.manual_book_title,
+        payload = {
+          book_id: null,
+          manual_book_title: resolvedManual ?? '', // 空白は直前でnull→''に戻す
           duration_minutes: formData.duration_minutes,
-          memo: formData.memo,
-          studied_at: formData.studied_at
-        };
+          memo: sanitizeNullable(formData.memo) ?? '',
+          studied_at: formData.studied_at,
+          free_mode: false,
+        }
       } else {
-        submitData = {
-          book_isbn: '',
+        // 書籍なし（フリーモード）: book_id も manual_book_title も不要
+        payload = {
+          book_id: null,
           manual_book_title: '',
           duration_minutes: formData.duration_minutes,
-          memo: formData.memo,
-          studied_at: formData.studied_at
-        };
+          memo: sanitizeNullable(formData.memo) ?? '',
+          studied_at: formData.studied_at,
+          free_mode: true,
+        }
       }
 
-      await onSubmit(submitData);
-      onClose();
-    } catch (error) {
-      console.error('Submit error:', error);
-    }
-    setIsSubmitting(false);
-  };
+      // 事前ガード（UX向上）：none 以外で最低条件を満たさなければ警告
+      if (!isFree) {
+        const ok =
+          (bookSearchType === 'isbn' || bookSearchType === 'title')
+            ? !!payload.book_id
+            : (bookSearchType === 'manual')
+              ? !!sanitizeNullable(payload.manual_book_title)
+              : true
+        if (!ok) {
+          console.warn('入力が不足しています。書籍を選ぶか、タイトルを入力してください。')
+          return
+        }
+      }
 
-  if (!isOpen) return null;
+      await onSubmit(payload)
+      onClose()
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -154,60 +215,31 @@ export default function StudyLogModal({
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* 書籍選択方法 */}
+            {/* 記録モード選択 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                書籍の記録方法
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-3">書籍の記録方法</label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setBookSearchType('isbn')}
-                  className={`p-3 text-sm rounded-lg border transition-colors ${
-                    bookSearchType === 'isbn'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  ISBN検索
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBookSearchType('title')}
-                  className={`p-3 text-sm rounded-lg border transition-colors ${
-                    bookSearchType === 'title'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  書籍名検索
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBookSearchType('manual')}
-                  className={`p-3 text-sm rounded-lg border transition-colors ${
-                    bookSearchType === 'manual'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  手入力
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBookSearchType('none')}
-                  className={`p-3 text-sm rounded-lg border transition-colors ${
-                    bookSearchType === 'none'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  書籍なし
-                </button>
+                {(['isbn','title','manual','none'] as const).map(k => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setBookSearchType(k)}
+                    className={`p-3 text-sm rounded-lg border transition-colors ${
+                      bookSearchType === k
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    {k === 'isbn' ? 'ISBN検索'
+                      : k === 'title' ? '書籍名検索'
+                      : k === 'manual' ? '手入力'
+                      : '書籍なし'}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* 書籍検索 */}
+            {/* 検索UI（ISBN/タイトル） */}
             {(bookSearchType === 'isbn' || bookSearchType === 'title') && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -219,7 +251,7 @@ export default function StudyLogModal({
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder={bookSearchType === 'isbn' ? 'ISBNを入力' : '書籍名を入力'}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
                   />
                   <button
                     type="button"
@@ -231,15 +263,35 @@ export default function StudyLogModal({
                   </button>
                 </div>
 
+                {/* 検索中のローディングアニメーション */}
+                {isSearching && (
+                  <div className="mt-4 py-8">
+                    <BookSearchLoading 
+                      message={
+                        bookSearchType === 'isbn' 
+                          ? 'ISBNから書籍を検索しています...'
+                          : 'タイトルから書籍を検索しています...'
+                      }
+                      size="md"
+                    />
+                  </div>
+                )}
+
                 {/* 検索結果 */}
-                {searchResults.length > 0 && (
+                {!isSearching && searchResults.length > 0 && (
                   <div className="mt-3 space-y-2 max-h-60 overflow-y-auto border rounded-md">
-                    {searchResults.map((book, index) => (
+                    {searchResults.map((book) => (
                       <div
-                        key={index}
+                        key={book.id ?? book.isbn ?? `${book.title}-${book.author}`}
                         onClick={() => handleBookSelect(book)}
                         className={`p-3 cursor-pointer border-b last:border-b-0 hover:bg-gray-50 ${
-                          selectedBook?.isbn === book.isbn ? 'bg-blue-50 border-blue-200' : ''
+                          selectedBook?.id && book.id
+                            ? selectedBook.id === book.id
+                              ? 'bg-blue-50 border-blue-200'
+                              : ''
+                            : selectedBook?.isbn && book.isbn && selectedBook.isbn === book.isbn
+                              ? 'bg-blue-50 border-blue-200'
+                              : ''
                         }`}
                       >
                         <div className="flex items-start gap-3">
@@ -263,18 +315,18 @@ export default function StudyLogModal({
               </div>
             )}
 
-            {/* 手入力書籍名 */}
+            {/* 手入力タイトル */}
             {bookSearchType === 'manual' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  書籍名
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">書籍名</label>
                 <input
                   type="text"
-                  value={formData.manual_book_title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, manual_book_title: e.target.value }))}
+                  value={formData.manual_book_title ?? ''}
+                  onChange={(e) =>
+                    setFormData(prev => ({ ...prev, manual_book_title: e.target.value }))
+                  }
                   placeholder="書籍名を入力してください"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
                   required={bookSearchType === 'manual'}
                 />
               </div>
@@ -282,49 +334,48 @@ export default function StudyLogModal({
 
             {/* 学習時間 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                学習時間（分）
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">学習時間（分）</label>
               <input
                 type="number"
                 value={formData.duration_minutes}
-                onChange={(e) => setFormData(prev => ({ ...prev, duration_minutes: parseInt(e.target.value) || 0 }))}
-                min="1"
-                max="1440"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) =>
+                  setFormData(prev => ({
+                    ...prev,
+                    duration_minutes: Math.max(1, Math.min(1440, parseInt(e.target.value) || 0)),
+                  }))
+                }
+                min={1}
+                max={1440}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                 required
               />
             </div>
 
             {/* 学習日時 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                学習日時
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">学習日時</label>
               <input
                 type="datetime-local"
                 value={formData.studied_at}
                 onChange={(e) => setFormData(prev => ({ ...prev, studied_at: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
                 required
               />
             </div>
 
             {/* メモ */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                メモ（任意）
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">メモ（任意）</label>
               <textarea
-                value={formData.memo}
+                value={formData.memo ?? ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, memo: e.target.value }))}
                 placeholder="学習内容や感想を記録してください"
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
               />
             </div>
 
-            {/* フォームアクション */}
+            {/* アクション */}
             <div className="flex justify-end gap-3 pt-4 border-t">
               <button
                 type="button"
@@ -345,5 +396,5 @@ export default function StudyLogModal({
         </div>
       </div>
     </div>
-  );
+  )
 }

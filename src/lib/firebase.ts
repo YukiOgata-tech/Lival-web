@@ -39,7 +39,7 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 export const auth = getAuth(app)
 export const db = getFirestore(app)
 export const storage = getStorage(app)
-export const functions = getFunctions(app)
+export const functions = getFunctions(app, 'asia-northeast1');
 
 // 開発環境でのエミュレーター接続（本番では実行されない）
 // if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {

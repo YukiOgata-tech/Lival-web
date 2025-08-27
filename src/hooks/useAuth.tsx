@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { 
   User as FirebaseUser, 
   onAuthStateChanged, 
@@ -10,6 +10,7 @@ import {
 } from 'firebase/auth'
 import { httpsCallable } from 'firebase/functions'
 import { auth, functions } from '@/lib/firebase'
+import { supabase } from '@/lib/supabase/supabaseClient' // <-- Import Supabase client
 import { LivalUser } from '@/types'
 import { createUserInFirestore, getUserData } from '@/lib/user'
 
@@ -45,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const refreshUserData = async (retryCount = 0): Promise<void> => {
+  const refreshUserData = useCallback(async (retryCount = 0): Promise<void> => {
     if (!user) {
       console.log('👤 No user, clearing userData')
       setUserData(null)
@@ -59,12 +60,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data) {
         console.log('✅ User data found and set')
         
-        // 既存ユーザーのマイグレーション確認
         if (!data.role || !data.hasOwnProperty('mobileProfile')) {
           console.log('🔄 Migrating existing user data...')
           await migrateUserData()
           
-          // マイグレーション後に再取得
           const updatedData = await getUserData(user.uid)
           setUserData(updatedData || data)
         } else {
@@ -73,7 +72,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      // データが見つからない場合
       console.log('❌ User data not found in Firestore')
       
       if (retryCount < 2) {
@@ -83,7 +81,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await createUserInFirestore(user)
           console.log('✅ User created via Functions, retrying data fetch...')
           
-          // 短い待機時間で再試行
           setTimeout(() => {
             refreshUserData(retryCount + 1)
           }, 1500)
@@ -99,75 +96,112 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('🚨 Error in refreshUserData:', error)
       setUserData(null)
     }
-  }
+  }, [user]);
 
   useEffect(() => {
+    const setSupabaseSession = async (firebaseUser: FirebaseUser) => {
+      try {
+        // 1. Get the ID Token and check claims
+        let idToken = await firebaseUser.getIdToken(true); // Force refresh to get latest claims
+        const decodedToken = await firebaseUser.getIdTokenResult();
+        const customClaims = decodedToken.claims;
+
+        // 2. If 'role: authenticated' claim is missing, call the Cloud Function
+        if (customClaims.role !== 'authenticated') {
+          console.log('🔄 Custom claim "role: authenticated" missing. Calling Cloud Function...');
+          const callSetSupabaseRoleOnCreate = httpsCallable(functions, 'setSupabaseRoleOnCreate');
+          const callEnsureSupabaseAuthenticatedClaim = httpsCallable(functions, 'ensureSupabaseAuthenticatedClaim');
+
+          try {
+            await callSetSupabaseRoleOnCreate();
+            console.log('✅ setSupabaseRoleOnCreate called successfully.');
+          } catch (error) {
+            console.warn('⚠️ setSupabaseRoleOnCreate failed, trying ensureSupabaseAuthenticatedClaim:', error);
+            await callEnsureSupabaseAuthenticatedClaim();
+            console.log('✅ ensureSupabaseAuthenticatedClaim called successfully.');
+          }
+
+          // 3. Force refresh ID token to get updated claims
+          idToken = await firebaseUser.getIdToken(true);
+          console.log('✅ ID Token refreshed with new claims.');
+        } else {
+          console.log('✅ Custom claim "role: authenticated" already present.');
+        }
+
+        // 4. Set Firebase JWT as Supabase authorization header for RLS
+        supabase.rest.headers['Authorization'] = `Bearer ${idToken}`;
+        supabase.realtime.setAuth(idToken);
+        
+        console.log('✅ Firebase JWT set as Supabase authorization header');
+      } catch (error) {
+        console.error('🚨 Error setting Supabase session:', error);
+        await clearSupabaseSession(); // Clear session on error
+      }
+    };
+
+    const clearSupabaseSession = async () => {
+      delete supabase.rest.headers['Authorization'];
+      supabase.realtime.setAuth(null);
+      console.log('👋 Firebase JWT cleared from Supabase headers');
+    };
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log('🔐 Auth state changed:', firebaseUser?.uid || 'null')
-      setUser(firebaseUser)
+      console.log('🔐 Auth state changed:', firebaseUser?.uid || 'null');
+      setUser(firebaseUser);
       
       if (firebaseUser) {
-        console.log('✅ User logged in, initializing user data...')
+        console.log('✅ User logged in, setting Supabase session and initializing user data...');
+        await setSupabaseSession(firebaseUser);
         
-        // まず既存のユーザーデータを確認
+        // Firestore user data logic (unchanged)
         try {
-          const existingData = await getUserData(firebaseUser.uid)
+          const existingData = await getUserData(firebaseUser.uid);
           if (existingData) {
-            console.log('✅ Found existing user data')
-            setUserData(existingData)
-            setLoading(false)
-            return
+            setUserData(existingData);
+          } else {
+            await createUserInFirestore(firebaseUser);
+            await refreshUserData();
           }
         } catch (error) {
-          console.log('❌ Error checking existing data, will create new:', error)
-        }
-        
-        // 既存データがない場合は作成
-        console.log('🔨 Creating new user in Firestore...')
-        try {
-          await createUserInFirestore(firebaseUser)
-          // 作成後にデータを取得
-          refreshUserData()
-        } catch (error) {
-          console.error('🚨 Failed to create user in Firestore:', error)
-          // エラーの場合はフォールバックデータを使用
-          refreshUserData()
+          console.error('🚨 Failed to initialize user data:', error);
+          await refreshUserData(); // Try to recover
         }
       } else {
-        console.log('👋 User logged out')
-        setUserData(null)
+        console.log('👋 User logged out, clearing Supabase session');
+        await clearSupabaseSession();
+        setUserData(null);
       }
       
-      setLoading(false)
-    })
+      setLoading(false);
+    });
 
-    return unsubscribe
-  }, [])
-
-  // userが変更された時の副作用を削除（無限ループの原因）
+    return () => {
+      unsubscribe();
+    };
+  }, [refreshUserData]);
 
   const signOut = async () => {
-    await firebaseSignOut(auth)
-  }
+    await firebaseSignOut(auth);
+    // onAuthStateChanged will handle the Supabase sign out
+  };
 
   const signIn = async (email: string, password: string) => {
-    await signInWithEmailAndPassword(auth, email, password)
-  }
+    await signInWithEmailAndPassword(auth, email, password);
+    // onAuthStateChanged will handle the rest
+  };
 
   const signUp = async (email: string, password: string, displayName?: string) => {
-    const result = await createUserWithEmailAndPassword(auth, email, password)
+    const result = await createUserWithEmailAndPassword(auth, email, password);
     
     if (displayName && result.user) {
-      await updateProfile(result.user, { displayName })
+      await updateProfile(result.user, { displayName });
     }
     
-    // Firestoreにユーザーデータを作成（onAuthStateChangedでも実行されるが、明示的に実行）
-    await createUserInFirestore(result.user)
-  }
+    // Firestore user creation is handled by onAuthStateChanged
+  };
 
-  // 管理者権限の判定
-  const isAdmin = userData?.role === 'admin' || userData?.email === 'admin@lival.ai' // 管理者メールアドレス
-  const isModerator = userData?.role === 'moderator' || userData?.role === 'admin' || isAdmin
+  const isAdmin = userData?.role === 'admin' || userData?.email === 'admin@lival.ai';
+  const isModerator = userData?.role === 'moderator' || userData?.role === 'admin' || isAdmin;
 
   const value = {
     user,
@@ -180,21 +214,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     refreshUserData,
     migrateUserData
-  }
+  };
 
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context
+  return context;
 }
 
 // HOC for protected routes
@@ -230,7 +264,6 @@ export function withAuth<P extends object>(Component: React.ComponentType<P>) {
       )
     }
 
-    // ユーザーデータがまだロードされていない場合
     if (!userData) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
