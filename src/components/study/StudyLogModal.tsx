@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { StudyLogInput, BookSearchResult } from '../../types/study'
 import { searchBookByISBN, searchBookByTitle } from '../../lib/api/bookService'
 import { BookSearchLoading } from '../ui/LoadingAnimation'
+import BarcodeScanner from './BarcodeScanner'
 
 interface StudyLogModalProps {
   isOpen: boolean
@@ -41,6 +42,7 @@ export default function StudyLogModal({
   const [selectedBook, setSelectedBook] = useState<BookSearchResult | null>(null)
   const [isSearching, setIsSearching] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false)
 
   // 空文字/空白のみを null に変換（DB制約/RLSに優しい形へ）
   const sanitizeNullable = (s?: string | null) => {
@@ -116,6 +118,29 @@ export default function StudyLogModal({
         const rs = await searchBookByTitle(searchQuery.trim())
         setSearchResults(rs)
       }
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  // バーコード読み取り完了処理
+  const handleBarcodeScanComplete = async (isbn: string) => {
+    setIsBarcodeScannerOpen(false)
+    setBookSearchType('isbn')
+    setSearchQuery(isbn)
+    
+    // 自動的にISBN検索を実行
+    setIsSearching(true)
+    try {
+      const result = await searchBookByISBN(isbn)
+      setSearchResults(result ? [result] : [])
+      
+      // 結果が1つだけの場合は自動選択
+      if (result) {
+        handleBookSelect(result)
+      }
+    } catch (error) {
+      console.error('Barcode search error:', error)
     } finally {
       setIsSearching(false)
     }
@@ -245,22 +270,46 @@ export default function StudyLogModal({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {bookSearchType === 'isbn' ? 'ISBN' : '書籍名'}
                 </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={bookSearchType === 'isbn' ? 'ISBNを入力' : '書籍名を入力'}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleSearch}
-                    disabled={isSearching || !searchQuery.trim()}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSearching ? '検索中...' : '検索'}
-                  </button>
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder={bookSearchType === 'isbn' ? 'ISBNを入力' : '書籍名を入力'}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSearch}
+                      disabled={isSearching || !searchQuery.trim()}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSearching ? '検索中...' : '検索'}
+                    </button>
+                  </div>
+                  
+                  {bookSearchType === 'isbn' && (
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-px bg-gray-300"></div>
+                      <span className="text-sm text-gray-500">または</span>
+                      <div className="flex-1 h-px bg-gray-300"></div>
+                    </div>
+                  )}
+                  
+                  {bookSearchType === 'isbn' && (
+                    <button
+                      type="button"
+                      onClick={() => setIsBarcodeScannerOpen(true)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-md hover:border-gray-400 hover:bg-gray-50 transition-colors"
+                    >
+                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span className="text-gray-700">バーコードをスキャン</span>
+                    </button>
+                  )}
                 </div>
 
                 {/* 検索中のローディングアニメーション */}
@@ -395,6 +444,13 @@ export default function StudyLogModal({
           </form>
         </div>
       </div>
+
+      {/* バーコードスキャナー */}
+      <BarcodeScanner
+        isOpen={isBarcodeScannerOpen}
+        onClose={() => setIsBarcodeScannerOpen(false)}
+        onScanComplete={handleBarcodeScanComplete}
+      />
     </div>
   )
 }
