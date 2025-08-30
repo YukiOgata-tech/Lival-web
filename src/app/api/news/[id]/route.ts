@@ -7,10 +7,10 @@ import { NewsFormData } from '@/lib/types/news'
 // GET /api/news/[id] - 個別お知らせ取得
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const { searchParams } = new URL(request.url)
     const incrementView = searchParams.get('view') === 'true'
 
@@ -42,10 +42,10 @@ export async function GET(
 // PUT /api/news/[id] - お知らせ更新
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
     const { title, content, priority, type, status } = body as NewsFormData
 
@@ -92,10 +92,10 @@ export async function PUT(
 // DELETE /api/news/[id] - お知らせ削除
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // 既存のお知らせ確認
     const existingNews = await getNewsById(id)
