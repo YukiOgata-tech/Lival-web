@@ -7,7 +7,8 @@ import { useDiagnosis } from '@/hooks/useDiagnosis'
 import { saveDiagnosisToUserProfile } from '@/lib/diagnosis'
 import DiagnosisProgress from '@/components/diagnosis/DiagnosisProgress'
 import QuestionCard from '@/components/diagnosis/QuestionCard'
-import DiagnosisResult from '@/components/diagnosis/DiagnosisResult'
+import DiagnosisResultComponent from '@/components/diagnosis/DiagnosisResult'
+import { DiagnosisResult } from '@/types/diagnosis'
 import { 
   Sparkles, 
   User, 
@@ -42,7 +43,7 @@ export default function DiagnosisPage() {
     clearError
   } = useDiagnosis()
 
-  const [result, setResult] = useState(null)
+  const [result, setResult] = useState<DiagnosisResult | null>(null)
   const [showResult, setShowResult] = useState(false)
 
   // 診断完了時の処理
@@ -120,7 +121,7 @@ export default function DiagnosisPage() {
             </p>
           </motion.div>
 
-          <DiagnosisResult result={result} />
+          <DiagnosisResultComponent result={result} />
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

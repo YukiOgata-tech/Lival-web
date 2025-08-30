@@ -6,12 +6,13 @@ import NewsDetail from '@/components/news/NewsDetail'
 import { getNewsById } from '@/lib/firebase/news'
 
 interface NewsDetailPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export async function generateMetadata({ params }: NewsDetailPageProps): Promise<Metadata> {
   try {
-    const news = await getNewsById(params.id)
+    const { id } = await params
+    const news = await getNewsById(id)
     
     if (!news || news.status !== 'published') {
       return {
@@ -40,7 +41,8 @@ export async function generateMetadata({ params }: NewsDetailPageProps): Promise
 
 export default async function NewsDetailPage({ params }: NewsDetailPageProps) {
   try {
-    const news = await getNewsById(params.id)
+    const { id } = await params
+    const news = await getNewsById(id)
     
     if (!news || news.status !== 'published') {
       notFound()

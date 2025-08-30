@@ -6,6 +6,7 @@ import {
   getDoc, 
   updateDoc, 
   serverTimestamp,
+  Timestamp,
   query,
   where,
   orderBy,
@@ -27,7 +28,7 @@ import { DIAGNOSIS_TYPES, SCORING_FORMULAS } from '@/data/diagnosis/types'
  * 診断セッションを開始
  */
 export const startDiagnosisSession = async (userId?: string): Promise<string> => {
-  const now = serverTimestamp()
+  const now = Timestamp.now()
   const sessionData: Omit<DiagnosisSession, 'id'> = {
     userId: userId || null,
     startedAt: now,
@@ -95,7 +96,7 @@ export const submitAnswer = async (
       console.warn(`Question ${questionId} already answered, skipping...`)
       // 次の質問を返す
       const nextQuestion = getNextQuestion(session.responses, session.currentQuestionIndex)
-      return { nextQuestion, isCompleted: !nextQuestion }
+      return { nextQuestion: nextQuestion || undefined, isCompleted: !nextQuestion }
     }
 
     // 回答を配列内ではJavaScriptのDateオブジェクトを使用
@@ -103,7 +104,7 @@ export const submitAnswer = async (
       questionId,
       answer,
       responseTime,
-      answeredAt: new Date() // serverTimestamp()ではなくnew Date()を使用
+      answeredAt: Timestamp.now() // serverTimestamp()ではなくnew Date()を使用
     }
 
     const updatedResponses = [...session.responses, response]
@@ -113,8 +114,8 @@ export const submitAnswer = async (
     const updateData: Partial<DiagnosisSession> = {
       responses: updatedResponses,
       currentQuestionIndex: nextQuestionIndex,
-      updatedAt: serverTimestamp(),
-      lastActiveAt: serverTimestamp()
+      updatedAt: Timestamp.now(),
+      lastActiveAt: Timestamp.now()
     }
 
     // フォローアップ質問の総数を動的に更新
@@ -135,10 +136,13 @@ export const submitAnswer = async (
       await completeDiagnosis(sessionId, updatedResponses)
     }
 
-    return { nextQuestion, isCompleted }
+    return { nextQuestion: nextQuestion || undefined, isCompleted }
   } catch (error) {
     console.error('Error submitting answer:', error)
-    throw new Error(`回答の送信に失敗しました: ${error.message}`)
+    if (error instanceof Error) {
+      throw new Error(`回答の送信に失敗しました: ${error.message}`)
+    }
+    throw new Error('回答の送信に失敗しました')
   }
 }
 

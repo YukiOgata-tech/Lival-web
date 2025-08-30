@@ -23,11 +23,11 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
   
   // Mock categories data
   const categories = [
-    { id: '1', name: '技術', slug: 'tech', description: '技術関連の記事', count: 15 },
-    { id: '2', name: '学習法', slug: 'learning', description: '学習法に関する記事', count: 8 },
-    { id: '3', name: 'AI', slug: 'ai', description: 'AI技術の記事', count: 12 },
-    { id: '4', name: 'フロントエンド', slug: 'frontend', description: 'フロントエンド開発', count: 10 },
-    { id: '5', name: 'TypeScript', slug: 'typescript', description: 'TypeScript関連', count: 6 }
+    { id: '1', name: '技術', slug: 'tech', description: '技術関連の記事', count: 15, isActive: true, sortOrder: 1 },
+    { id: '2', name: '学習法', slug: 'learning', description: '学習法に関する記事', count: 8, isActive: true, sortOrder: 2 },
+    { id: '3', name: 'AI', slug: 'ai', description: 'AI技術の記事', count: 12, isActive: true, sortOrder: 3 },
+    { id: '4', name: 'フロントエンド', slug: 'frontend', description: 'フロントエンド開発', count: 10, isActive: true, sortOrder: 4 },
+    { id: '5', name: 'TypeScript', slug: 'typescript', description: 'TypeScript関連', count: 6, isActive: true, sortOrder: 5 }
   ]
   const currentPage = parseInt(params.page || '1')
   

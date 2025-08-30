@@ -215,10 +215,7 @@ export async function deleteStudyLog(
 export async function getStudyStats(userId: string): Promise<StudyStats> {
   try {
     console.log('Getting study stats for user:', userId);
-    console.log('Supabase client config:', {
-      url: supabase.supabaseUrl,
-      key: supabase.supabaseKey ? 'Present' : 'Missing'
-    });
+    
 
     // まず簡単なテーブルアクセステスト
     const { count, error: countError } = await supabase

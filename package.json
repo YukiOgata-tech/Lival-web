@@ -33,7 +33,6 @@
     "@tiptap/extension-table-row": "^3.2.2",
     "@tiptap/react": "^3.2.2",
     "@tiptap/starter-kit": "^3.2.2",
-    "@types/html2canvas": "^0.5.35",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.17.20",
     "@types/three": "^0.179.0",

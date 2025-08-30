@@ -5,12 +5,13 @@ import BlogContent from '@/components/blog/BlogContent'
 import { BlogService } from '@/lib/firebase/blog'
 
 interface BlogPageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
   try {
-    const blog = await BlogService.getBlogBySlug(params.slug)
+    const { slug } = await params
+    const blog = await BlogService.getBlogBySlug(slug)
     
     if (!blog) {
       return {
@@ -58,7 +59,7 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
 }
 
 export default async function BlogPage({ params }: BlogPageProps) {
-  const { slug } = params
+  const { slug } = await params
 
   try {
     // This would typically be done through an API call in a real app

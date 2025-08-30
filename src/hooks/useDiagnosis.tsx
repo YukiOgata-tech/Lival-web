@@ -1,6 +1,7 @@
 // src/hooks/useDiagnosis.tsx
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import { Timestamp } from 'firebase/firestore'
 import { 
   DiagnosisSession, 
   DiagnosisQuestion, 
@@ -54,10 +55,13 @@ export function useDiagnosis() {
       const sessionId = await startDiagnosisSession(user?.uid)
       const firstQuestion = CORE_QUESTIONS[0]
       
+      const now = Timestamp.now()
       const newSession: DiagnosisSession = {
         id: sessionId,
         userId: user?.uid || null,
-        startedAt: new Date(),
+        startedAt: now,
+        createdAt: now,
+        updatedAt: now,
         rawScores: {},
         status: 'active',
         currentQuestionIndex: 0,

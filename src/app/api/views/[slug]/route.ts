@@ -5,10 +5,10 @@ import { getServerUserRole } from '@/lib/auth/server'
 // POST /api/views/[slug] - Increment view count (simplified)
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params
+    const { slug } = await params
     const userRole = await getServerUserRole(request)
     
     if (!slug) {

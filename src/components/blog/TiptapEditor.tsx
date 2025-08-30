@@ -37,6 +37,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 interface TiptapEditorProps {
   content: string
   onChange: (content: string) => void
+  placeholder?: string
   preview?: boolean
   uploaderId?: string
 }
@@ -67,7 +68,13 @@ const MenuButton = ({ onClick, isActive = false, disabled = false, children, tit
   </button>
 )
 
-export default function TiptapEditor({ content, onChange, preview = false, uploaderId }: TiptapEditorProps) {
+export default function TiptapEditor({ 
+  content, 
+  onChange, 
+  placeholder = '記事の内容を入力してください...\n\n読者にとって価値のある、実践的な内容を心がけましょう。', 
+  preview = false, 
+  uploaderId 
+}: TiptapEditorProps) {
   const [showImageUpload, setShowImageUpload] = useState(false)
   const [uploadedImages, setUploadedImages] = useState<ImageUploadResult[]>([])
 
@@ -76,7 +83,7 @@ export default function TiptapEditor({ content, onChange, preview = false, uploa
     
     // Insert images into editor
     images.forEach(image => {
-      editor?.chain().focus().setImage({ 
+      editor?.chain().focus().setImage({
         src: image.url, 
         alt: image.originalName,
         title: image.originalName
@@ -121,8 +128,9 @@ export default function TiptapEditor({ content, onChange, preview = false, uploa
       TableHeader,
       TableCell,
       Placeholder.configure({
-        placeholder: '記事の内容を入力してください...\n\n読者にとって価値のある、実践的な内容を心がけましょう。',
+        placeholder: placeholder,
       }),
+
     ],
     content: content,
     onUpdate: ({ editor }) => {

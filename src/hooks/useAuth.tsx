@@ -99,61 +99,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   useEffect(() => {
-    const setSupabaseSession = async (firebaseUser: FirebaseUser) => {
-      try {
-        // 1. Get the ID Token and check claims
-        let idToken = await firebaseUser.getIdToken(true); // Force refresh to get latest claims
-        const decodedToken = await firebaseUser.getIdTokenResult();
-        const customClaims = decodedToken.claims;
-
-        // 2. If 'role: authenticated' claim is missing, call the Cloud Function
-        if (customClaims.role !== 'authenticated') {
-          console.log('🔄 Custom claim "role: authenticated" missing. Calling Cloud Function...');
-          const callSetSupabaseRoleOnCreate = httpsCallable(functions, 'setSupabaseRoleOnCreate');
-          const callEnsureSupabaseAuthenticatedClaim = httpsCallable(functions, 'ensureSupabaseAuthenticatedClaim');
-
-          try {
-            await callSetSupabaseRoleOnCreate();
-            console.log('✅ setSupabaseRoleOnCreate called successfully.');
-          } catch (error) {
-            console.warn('⚠️ setSupabaseRoleOnCreate failed, trying ensureSupabaseAuthenticatedClaim:', error);
-            await callEnsureSupabaseAuthenticatedClaim();
-            console.log('✅ ensureSupabaseAuthenticatedClaim called successfully.');
-          }
-
-          // 3. Force refresh ID token to get updated claims
-          idToken = await firebaseUser.getIdToken(true);
-          console.log('✅ ID Token refreshed with new claims.');
-        } else {
-          console.log('✅ Custom claim "role: authenticated" already present.');
-        }
-
-        // 4. Set Firebase JWT as Supabase authorization header for RLS
-        supabase.rest.headers['Authorization'] = `Bearer ${idToken}`;
-        supabase.realtime.setAuth(idToken);
-        
-        console.log('✅ Firebase JWT set as Supabase authorization header');
-      } catch (error) {
-        console.error('🚨 Error setting Supabase session:', error);
-        await clearSupabaseSession(); // Clear session on error
-      }
-    };
-
-    const clearSupabaseSession = async () => {
-      delete supabase.rest.headers['Authorization'];
-      supabase.realtime.setAuth(null);
-      console.log('👋 Firebase JWT cleared from Supabase headers');
-    };
-
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       console.log('🔐 Auth state changed:', firebaseUser?.uid || 'null');
       setUser(firebaseUser);
       
       if (firebaseUser) {
-        console.log('✅ User logged in, setting Supabase session and initializing user data...');
-        await setSupabaseSession(firebaseUser);
+        console.log('✅ User logged in, ensuring custom claims and initializing user data...');
         
-        // Firestore user data logic (unchanged)
+        try {
+          // 1. Get the ID Token and check claims
+          let idToken = await firebaseUser.getIdToken(true); // Force refresh to get latest claims
+          const decodedToken = await firebaseUser.getIdTokenResult();
+          const customClaims = decodedToken.claims;
+
+          // 2. If 'role: authenticated' claim is missing, call the Cloud Function
+          if (customClaims.role !== 'authenticated') {
+            console.log('🔄 Custom claim "role: authenticated" missing. Calling Cloud Function...');
+            const callSetSupabaseRoleOnCreate = httpsCallable(functions, 'setSupabaseRoleOnCreate');
+            const callEnsureSupabaseAuthenticatedClaim = httpsCallable(functions, 'ensureSupabaseAuthenticatedClaim');
+
+            try {
+              await callSetSupabaseRoleOnCreate();
+              console.log('✅ setSupabaseRoleOnCreate called successfully.');
+            } catch (error) {
+              console.warn('⚠️ setSupabaseRoleOnCreate failed, trying ensureSupabaseAuthenticatedClaim:', error);
+              await callEnsureSupabaseAuthenticatedClaim();
+              console.log('✅ ensureSupabaseAuthenticatedClaim called successfully.');
+            }
+
+            // 3. Force refresh ID token to get updated claims
+            await firebaseUser.getIdToken(true);
+            console.log('✅ ID Token refreshed with new claims.');
+          } else {
+            console.log('✅ Custom claim "role: authenticated" already present.');
+          }
+        } catch (error) {
+          console.error('🚨 Error ensuring custom claims:', error);
+        }
+
+        // Firestore user data logic
         try {
           const existingData = await getUserData(firebaseUser.uid);
           if (existingData) {
@@ -167,8 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await refreshUserData(); // Try to recover
         }
       } else {
-        console.log('👋 User logged out, clearing Supabase session');
-        await clearSupabaseSession();
+        console.log('👋 User logged out, clearing user data');
         setUserData(null);
       }
       

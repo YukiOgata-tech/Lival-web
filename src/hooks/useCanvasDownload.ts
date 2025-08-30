@@ -73,7 +73,10 @@ export const useCanvasDownload = () => {
 
     } catch (error) {
       console.error('Canvas download failed:', error)
-      throw new Error(`Canvas download failed: ${error.message}`)
+      if (error instanceof Error) {
+        throw new Error(`Canvas download failed: ${error.message}`)
+      }
+      throw new Error('Canvas download failed with an unknown error')
     } finally {
       setIsDownloading(false)
     }

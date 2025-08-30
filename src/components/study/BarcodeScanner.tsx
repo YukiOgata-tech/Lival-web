@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Camera, Upload, X, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react'
-import { BrowserMultiFormatReader, Result } from '@zxing/browser'
+import { BrowserMultiFormatReader } from '@zxing/browser'
+import { Result } from '@zxing/library'
 
 interface BarcodeScannerProps {
   isOpen: boolean

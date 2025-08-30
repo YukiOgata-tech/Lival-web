@@ -152,7 +152,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-amber-900 truncate">
-                {userData.displayName || user.email?.split('@')[0]}
+                {userData?.displayName || user.email?.split('@')[0]}
               </p>
               <p className="text-xs text-amber-700">管理者</p>
             </div>

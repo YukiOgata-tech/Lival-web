@@ -189,7 +189,10 @@ export const useImageDownload = () => {
 
     } catch (error) {
       console.error('画像のダウンロードに失敗しました:', error)
-      throw new Error(`画像のダウンロードに失敗しました: ${error.message}`)
+      if (error instanceof Error) {
+        throw new Error(`画像のダウンロードに失敗しました: ${error.message}`)
+      }
+      throw new Error('画像のダウンロードに失敗しました')
     } finally {
       setIsDownloading(false)
     }
@@ -235,7 +238,10 @@ export const useImageDownload = () => {
       }
     } catch (error) {
       console.error('画像データの取得に失敗しました:', error)
-      throw new Error(`画像データの取得に失敗しました: ${error.message}`)
+      if (error instanceof Error) {
+        throw new Error(`画像データの取得に失敗しました: ${error.message}`)
+      }
+      throw new Error('画像データの取得に失敗しました')
     }
   }, [])
 

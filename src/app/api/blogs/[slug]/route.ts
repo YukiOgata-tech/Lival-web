@@ -126,8 +126,8 @@ function canAccessFullContent(blog: { visibility: string }, userRole: string): b
 
 // PUT /api/blogs/[slug] - Update blog (simplified)
 export async function PUT(
-  _request: NextRequest,
-  { params: _params }: { params: Promise<{ slug: string }> }
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     return NextResponse.json({ 

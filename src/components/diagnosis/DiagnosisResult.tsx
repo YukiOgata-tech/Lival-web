@@ -230,7 +230,7 @@ export default function DiagnosisResult({
           </div>
 
           {/* セカンダリタイプ */}
-          {secondaryType && (
+          {secondaryType && SecondaryIcon && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -658,7 +658,7 @@ export default function DiagnosisResult({
                         <span className="text-gray-700">{copySuccess ? 'コピー完了！' : 'リンクをコピー'}</span>
                       </motion.button>
                       
-                      {typeof navigator !== 'undefined' && navigator.share && (
+                      {typeof navigator !== 'undefined' && typeof navigator.share === 'function' && (
                         <>
                           <hr className="my-2 border-gray-200" />
                           <motion.button

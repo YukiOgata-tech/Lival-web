@@ -28,15 +28,17 @@ export async function POST(request: NextRequest) {
     }
 
     const validActions: ReviewAction[] = ['approved', 'rejected', 'revise']
-    if (!validActions.includes(action)) {
+    if (!validActions.includes(action as ReviewAction)) {
       return NextResponse.json(
         { error: `Invalid action. Must be one of: ${validActions.join(', ')}` },
         { status: 400 }
       )
     }
 
+    const typedAction = action as ReviewAction
+
     // For rejection or revision, comments are recommended
-    if ((action === 'rejected' || action === 'revise') && !comments && !templateIds?.length) {
+    if ((typedAction === 'rejected' || typedAction === 'revise') && !comments && !templateIds?.length) {
       return NextResponse.json(
         { error: 'Comments or template feedback required for rejection/revision' },
         { status: 400 }
@@ -51,9 +53,9 @@ export async function POST(request: NextRequest) {
       finalComments += `\n\nTemplate IDs used: ${templateIds.join(', ')}`
     }
 
-    await BlogService.reviewBlog(blogId, action, userId, finalComments)
+    await BlogService.reviewBlog(blogId, typedAction, userId, finalComments)
 
-    const actionMessages = {
+    const actionMessages: Record<ReviewAction, string> = {
       approved: 'Blog approved and published successfully',
       rejected: 'Blog rejected with feedback',
       revise: 'Blog sent back for revision'
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: actionMessages[action]
+      message: actionMessages[typedAction]
     })
 
   } catch (error) {

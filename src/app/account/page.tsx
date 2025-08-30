@@ -6,6 +6,7 @@ import { updateUserProfile, updateAuthProfile } from '@/lib/user'
 import { User, Edit3, Save, X, Camera, Mail, Calendar, Users, Trophy, Coins, Zap } from 'lucide-react'
 import { formatPrice, getPlanInfo } from '@/data/subscriptions'
 import { LivalUser, Gender } from '@/types'
+import { Timestamp } from 'firebase/firestore'
 import Link from 'next/link'
 import Image from 'next/image'
 
