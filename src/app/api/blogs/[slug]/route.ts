@@ -60,10 +60,10 @@ const mockBlogs = [
 // GET /api/blogs/[slug] - Get blog by slug
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params
+    const { slug } = await params
     const userRole = await getServerUserRole(request)
     
     if (!slug) {
@@ -127,7 +127,7 @@ function canAccessFullContent(blog: { visibility: string }, userRole: string): b
 // PUT /api/blogs/[slug] - Update blog (simplified)
 export async function PUT(
   _request: NextRequest,
-  { params: _params }: { params: { slug: string } }
+  { params: _params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     return NextResponse.json({ 
