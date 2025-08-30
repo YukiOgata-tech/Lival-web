@@ -2,8 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getNewsList, createNews, getNewsStats } from '@/lib/firebase/news'
-import { NewsFormData, NewsFilter } from '@/lib/types/news'
-import { serverTimestamp } from 'firebase/firestore'
+import { NewsFormData, NewsFilter, NewsType, NewsPriority, NewsStatus } from '@/lib/types/news'
 
 // GET /api/news - お知らせ一覧取得
 export async function GET(request: NextRequest) {
@@ -27,9 +26,9 @@ export async function GET(request: NextRequest) {
     
     // フィルターオブジェクトを作成
     const filter: NewsFilter = {}
-    if (status) filter.status = status as any
-    if (type) filter.type = type as any
-    if (priority) filter.priority = priority as any
+    if (status) filter.status = status as NewsStatus
+    if (type) filter.type = type as NewsType
+    if (priority) filter.priority = priority as NewsPriority
     if (search) filter.search = search
     
     console.log('Filter params:', { page, limit, filter })
@@ -44,7 +43,7 @@ export async function GET(request: NextRequest) {
     console.error('Error in GET /api/news:', error)
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
-      code: (error as any).code,
+      code: error && typeof error === 'object' && 'code' in error ? (error as { code: unknown }).code : undefined,
       stack: error instanceof Error ? error.stack : undefined
     })
     return NextResponse.json(
@@ -110,7 +109,7 @@ export async function POST(request: NextRequest) {
     console.error('Error in POST /api/news:', error)
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
-      code: (error as any).code,
+      code: error && typeof error === 'object' && 'code' in error ? (error as { code: unknown }).code : undefined,
       stack: error instanceof Error ? error.stack : undefined
     })
     return NextResponse.json(

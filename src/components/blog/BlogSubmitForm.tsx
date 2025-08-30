@@ -198,7 +198,7 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
   
   const isAdmin = userRole === 'admin'
 
-  const handleInputChange = (field: keyof FormData) => (value: any) => {
+  const handleInputChange = (field: keyof FormData) => (value: string | string[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value

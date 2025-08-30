@@ -100,7 +100,7 @@ export const newsConverter = {
     createdAt: news.createdAt || new Date(),
     updatedAt: new Date(),
   }),
-  fromFirestore: (snapshot: any) => {
+  fromFirestore: (snapshot: { id: string; data: () => any }) => {
     const data = snapshot.data()
     return {
       id: snapshot.id,

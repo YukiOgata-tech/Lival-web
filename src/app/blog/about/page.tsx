@@ -7,12 +7,11 @@ import {
   Users, 
   Crown, 
   BookOpen, 
-  Zap, 
+ 
   CheckCircle,
   Star,
   Award,
   TrendingUp,
-  Lock,
   Eye,
   FileText,
   MessageSquare,

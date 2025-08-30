@@ -4,9 +4,8 @@ import { Suspense, use } from 'react'
 import BlogList from '@/components/blog/BlogList'
 import BlogFilters from '@/components/blog/BlogFilters'
 import { useAuth } from '@/hooks/useAuth'
-import { getPlanInfo } from '@/data/subscriptions'
 import Link from 'next/link'
-import { BookOpen, Search, Filter, Clock, PenTool, Plus, ArrowRight } from 'lucide-react'
+import { BookOpen, Search, Clock, PenTool, ArrowRight } from 'lucide-react'
 
 
 interface BlogPageProps {

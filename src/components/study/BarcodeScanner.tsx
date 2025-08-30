@@ -23,7 +23,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScanComplete }: Barc
   const videoRef = useRef<HTMLVideoElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null)
-  const streamRef = useRef<any>(null)
+  const streamRef = useRef<{ stop: () => void } | null>(null)
 
   // コンポーネント初期化
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function BarcodeScanner({ isOpen, onClose, onScanComplete }: Barc
       )
 
       // controlsをstreamRefに保存（停止用）
-      streamRef.current = controls as any
+      streamRef.current = controls
 
     } catch (error) {
       console.error('Camera scanning error:', error)

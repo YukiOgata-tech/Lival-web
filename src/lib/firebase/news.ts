@@ -160,8 +160,8 @@ export async function createNews(
   } catch (error) {
     console.error('Error creating news:', error)
     console.error('Error details:', {
-      code: (error as any).code,
-      message: (error as any).message,
+      code: error && typeof error === 'object' && 'code' in error ? (error as { code: unknown }).code : undefined,
+      message: error && typeof error === 'object' && 'message' in error ? (error as { message: unknown }).message : undefined,
       authState: !!authorId,
       newsData: newsData
     })

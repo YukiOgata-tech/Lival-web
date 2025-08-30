@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import NewsCard from './NewsCard'
-import { News, NewsListResponse, NewsFilter, NEWS_TYPE_CONFIG } from '@/lib/types/news'
+import { News, NewsListResponse, NewsFilter, NewsType, NEWS_TYPE_CONFIG } from '@/lib/types/news'
 import { 
   Megaphone,
   Filter,
@@ -160,7 +160,7 @@ export default function NewsList() {
               {Object.entries(NEWS_TYPE_CONFIG).map(([type, config]) => (
                 <button
                   key={type}
-                  onClick={() => setFilters({ type: type as any })}
+                  onClick={() => setFilters({ type: type as NewsType })}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     filters.type === type 
                       ? 'bg-blue-100 text-blue-700 border-blue-200' 

@@ -1,7 +1,7 @@
 // src/app/dashboard/study/page.tsx
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../../lib/firebase';
 import { StudyStats, StudyLog } from '../../../types/study';
@@ -17,13 +17,7 @@ export default function StudyPage() {
   const [logs, setLogs] = useState<StudyLog[]>([]);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
 
-  useEffect(() => {
-    if (user) {
-      loadStudyStats();
-    }
-  }, [user]);
-
-  const loadStudyStats = async () => {
+  const loadStudyStats = useCallback(async () => {
     if (!user) return;
 
     setIsLoadingStats(true);
@@ -46,7 +40,13 @@ export default function StudyPage() {
       console.error('Error loading study stats:', error);
     }
     setIsLoadingStats(false);
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadStudyStats();
+    }
+  }, [user, loadStudyStats]);
 
   // 認証チェック
   if (loading) {
