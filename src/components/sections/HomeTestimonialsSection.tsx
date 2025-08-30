@@ -30,24 +30,24 @@ const testimonials = [
 
 export default function HomeTestimonialsSection() {
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+    <section className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-6">
             利用者の声
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-sm md:text-lg lg:text-xl text-gray-600 px-4 md:px-0">
             実際にLIVAL AIを使って成果を上げた学習者たちの体験談
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.name}
@@ -55,25 +55,25 @@ export default function HomeTestimonialsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-2xl mr-4">
+              <div className="flex items-center mb-4 md:mb-6">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-lg md:text-2xl mr-3 md:mr-4">
                   {testimonial.avatar}
                 </div>
                 <div>
-                  <div className="font-bold text-gray-900">{testimonial.name}</div>
-                  <div className="text-gray-600 text-sm">{testimonial.grade}</div>
+                  <div className="font-bold text-gray-900 text-sm md:text-base">{testimonial.name}</div>
+                  <div className="text-gray-600 text-xs md:text-sm">{testimonial.grade}</div>
                 </div>
               </div>
               
-              <div className="flex mb-4">
+              <div className="flex mb-3 md:mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                  <Star key={i} className="w-4 h-4 md:w-5 md:h-5 text-yellow-400 fill-current" />
                 ))}
               </div>
               
-              <p className="text-gray-700 leading-relaxed">{testimonial.comment}</p>
+              <p className="text-gray-700 leading-relaxed text-sm md:text-base">{testimonial.comment}</p>
             </motion.div>
           ))}
         </div>

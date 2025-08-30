@@ -4,6 +4,7 @@ import MainHeader from '@/components/layout/MainHeader'
 import MainFooter from '@/components/layout/MainFooter'
 import { AuthProvider } from '@/hooks/useAuth'
 import { Metadata } from 'next'
+import { ConditionalLayout } from '@/components/layout/ConditionalLayout'
 
 export const metadata: Metadata = {
   title: {
@@ -105,11 +106,9 @@ export default function RootLayout({
       </head>
       <body>
         <AuthProvider>
-          <MainHeader />
-          <main className="min-h-screen">
+          <ConditionalLayout>
             {children}
-          </main>
-          <MainFooter />
+          </ConditionalLayout>
         </AuthProvider>
       </body>
     </html>

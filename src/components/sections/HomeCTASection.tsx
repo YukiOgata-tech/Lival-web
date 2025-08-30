@@ -17,7 +17,7 @@ export default function HomeCTASection() {
           <h2 className="text-4xl lg:text-5xl font-bold mb-6">
             今すぐ始めよう
           </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+          <p className="text-lg sm:text-xl mb-8 max-w-2xl mx-auto opacity-90">
             あなたの学習を革新する、教育特化AIとの世界へ
           </p>
           

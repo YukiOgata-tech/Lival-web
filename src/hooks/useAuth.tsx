@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         try {
           // 1. Get the ID Token and check claims
-          let idToken = await firebaseUser.getIdToken(true); // Force refresh to get latest claims
+          const idToken = await firebaseUser.getIdToken(true); // Force refresh to get latest claims
           const decodedToken = await firebaseUser.getIdTokenResult();
           const customClaims = decodedToken.claims;
 

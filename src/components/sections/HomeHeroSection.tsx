@@ -66,7 +66,7 @@ export default function HomeHeroSection() {
   }, [])
 
   return (
-    <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section ref={heroRef} className="relative min-h-screen/2 md:pt-14 pt-4 flex items-center justify-center overflow-hidden">
       {/* Background Animation */}
       <motion.div 
         className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10"
@@ -113,14 +113,14 @@ export default function HomeHeroSection() {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mb-8"
+            className="mb-6 md:mb-8"
           >
             <h1 className="text-4xl md:text-6xl lg:text-7xl mb-6">
               <span className="font-bold text-hero bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 あなただけの
               </span>
               <br />
-              <div className="flex items-center justify-center lg:justify-start">
+              <div className="flex items-center justify-center">
                 <Image
                   src="/images/header-livalAI.png"
                   alt="Lival AI"
@@ -139,8 +139,9 @@ export default function HomeHeroSection() {
               </div>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed font-soft">
-              <span className="font-playful text-blue-700">6つの学習タイプ別</span>に最適化された<br />
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed font-soft">
+              <span className="font-playful text-blue-700">6つの学習タイプ別</span>に最適化された
+              <span className="block md:inline"><br className="md:hidden" /></span>
               <span className="font-accent text-purple-700">教育特化AIコーチング</span>で、学習効果を最大化
             </p>
           </motion.div>
@@ -174,30 +175,30 @@ export default function HomeHeroSection() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="relative mx-auto max-w-4xl"
+            className="relative mx-auto max-w-4xl px-4 md:px-0"
           >
             <LottieAnimation 
-              className="h-96 md:h-[500px]" 
+              className="h-64 md:h-96 lg:h-[500px]" 
               fallback={
-                <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl p-8 relative">
+                <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl md:rounded-3xl p-4 md:p-8 relative">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="w-32 h-32 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center"
+                    className="w-20 h-20 md:w-32 md:h-32 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center"
                   >
-                    <Brain className="w-16 h-16 text-white" />
+                    <Brain className="w-10 h-10 md:w-16 md:h-16 text-white" />
                   </motion.div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="grid grid-cols-3 gap-4 w-full max-w-md">
+                    <div className="grid grid-cols-3 gap-2 md:gap-4 w-full max-w-xs md:max-w-md">
                       {[Brain, Target, Zap, Users, BookOpen, Award].map((Icon, index) => (
                         <motion.div
                           key={index}
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ delay: 0.8 + index * 0.1 }}
-                          className="w-12 h-12 bg-white/80 rounded-lg flex items-center justify-center shadow-lg"
+                          className="w-8 h-8 md:w-12 md:h-12 bg-white/80 rounded-lg flex items-center justify-center shadow-lg"
                         >
-                          <Icon className="w-6 h-6 text-blue-600" />
+                          <Icon className="w-4 h-4 md:w-6 md:h-6 text-blue-600" />
                         </motion.div>
                       ))}
                     </div>

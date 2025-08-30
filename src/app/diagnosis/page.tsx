@@ -46,6 +46,17 @@ export default function DiagnosisPage() {
   const [result, setResult] = useState<DiagnosisResult | null>(null)
   const [showResult, setShowResult] = useState(false)
 
+  // スクロール位置をリセットする関数
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // 診断開始時にスクロールをリセット
+  const handleStartDiagnosis = () => {
+    startDiagnosis()
+    setTimeout(() => scrollToTop(), 100) // 状態変更後にスクロール
+  }
+
   // 診断完了時の処理
   useEffect(() => {
     if (isCompleted && !showResult) {
@@ -77,23 +88,23 @@ export default function DiagnosisPage() {
   // エラー表示
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-xl shadow-lg border border-red-200 p-8 max-w-md w-full text-center">
-          <div className="text-red-500 mb-4">
-            <Brain className="w-12 h-12 mx-auto" />
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-3 md:p-4">
+        <div className="bg-white rounded-lg md:rounded-xl shadow-lg border border-red-200 p-4 md:p-8 max-w-md w-full text-center">
+          <div className="text-red-500 mb-3 md:mb-4">
+            <Brain className="w-10 h-10 md:w-12 md:h-12 mx-auto" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">エラーが発生しました</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
+          <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-2">エラーが発生しました</h2>
+          <p className="text-sm md:text-base text-gray-600 mb-4 md:mb-6">{error}</p>
           <div className="space-y-3">
             <button
               onClick={clearError}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+              className="w-full bg-blue-600 text-white py-2 md:py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base"
             >
               もう一度試す
             </button>
             <Link
               href="/"
-              className="block w-full text-gray-600 hover:text-gray-800 transition-colors"
+              className="block w-full text-gray-600 hover:text-gray-800 transition-colors text-sm md:text-base"
             >
               ホームに戻る
             </Link>
@@ -106,17 +117,17 @@ export default function DiagnosisPage() {
   // 結果表示
   if (showResult && result) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4">
+      <div className="min-h-screen bg-gray-50 py-4 md:py-8">
+        <div className="max-w-4xl mx-auto px-3 md:px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8"
+            className="text-center mb-4 md:mb-8"
           >
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 md:mb-4">
               🎉 診断完了！
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-base md:text-lg text-gray-600">
               あなたの学習タイプが判明しました
             </p>
           </motion.div>
@@ -127,15 +138,16 @@ export default function DiagnosisPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
-            className="mt-8 text-center"
+            className="mt-4 md:mt-8 text-center"
           >
             <button
               onClick={() => {
                 setResult(null)
                 setShowResult(false)
                 resetDiagnosis()
+                scrollToTop()
               }}
-              className="text-gray-600 hover:text-gray-800 transition-colors"
+              className="text-gray-600 hover:text-gray-800 transition-colors text-sm md:text-base"
             >
               もう一度診断する
             </button>
@@ -148,13 +160,13 @@ export default function DiagnosisPage() {
   // 診断中
   if (isActive && currentQuestion) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4">
+      <div className="min-h-screen bg-gray-50 py-4 md:py-8">
+        <div className="max-w-4xl mx-auto px-3 md:px-4">
           <DiagnosisProgress
             currentQuestion={progress.currentQuestion}
             totalQuestions={progress.totalQuestions}
             timeElapsed={progress.timeElapsed}
-            className="mb-8"
+            className="mb-4 md:mb-8"
           />
 
           <AnimatePresence mode="wait">
@@ -220,30 +232,31 @@ export default function DiagnosisPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-12"
+          className="mb-6 md:mb-12"
         >
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">6つの学習タイプ</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 text-center mb-4 md:mb-8">6つの学習タイプ</h2>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             {[
-              { icon: Brain, name: '探求家', color: 'text-purple-600', bg: 'bg-purple-100', desc: '好奇心・発見を重視' },
-              { icon: Target, name: '戦略家', color: 'text-blue-600', bg: 'bg-blue-100', desc: '計画性・目標達成重視' },
-              { icon: TrendingUp, name: '努力家', color: 'text-green-600', bg: 'bg-green-100', desc: '承認・成長を大切に' },
-              { icon: Zap, name: '挑戦家', color: 'text-red-600', bg: 'bg-red-100', desc: '競争・スピードを追求' },
-              { icon: Users, name: '伴走者', color: 'text-pink-600', bg: 'bg-pink-100', desc: '関係性・協調を重視' },
-              { icon: BookOpen, name: '効率家', color: 'text-amber-600', bg: 'bg-amber-100', desc: '実用性・効率を追求' }
+              { icon: Brain, name: '探求家', color: 'text-purple-600', bg: 'bg-purple-100', desc: '好奇心・発見を重視', shortDesc: '好奇心重視' },
+              { icon: Target, name: '戦略家', color: 'text-blue-600', bg: 'bg-blue-100', desc: '計画性・目標達成重視', shortDesc: '計画性重視' },
+              { icon: TrendingUp, name: '努力家', color: 'text-green-600', bg: 'bg-green-100', desc: '承認・成長を大切に', shortDesc: '成長重視' },
+              { icon: Zap, name: '挑戦家', color: 'text-red-600', bg: 'bg-red-100', desc: '競争・スピードを追求', shortDesc: '競争重視' },
+              { icon: Users, name: '伴走者', color: 'text-pink-600', bg: 'bg-pink-100', desc: '関係性・協調を重視', shortDesc: '協調重視' },
+              { icon: BookOpen, name: '効率家', color: 'text-amber-600', bg: 'bg-amber-100', desc: '実用性・効率を追求', shortDesc: '効率重視' }
             ].map((type, index) => (
               <motion.div
                 key={type.name}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + index * 0.1 }}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center"
+                className="bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-200 p-3 md:p-6 text-center"
               >
-                <div className={`w-12 h-12 ${type.bg} rounded-lg flex items-center justify-center mx-auto mb-3`}>
-                  <type.icon className={`w-6 h-6 ${type.color}`} />
+                <div className={`w-8 h-8 md:w-12 md:h-12 ${type.bg} rounded-lg flex items-center justify-center mx-auto mb-2 md:mb-3`}>
+                  <type.icon className={`w-4 h-4 md:w-6 md:h-6 ${type.color}`} />
                 </div>
-                <h3 className="font-bold text-gray-900 mb-2">{type.name}</h3>
-                <p className="text-sm text-gray-600">{type.desc}</p>
+                <h3 className="font-bold text-gray-900 mb-1 md:mb-2 text-sm md:text-base">{type.name}</h3>
+                <p className="text-xs md:hidden text-gray-600">{type.shortDesc}</p>
+                <p className="hidden md:block text-sm text-gray-600">{type.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -254,48 +267,48 @@ export default function DiagnosisPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-12"
+          className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-gray-200 p-4 md:p-8 mb-6 md:mb-12"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
             <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">診断について</h3>
-              <ul className="space-y-3 text-gray-700">
-                <li className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span>質問数: 6-10問（約3-5分）</span>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">診断について</h3>
+              <ul className="space-y-2 md:space-y-3 text-gray-700">
+                <li className="flex items-center space-x-2 md:space-x-3">
+                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm md:text-base">質問数: 6-10問（約3-5分）</span>
                 </li>
-                <li className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span>科学的根拠に基づく診断</span>
+                <li className="flex items-center space-x-2 md:space-x-3">
+                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm md:text-base">科学的根拠に基づく診断</span>
                 </li>
-                <li className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span>正解・不正解はありません</span>
+                <li className="flex items-center space-x-2 md:space-x-3">
+                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm md:text-base">正解・不正解はありません</span>
                 </li>
-                <li className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span>直感で答えてOK</span>
+                <li className="flex items-center space-x-2 md:space-x-3">
+                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm md:text-base">直感で答えてOK</span>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">診断後にできること</h3>
-              <ul className="space-y-3 text-gray-700">
-                <li className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>パーソナライズされたAIコーチング</span>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">診断後にできること</h3>
+              <ul className="space-y-2 md:space-y-3 text-gray-700">
+                <li className="flex items-center space-x-2 md:space-x-3">
+                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm md:text-base">パーソナライズされたAIコーチング</span>
                 </li>
-                <li className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>最適な学習方法の提案</span>
+                <li className="flex items-center space-x-2 md:space-x-3">
+                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm md:text-base">最適な学習方法の提案</span>
                 </li>
-                <li className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>強みを活かした学習計画</span>
+                <li className="flex items-center space-x-2 md:space-x-3">
+                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm md:text-base">強みを活かした学習計画</span>
                 </li>
-                <li className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>継続的な成長サポート</span>
+                <li className="flex items-center space-x-2 md:space-x-3">
+                  <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                  <span className="text-sm md:text-base">継続的な成長サポート</span>
                 </li>
               </ul>
             </div>
@@ -321,13 +334,13 @@ export default function DiagnosisPage() {
                 診断結果はアカウントに保存され、いつでも確認できます
               </p>
               <button
-                onClick={startDiagnosis}
+                onClick={handleStartDiagnosis}
                 disabled={isLoading}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all duration-200 transform hover:scale-105 flex items-center space-x-3 mx-auto"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl font-bold text-base md:text-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all duration-200 transform hover:scale-105 flex items-center space-x-2 md:space-x-3 mx-auto"
               >
-                <Play className="w-6 h-6" />
+                <Play className="w-5 h-5 md:w-6 md:h-6" />
                 <span>{isLoading ? '開始中...' : '診断を開始する'}</span>
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             </div>
           ) : (
@@ -347,13 +360,13 @@ export default function DiagnosisPage() {
               </p>
               <div className="space-y-4">
                 <button
-                  onClick={startDiagnosis}
+                  onClick={handleStartDiagnosis}
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl font-bold text-base md:text-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2 md:space-x-3"
                 >
-                  <Play className="w-6 h-6" />
+                  <Play className="w-5 h-5 md:w-6 md:h-6" />
                   <span>{isLoading ? '開始中...' : 'ゲストとして診断開始'}</span>
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                 </button>
                 <div className="text-sm text-gray-500">
                   または

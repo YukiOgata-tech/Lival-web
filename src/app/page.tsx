@@ -8,6 +8,7 @@ import HomeCredibilitySection from '@/components/sections/HomeCredibilitySection
 import HomeTestimonialsSection from '@/components/sections/HomeTestimonialsSection'
 import HomeCTASection from '@/components/sections/HomeCTASection'
 import ScrollToTop from '@/components/ui/ScrollToTop'
+import FloatingProfileButton from '@/components/ui/FloatingProfileButton'
 
 export default function HomePage() {
   return (
@@ -36,6 +37,9 @@ export default function HomePage() {
 
       {/* Scroll to Top Button */}
       <ScrollToTop />
+
+      {/* Floating Profile Setup Button */}
+      <FloatingProfileButton />
     </div>
   )
 }

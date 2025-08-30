@@ -16,24 +16,25 @@ const studentTypes = [
 
 export default function HomeStudentTypesSection() {
   return (
-    <section className="py-20 bg-gradient-to-r from-blue-50 to-purple-50">
+    <section className="py-12 md:py-20 bg-gradient-to-r from-blue-50 to-purple-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-6">
             あなたは どのタイプ？
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-sm md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-4">
             性格診断で6つの学習タイプを判定。それぞれに最適化されたAIコーチングを提供します。
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* スマホ: 2列グリッド、タブレット以上: 3列グリッド */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
           {studentTypes.map((type, index) => (
             <motion.div
               key={type.name}
@@ -41,14 +42,15 @@ export default function HomeStudentTypesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
+              whileHover={{ y: -5, scale: 1.02 }}
+              className="bg-white/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
             >
-              <div className={`w-20 h-20 mx-auto mb-4 bg-gradient-to-r ${type.color} rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300`}>
+              <div className={`w-12 h-12 md:w-20 md:h-20 mx-auto mb-2 md:mb-4 bg-gradient-to-r ${type.color} rounded-full flex items-center justify-center text-xl md:text-3xl group-hover:scale-110 transition-transform duration-300`}>
                 {type.icon}
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">{type.name}</h3>
-              <p className="text-gray-600 text-center">{type.description}</p>
+              <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-1 md:mb-2 text-center">{type.name}</h3>
+              {/* スマホでは詳細テキストを非表示 */}
+              <p className="text-gray-600 text-center text-xs md:text-base hidden md:block">{type.description}</p>
             </motion.div>
           ))}
         </div>
@@ -58,26 +60,32 @@ export default function HomeStudentTypesSection() {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           viewport={{ once: true }}
-          className="text-center mt-12"
+          className="text-center mt-6 md:mt-12 px-4"
         >
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="flex flex-col space-y-3 md:flex-row md:justify-center md:items-center md:space-y-0 md:space-x-4">
             <Link
               href="/diagnosis"
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+              className="inline-flex items-center justify-center px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base md:text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
-              <Lightbulb className="w-5 h-5 mr-2" />
-              2分で診断スタート
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <Lightbulb className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+              <span className="text-sm md:text-base">2分で診断スタート</span>
+              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 ml-2" />
             </Link>
             
             <Link
               href="/diagnosis/types"
-              className="inline-flex items-center px-6 py-3 border-2 border-purple-600 text-purple-600 text-base font-semibold rounded-full hover:bg-purple-50 transition-all duration-300 transform hover:scale-105"
+              className="inline-flex items-center justify-center px-5 py-2.5 md:px-6 md:py-3 border-2 border-purple-600 text-purple-600 text-sm md:text-base font-semibold rounded-full hover:bg-purple-50 transition-all duration-300 transform hover:scale-105"
             >
-              タイプ詳細を見る
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <span className="hidden md:inline">タイプ詳細を見る</span>
+              <span className="md:hidden">詳細を見る</span>
+              <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-2" />
             </Link>
           </div>
+          
+          {/* スマホ用：簡潔な説明文 */}
+          <p className="text-xs text-gray-500 mt-3 md:hidden">
+            タップして詳細を確認できます
+          </p>
         </motion.div>
       </div>
     </section>
