@@ -100,7 +100,7 @@ export default function HomeHeroSection() {
         </div>
       )}
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 ">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: isMounted ? 1 : 0, y: isMounted ? 0 : 50 }}
@@ -115,7 +115,7 @@ export default function HomeHeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-6 md:mb-8"
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl mb-6">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl mb-4 md:mb-6">
               <span className="font-bold text-hero bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 あなただけの
               </span>
@@ -151,7 +151,7 @@ export default function HomeHeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+            className="flex flex-col sm:flex-row gap-4 justify-center mb-2"
           >
             <Link
               href="/diagnosis"
@@ -180,7 +180,7 @@ export default function HomeHeroSection() {
             <LottieAnimation 
               className="h-64 md:h-96 lg:h-[500px]" 
               fallback={
-                <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl md:rounded-3xl p-4 md:p-8 relative">
+                <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl md:rounded-3xl p-8 md:p-16 relative">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -189,7 +189,7 @@ export default function HomeHeroSection() {
                     <Brain className="w-10 h-10 md:w-16 md:h-16 text-white" />
                   </motion.div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="grid grid-cols-3 gap-2 md:gap-4 w-full max-w-xs md:max-w-md">
+                    <div className="grid grid-cols-3 gap-2 md:gap-4 w-full max-w-s md:max-w-xl">
                       {[Brain, Target, Zap, Users, BookOpen, Award].map((Icon, index) => (
                         <motion.div
                           key={index}
@@ -215,7 +215,7 @@ export default function HomeHeroSection() {
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10"
         >
           <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
             <div className="w-1 h-3 bg-gray-400 rounded-full mt-2" />

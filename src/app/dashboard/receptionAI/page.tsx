@@ -120,17 +120,19 @@ export default function ProfileSetupPage() {
   const [isComplete, setIsComplete] = useState(false)
   const [currentInput, setCurrentInput] = useState('')
   const [selectedOptions, setSelectedOptions] = useState<string[]>([])
-  const [hasInitialized, setHasInitialized] = useState(false)
+  const [, setHasInitialized] = useState(false)
+  const [showInput, setShowInput] = useState(false)
   const initializationRef = useRef(false)
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // タイピングエフェクト付きでメッセージを追加
-  const addAIMessage = useCallback((content: string) => {
+  const addAIMessage = useCallback((content: string, showInputAfter = true) => {
     const messageId = Date.now().toString()
     
-    // タイピング中の状態を表示
+    // 入力欄を隠してタイピング中の状態を表示
+    setShowInput(false)
     setIsTyping(true)
     
     setTimeout(() => {
@@ -142,6 +144,13 @@ export default function ProfileSetupPage() {
         timestamp: new Date()
       }
       setMessages(prev => [...prev, newMessage])
+      
+      // AIメッセージ表示後、少し遅れて入力欄を表示
+      if (showInputAfter) {
+        setTimeout(() => {
+          setShowInput(true)
+        }, 800)
+      }
     }, 1000 + Math.random() * 500) // ランダムな遅延でリアルさを演出
   }, [])
 
@@ -188,6 +197,11 @@ export default function ProfileSetupPage() {
             timestamp: new Date()
           }
           setMessages(prev => [...prev, questionMessage])
+          
+          // 質問メッセージ表示後、少し遅れて入力欄を表示
+          setTimeout(() => {
+            setShowInput(true)
+          }, 800)
         }, 1500)
       }, 1000)
     }
@@ -230,7 +244,7 @@ export default function ProfileSetupPage() {
       addUserMessage(styles.length > 0 ? styles.join('、') : 'スキップ')
     } else {
       const stringValue = typeof value === 'string' ? value : String(value)
-      updatedProfile[currentQuestion.id as keyof ProfileData] = stringValue as any
+      updatedProfile[currentQuestion.id as keyof ProfileData] = stringValue as string | number
       addUserMessage(stringValue || 'スキップ')
       
       // 名前質問の場合はFirestoreにも保存
@@ -263,7 +277,7 @@ export default function ProfileSetupPage() {
         addAIMessage(nextQuestion.question)
       } else {
         // 全質問完了 - 完了処理を直接実行
-        addAIMessage('ありがとうございました！✨\n\nあなたのプロファイルを保存して、最適な学習体験を準備中です...')
+        addAIMessage('ありがとうございました！✨\n\nあなたのプロファイルを保存して、最適な学習体験を準備中です...', false)
         
         setTimeout(async () => {
           try {
@@ -285,14 +299,14 @@ export default function ProfileSetupPage() {
             const savedProfile = await upsertUserProfile(profileToSave)
             
             if (savedProfile) {
-              addAIMessage('🎉 プロファイルの設定が完了しました！\n\nこれでAIがあなたに最適化された学習サポートを提供できます。\n\n準備ができましたら、トップページから学習を始めましょう！')
+              addAIMessage('🎉 プロファイルの設定が完了しました！\n\nこれでAIがあなたに最適化された学習サポートを提供できます。\n\n準備ができましたら、トップページから学習を始めましょう！', false)
               setIsComplete(true)
             } else {
               throw new Error('プロファイルの保存に失敗しました')
             }
           } catch (error) {
             console.error('Profile save error:', error)
-            addAIMessage('申し訳ありません。保存中にエラーが発生しました。\n\nネットワーク接続を確認して、後ほど再試行してください。')
+            addAIMessage('申し訳ありません。保存中にエラーが発生しました。\n\nネットワーク接続を確認して、後ほど再試行してください。', false)
           }
         }, 2000)
       }
@@ -307,35 +321,40 @@ export default function ProfileSetupPage() {
 
   // 入力コンポーネントの描画
   const renderInput = () => {
-    if (isComplete || currentQuestionIndex >= questions.length) return null
+    if (isComplete || currentQuestionIndex >= questions.length || !showInput) return null
     
     const currentQuestion = questions[currentQuestionIndex]
     
     switch (currentQuestion.type) {
       case 'text':
         return (
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-            <input
-              ref={inputRef}
-              type="text"
-              value={currentInput}
-              onChange={(e) => setCurrentInput(e.target.value)}
-              placeholder={currentQuestion.placeholder}
-              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-700 border border-gray-600 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-              onKeyPress={(e) => e.key === 'Enter' && handleAnswer(currentInput)}
-            />
-            <div className="flex space-x-2 sm:space-x-0">
-              <button
-                onClick={() => handleAnswer(currentInput)}
-                className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-colors text-sm sm:text-base"
-              >
-                送信
-              </button>
+          <div className="space-y-3">
+            {/* スキップボタン */}
+            <div className="flex justify-center">
               <button
                 onClick={handleSkip}
-                className="px-4 py-2.5 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-full transition-colors text-sm sm:text-base"
+                className="px-4 py-2 bg-gray-600/50 hover:bg-gray-600 text-gray-300 hover:text-white rounded-full transition-all duration-200 text-xs sm:text-sm border border-gray-500 hover:border-gray-400"
               >
-                スキップ
+                この質問をスキップ
+              </button>
+            </div>
+            
+            {/* 入力バーと送信ボタン */}
+            <div className="flex space-x-3">
+              <input
+                ref={inputRef}
+                type="text"
+                value={currentInput}
+                onChange={(e) => setCurrentInput(e.target.value)}
+                placeholder={currentQuestion.placeholder}
+                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-700 border border-gray-600 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                onKeyPress={(e) => e.key === 'Enter' && handleAnswer(currentInput)}
+              />
+              <button
+                onClick={() => handleAnswer(currentInput)}
+                className="px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-colors text-sm sm:text-base flex-shrink-0"
+              >
+                送信
               </button>
             </div>
           </div>
@@ -343,31 +362,49 @@ export default function ProfileSetupPage() {
       
       case 'select':
         return (
-          <div className="space-y-2 sm:space-y-3">
-            <div className="grid gap-2">
+          <div className="space-y-3">
+            {/* スキップボタン */}
+            <div className="flex justify-center">
+              <button
+                onClick={handleSkip}
+                className="px-4 py-2 bg-gray-600/50 hover:bg-gray-600 text-gray-300 hover:text-white rounded-full transition-all duration-200 text-xs sm:text-sm border border-gray-500 hover:border-gray-400"
+              >
+                この質問をスキップ
+              </button>
+            </div>
+            
+            {/* 選択肢 */}
+            <div className="grid gap-2 sm:gap-3">
               {currentQuestion.options?.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => handleAnswer(option.value)}
-                  className="p-2.5 sm:p-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-lg text-left transition-colors group text-sm sm:text-base"
+                  className="p-3 sm:p-4 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-xl text-left transition-all duration-200 group text-sm sm:text-base leading-relaxed min-h-[48px] flex items-center hover:border-blue-500 hover:shadow-lg"
                 >
-                  <span className="text-white group-hover:text-blue-300">{option.label}</span>
+                  <span className="text-white group-hover:text-blue-300 w-full">
+                    {option.label}
+                  </span>
                 </button>
               ))}
             </div>
-            <button
-              onClick={handleSkip}
-              className="w-full px-4 py-2.5 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm sm:text-base"
-            >
-              スキップ
-            </button>
           </div>
         )
       
       case 'multi_select':
         return (
-          <div className="space-y-2 sm:space-y-3">
-            <div className="grid gap-2">
+          <div className="space-y-3">
+            {/* スキップボタン */}
+            <div className="flex justify-center">
+              <button
+                onClick={handleSkip}
+                className="px-4 py-2 bg-gray-600/50 hover:bg-gray-600 text-gray-300 hover:text-white rounded-full transition-all duration-200 text-xs sm:text-sm border border-gray-500 hover:border-gray-400"
+              >
+                この質問をスキップ
+              </button>
+            </div>
+            
+            {/* 選択肢 */}
+            <div className="grid gap-2 sm:gap-3">
               {currentQuestion.options?.map((option) => (
                 <button
                   key={option.value}
@@ -378,29 +415,30 @@ export default function ProfileSetupPage() {
                       : [...selectedOptions, optionValue]
                     setSelectedOptions(newSelection)
                   }}
-                  className={`p-2.5 sm:p-3 border rounded-lg text-left transition-colors text-sm sm:text-base ${
+                  className={`p-3 sm:p-4 border rounded-xl text-left transition-all duration-200 text-sm sm:text-base leading-relaxed min-h-[48px] flex items-center ${
                     selectedOptions.includes(String(option.value))
-                      ? 'bg-blue-600 border-blue-500 text-white'
-                      : 'bg-gray-700 hover:bg-gray-600 border-gray-600 text-white'
+                      ? 'bg-blue-600 border-blue-500 text-white shadow-lg'
+                      : 'bg-gray-700 hover:bg-gray-600 border-gray-600 text-white hover:border-blue-500 hover:shadow-lg'
                   }`}
                 >
-                  {option.label}
+                  <span className="w-full flex items-center">
+                    {selectedOptions.includes(String(option.value)) && (
+                      <span className="mr-2 text-blue-200">✓</span>
+                    )}
+                    {option.label}
+                  </span>
                 </button>
               ))}
             </div>
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            
+            {/* 選択完了ボタン */}
+            <div className="flex justify-center">
               <button
                 onClick={() => handleAnswer(selectedOptions)}
-                className="flex-1 px-4 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm sm:text-base"
+                className="px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-colors text-sm sm:text-base"
                 disabled={selectedOptions.length === 0}
               >
                 選択完了 ({selectedOptions.length})
-              </button>
-              <button
-                onClick={handleSkip}
-                className="px-4 py-2.5 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm sm:text-base"
-              >
-                スキップ
               </button>
             </div>
           </div>
@@ -497,8 +535,8 @@ export default function ProfileSetupPage() {
       </div>
 
       {/* 入力エリア */}
-      <div className="bg-gray-800/90 backdrop-blur-sm border-t border-gray-700 flex-shrink-0">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+      <div className="bg-gray-800/95 backdrop-blur-sm border-t border-gray-700 flex-shrink-0">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           {isComplete ? (
             <div className="text-center">
               <button
@@ -509,7 +547,9 @@ export default function ProfileSetupPage() {
               </button>
             </div>
           ) : (
-            renderInput()
+            <div className="animate-in slide-in-from-bottom-4 duration-300">
+              {renderInput()}
+            </div>
           )}
         </div>
       </div>
