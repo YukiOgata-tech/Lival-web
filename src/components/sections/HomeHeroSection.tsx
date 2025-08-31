@@ -126,7 +126,7 @@ export default function HomeHeroSection() {
                   alt="Lival AI"
                   width={300}
                   height={80}
-                  className="h-12 md:h-16 lg:h-20 w-auto"
+                  className="h-12 md:h-16 lg:h-20 w-auto bg-emerald-300/40 rounded-4xl"
                   priority
                 />
                 <motion.span

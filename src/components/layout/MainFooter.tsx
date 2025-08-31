@@ -112,6 +112,7 @@ export default function MainFooter() {
                   width={120}
                   height={32}
                   className="h-8 w-auto mb-1 brightness-0 invert"
+                  style={{ width: 'auto', height: '32px' }}
                 />
                 <div className="text-sm text-gray-400">
                   パーソナルAIコーチング
@@ -200,6 +201,7 @@ export default function MainFooter() {
                 width={80}
                 height={20}
                 className="h-4 w-auto brightness-0 invert opacity-70"
+                style={{ width: 'auto', height: '16px' }}
               />
               <span>All rights reserved.</span>
             </div>

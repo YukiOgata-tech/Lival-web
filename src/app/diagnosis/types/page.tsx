@@ -2,20 +2,11 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { 
-  ArrowLeft, 
-  Sparkles, 
-  Target, 
-  TrendingUp, 
-  Zap, 
-  Users, 
-  Settings,
-  Heart,
-  Lightbulb,
-  Rocket,
+  ArrowLeft,
   UserCheck,
-  Clock,
-  CheckCircle
+  Clock
 } from 'lucide-react'
+import ExpandableLearningType from '../../../components/diagnosis/ExpandableLearningType'
 
 export const metadata: Metadata = {
   title: '6つの学習タイプ詳細 | Lival AI診断',
@@ -33,7 +24,7 @@ const learningTypes = [
     id: 'explorer',
     name: '探求家',
     subtitle: '内発的探求者',
-    icon: Sparkles,
+    icon: 'explorer',
     color: 'from-purple-500 to-indigo-500',
     bgColor: 'purple',
     description: '純粋な知的好奇心によって学習が駆動されるタイプ',
@@ -68,7 +59,7 @@ const learningTypes = [
     id: 'strategist',
     name: '戦略家',
     subtitle: '目標志向戦略家',
-    icon: Target,
+    icon: 'strategist',
     color: 'from-blue-500 to-cyan-500',
     bgColor: 'blue',
     description: '明確な目標設定と計画的な学習進行を重視するタイプ',
@@ -103,7 +94,7 @@ const learningTypes = [
     id: 'achiever',
     name: '努力家',
     subtitle: '承認欲求努力家',
-    icon: TrendingUp,
+    icon: 'achiever',
     color: 'from-green-500 to-emerald-500',
     bgColor: 'green',
     description: '他者からの承認と評価を重視し、努力を大切にするタイプ',
@@ -138,7 +129,7 @@ const learningTypes = [
     id: 'challenger',
     name: '挑戦家',
     subtitle: '競争志向挑戦家',
-    icon: Zap,
+    icon: 'challenger',
     color: 'from-red-500 to-orange-500',
     bgColor: 'red',
     description: '競争的な環境でのモチベーションとスピード感を重視するタイプ',
@@ -173,7 +164,7 @@ const learningTypes = [
     id: 'companion',
     name: '伴走者',
     subtitle: '関係重視協調者',
-    icon: Users,
+    icon: 'companion',
     color: 'from-pink-500 to-rose-500',
     bgColor: 'pink',
     description: '他者とのつながりを重視し、協力的な学習環境を好むタイプ',
@@ -208,7 +199,7 @@ const learningTypes = [
     id: 'efficiency',
     name: '効率家',
     subtitle: '効率重視実用家',
-    icon: Settings,
+    icon: 'efficiency',
     color: 'from-amber-500 to-yellow-500',
     bgColor: 'amber',
     description: '効率性と実用性を重視し、最短経路での成果達成を目指すタイプ',
@@ -244,145 +235,50 @@ const learningTypes = [
 export default function DiagnosisTypesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
         {/* ヘッダー */}
-        <div className="mb-12">
+        <div className="mb-8 sm:mb-12">
           <Link 
             href="/diagnosis"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors mb-6"
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors mb-4 sm:mb-6 text-sm sm:text-base"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             診断画面に戻る
           </Link>
           
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Lival AIが識別する
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+          <div className="text-center mb-8 sm:mb-12">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+              <span className="block">Lival AIが識別する</span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mt-1 sm:mt-2">
                 6つの学習タイプ
               </span>
             </h1>
-            <p className="text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto px-2">
               自己決定理論（SDT）とBig Five性格理論に基づく科学的分類により、
               あなたの学習特性を6つのタイプに分けて詳細に分析します。
             </p>
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-6 rounded"></div>
+            <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-4 sm:mt-6 rounded"></div>
           </div>
         </div>
 
         {/* タイプ一覧 */}
-        <div className="space-y-12">
-          {learningTypes.map((type, index) => {
-            const IconComponent = type.icon
-            return (
-              <div key={type.id} className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-                {/* ヘッダー */}
-                <div className={`bg-gradient-to-r ${type.color} p-8 text-white`}>
-                  <div className="flex items-center space-x-4 mb-4">
-                    <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                      <IconComponent className="w-8 h-8 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-3xl font-bold">{type.name}</h2>
-                      <p className="text-lg opacity-90">{type.subtitle}</p>
-                    </div>
-                  </div>
-                  <p className="text-lg opacity-95">{type.description}</p>
-                </div>
-
-                {/* コンテンツ */}
-                <div className="p-8">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* 左側：詳細説明と特徴 */}
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                          <Heart className="w-5 h-5 mr-2 text-red-500" />
-                          このタイプの特徴
-                        </h3>
-                        <p className="text-gray-700 leading-relaxed mb-4">
-                          {type.detailedDescription}
-                        </p>
-                        <div className="space-y-2">
-                          {type.characteristics.map((characteristic, idx) => (
-                            <div key={idx} className={`flex items-start space-x-2 p-2 bg-${type.bgColor}-50 rounded-lg`}>
-                              <div className={`w-1.5 h-1.5 bg-${type.bgColor}-500 rounded-full mt-2 flex-shrink-0`}></div>
-                              <span className="text-gray-700 text-sm">{characteristic}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                          <CheckCircle className="w-5 h-5 mr-2 text-green-500" />
-                          あなたの強み
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {type.strengths.map((strength, idx) => (
-                            <span 
-                              key={idx} 
-                              className={`px-3 py-1 bg-${type.bgColor}-100 text-${type.bgColor}-800 rounded-full text-sm font-medium`}
-                            >
-                              {strength}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 右側：AIコーチングとコツ */}
-                    <div className="space-y-6">
-                      <div className={`bg-gradient-to-br from-${type.bgColor}-50 to-${type.bgColor}-100 rounded-xl p-6`}>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                          <Rocket className="w-5 h-5 mr-2 text-blue-500" />
-                          Lival AIコーチング
-                        </h3>
-                        <div className="space-y-3">
-                          <div className="bg-white/80 rounded-lg p-3">
-                            <h4 className="font-semibold text-gray-900 text-sm mb-1">コーチングスタイル</h4>
-                            <p className="text-gray-700 text-sm">{type.aiCoaching.style}</p>
-                          </div>
-                          <div className="bg-white/80 rounded-lg p-3">
-                            <h4 className="font-semibold text-gray-900 text-sm mb-1">アプローチ方法</h4>
-                            <p className="text-gray-700 text-sm">{type.aiCoaching.approach}</p>
-                          </div>
-                          <div className="bg-white/80 rounded-lg p-3">
-                            <h4 className="font-semibold text-gray-900 text-sm mb-1">AIからの声かけ例</h4>
-                            <p className="text-gray-700 text-sm italic">「{type.aiCoaching.example}」</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
-                          <Lightbulb className="w-5 h-5 mr-2 text-yellow-500" />
-                          効果的な学習のコツ
-                        </h3>
-                        <div className="space-y-2">
-                          {type.studyTips.map((tip, idx) => (
-                            <div key={idx} className="flex items-start space-x-2 p-2 bg-gray-50 rounded-lg">
-                              <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
-                              <span className="text-gray-700 text-sm">{tip}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
+        <div className="space-y-6 sm:space-y-8 md:space-y-12">
+          {learningTypes.map((type, index) => (
+            <ExpandableLearningType
+              key={type.id}
+              type={type}
+              index={index}
+            />
+          ))}
         </div>
 
         {/* 診断への誘導 */}
-        <div className="mt-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 text-center">
+        <div className="mt-12 sm:mt-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg sm:rounded-2xl p-6 sm:p-8 text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
               あなたはどのタイプ？
             </h2>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed px-2">
               科学的診断で正確にあなたの学習タイプを判定し、
               最適なAIコーチング体験を提供します
             </p>
@@ -390,14 +286,14 @@ export default function DiagnosisTypesPage() {
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Link
                 href="/diagnosis"
-                className="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 font-semibold text-lg"
+                className="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 font-semibold text-base sm:text-lg w-full sm:w-auto justify-center"
               >
-                <UserCheck className="w-6 h-6 mr-2" />
+                <UserCheck className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
                 無料診断を始める
               </Link>
               
-              <div className="flex items-center text-sm text-gray-600">
-                <Clock className="w-4 h-4 mr-1" />
+              <div className="flex items-center text-xs sm:text-sm text-gray-600">
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 所要時間: 約5-8分
               </div>
             </div>
@@ -405,13 +301,13 @@ export default function DiagnosisTypesPage() {
         </div>
 
         {/* 科学的根拠へのリンク */}
-        <div className="mt-12 text-center">
+        <div className="mt-8 sm:mt-12 text-center">
           <Link 
             href="/about/science"
-            className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+            className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors text-sm sm:text-base"
           >
             <span>この分類の科学的根拠について詳しく</span>
-            <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
+            <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 rotate-180" />
           </Link>
         </div>
       </div>

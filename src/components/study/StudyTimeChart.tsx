@@ -153,10 +153,10 @@ export default function StudyTimeChart({ logs, userId }: StudyTimeChartProps) {
 
   if (!currentWeek) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="text-center py-8">
-          <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500">学習データがありません</p>
+      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+        <div className="text-center py-6 sm:py-8">
+          <Calendar className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+          <p className="text-gray-500 text-sm sm:text-base">学習データがありません</p>
         </div>
       </div>
     )
@@ -164,37 +164,38 @@ export default function StudyTimeChart({ logs, userId }: StudyTimeChartProps) {
 
   return (
     <>
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">今週の学習時間</h3>
-            <p className="text-sm text-gray-600">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
+          <div className="flex-1">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900">今週の学習時間</h3>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
               {currentWeek.weekLabel} • 合計 {formatTime(currentWeek.totalMinutes)}
             </p>
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors text-sm sm:text-base"
           >
-            <TrendingUp className="w-4 h-4" />
-            詳細を見る
+            <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">詳細を見る</span>
+            <span className="sm:hidden">詳細</span>
           </button>
         </div>
 
         {/* 簡易チャート */}
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {currentWeek.days.map((day, index) => (
             <motion.div
               key={day.date.toISOString()}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="flex items-center gap-4"
+              className="flex items-center gap-2 sm:gap-4"
             >
-              <div className="w-12 text-sm text-gray-600 font-medium">
+              <div className="w-8 sm:w-12 text-xs sm:text-sm text-gray-600 font-medium">
                 {day.dayName}
               </div>
-              <div className="flex-1 bg-gray-100 rounded-full h-3 relative overflow-hidden">
+              <div className="flex-1 bg-gray-100 rounded-full h-2.5 sm:h-3 relative overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${(day.minutes / maxMinutes) * 100}%` }}
@@ -202,7 +203,7 @@ export default function StudyTimeChart({ logs, userId }: StudyTimeChartProps) {
                   className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
                 />
               </div>
-              <div className="w-20 text-sm text-gray-700 text-right">
+              <div className="w-16 sm:w-20 text-xs sm:text-sm text-gray-700 text-right">
                 {day.minutes > 0 ? formatTime(day.minutes) : '-'}
               </div>
             </motion.div>
@@ -217,45 +218,46 @@ export default function StudyTimeChart({ logs, userId }: StudyTimeChartProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-lg sm:rounded-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
             >
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {/* モーダルヘッダー */}
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900">学習時間グラフ</h2>
-                    <p className="text-gray-600 mt-1">週ごとの学習記録を確認できます</p>
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <div className="flex-1 pr-2">
+                    <h2 className="text-lg sm:text-2xl font-bold text-gray-900">学習時間グラフ</h2>
+                    <p className="text-gray-600 mt-1 text-sm sm:text-base">週ごとの学習記録を確認できます</p>
                   </div>
                   <button
                     onClick={() => setIsModalOpen(false)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors p-2"
+                    className="text-gray-400 hover:text-gray-600 transition-colors p-1 sm:p-2 flex-shrink-0"
                   >
-                    <X className="w-6 h-6" />
+                    <X className="w-5 h-5 sm:w-6 sm:h-6" />
                   </button>
                 </div>
 
                 {/* 週ナビゲーション */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-6 sm:mb-8">
                   <button
                     onClick={() => navigateWeek('prev')}
                     disabled={!canGoBack}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
                   >
-                    <ChevronLeft className="w-4 h-4" />
-                    前の週
+                    <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">前の週</span>
+                    <span className="sm:hidden">前</span>
                   </button>
                   
-                  <div className="text-center">
-                    <h3 className="text-xl font-semibold text-gray-900">
+                  <div className="text-center flex-1 px-2">
+                    <h3 className="text-base sm:text-xl font-semibold text-gray-900">
                       {currentWeek.weekLabel}
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1">
                       合計 {formatTime(currentWeek.totalMinutes)} • {currentWeek.days.filter(d => d.minutes > 0).length}日間
                     </p>
                   </div>
@@ -263,41 +265,42 @@ export default function StudyTimeChart({ logs, userId }: StudyTimeChartProps) {
                   <button
                     onClick={() => navigateWeek('next')}
                     disabled={!canGoForward}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
                   >
-                    次の週
-                    <ChevronRight className="w-4 h-4" />
+                    <span className="hidden sm:inline">次の週</span>
+                    <span className="sm:hidden">次</span>
+                    <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                   </button>
                 </div>
 
                 {/* 詳細チャート */}
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <div className="grid grid-cols-7 gap-4 mb-4">
+                <div className="bg-gray-50 rounded-lg p-3 sm:p-6">
+                  <div className="grid grid-cols-7 gap-1 sm:gap-4 mb-3 sm:mb-4">
                     {currentWeek.days.map((day) => (
                       <div key={day.date.toISOString()} className="text-center">
-                        <div className="text-sm font-medium text-gray-700 mb-2">
+                        <div className="text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                           {day.dayName}
                         </div>
-                        <div className="text-xs text-gray-500 mb-4">
+                        <div className="text-xs text-gray-500 mb-2 sm:mb-4">
                           {day.date.getDate()}日
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-7 gap-4 items-end" style={{ height: '200px' }}>
+                  <div className="grid grid-cols-7 gap-1 sm:gap-4 items-end" style={{ height: '120px' }}>
                     {currentWeek.days.map((day, index) => (
                       <motion.div
                         key={day.date.toISOString()}
                         initial={{ height: 0 }}
-                        animate={{ height: `${(day.minutes / maxMinutes) * 160}px` }}
+                        animate={{ height: `${(day.minutes / maxMinutes) * 100}px` }}
                         transition={{ duration: 0.8, delay: index * 0.1 }}
                         className="bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg relative group cursor-pointer hover:from-blue-600 hover:to-blue-500 transition-colors"
-                        style={{ minHeight: day.minutes > 0 ? '8px' : '2px' }}
+                        style={{ minHeight: day.minutes > 0 ? '6px' : '2px' }}
                       >
                         {day.minutes > 0 && (
-                          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                          <div className="absolute -top-6 sm:-top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="bg-gray-900 text-white text-xs px-1 sm:px-2 py-1 rounded whitespace-nowrap">
                               {formatTime(day.minutes)}
                               {day.sessions > 0 && ` (${day.sessions}回)`}
                             </div>
@@ -308,36 +311,36 @@ export default function StudyTimeChart({ logs, userId }: StudyTimeChartProps) {
                   </div>
 
                   {/* 統計サマリー */}
-                  <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-gray-200">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-4 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
                     <div className="text-center">
-                      <div className="flex items-center justify-center mb-2">
-                        <Clock className="w-5 h-5 text-blue-500 mr-2" />
+                      <div className="flex items-center justify-center mb-1 sm:mb-2">
+                        <Clock className="w-3 h-3 sm:w-5 sm:h-5 text-blue-500 mr-1 sm:mr-2" />
                       </div>
-                      <div className="text-2xl font-bold text-gray-900">
+                      <div className="text-sm sm:text-2xl font-bold text-gray-900">
                         {formatTime(currentWeek.totalMinutes)}
                       </div>
-                      <div className="text-sm text-gray-600">合計時間</div>
+                      <div className="text-xs sm:text-sm text-gray-600">合計時間</div>
                     </div>
                     <div className="text-center">
-                      <div className="flex items-center justify-center mb-2">
-                        <Calendar className="w-5 h-5 text-green-500 mr-2" />
+                      <div className="flex items-center justify-center mb-1 sm:mb-2">
+                        <Calendar className="w-3 h-3 sm:w-5 sm:h-5 text-green-500 mr-1 sm:mr-2" />
                       </div>
-                      <div className="text-2xl font-bold text-gray-900">
+                      <div className="text-sm sm:text-2xl font-bold text-gray-900">
                         {currentWeek.days.filter(d => d.minutes > 0).length}
                       </div>
-                      <div className="text-sm text-gray-600">学習日数</div>
+                      <div className="text-xs sm:text-sm text-gray-600">学習日数</div>
                     </div>
                     <div className="text-center">
-                      <div className="flex items-center justify-center mb-2">
-                        <TrendingUp className="w-5 h-5 text-purple-500 mr-2" />
+                      <div className="flex items-center justify-center mb-1 sm:mb-2">
+                        <TrendingUp className="w-3 h-3 sm:w-5 sm:h-5 text-purple-500 mr-1 sm:mr-2" />
                       </div>
-                      <div className="text-2xl font-bold text-gray-900">
+                      <div className="text-sm sm:text-2xl font-bold text-gray-900">
                         {currentWeek.totalMinutes > 0 
                           ? Math.round(currentWeek.totalMinutes / Math.max(currentWeek.days.filter(d => d.minutes > 0).length, 1))
                           : 0
                         }
                       </div>
-                      <div className="text-sm text-gray-600">分/日平均</div>
+                      <div className="text-xs sm:text-sm text-gray-600">分/日平均</div>
                     </div>
                   </div>
                 </div>
