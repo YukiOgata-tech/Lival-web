@@ -314,40 +314,42 @@ export default function ProfileSetupPage() {
     switch (currentQuestion.type) {
       case 'text':
         return (
-          <div className="flex space-x-3">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
             <input
               ref={inputRef}
               type="text"
               value={currentInput}
               onChange={(e) => setCurrentInput(e.target.value)}
               placeholder={currentQuestion.placeholder}
-              className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-700 border border-gray-600 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
               onKeyPress={(e) => e.key === 'Enter' && handleAnswer(currentInput)}
             />
-            <button
-              onClick={() => handleAnswer(currentInput)}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-colors"
-            >
-              送信
-            </button>
-            <button
-              onClick={handleSkip}
-              className="px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-full transition-colors"
-            >
-              スキップ
-            </button>
+            <div className="flex space-x-2 sm:space-x-0">
+              <button
+                onClick={() => handleAnswer(currentInput)}
+                className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition-colors text-sm sm:text-base"
+              >
+                送信
+              </button>
+              <button
+                onClick={handleSkip}
+                className="px-4 py-2.5 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-full transition-colors text-sm sm:text-base"
+              >
+                スキップ
+              </button>
+            </div>
           </div>
         )
       
       case 'select':
         return (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <div className="grid gap-2">
               {currentQuestion.options?.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => handleAnswer(option.value)}
-                  className="p-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-lg text-left transition-colors group"
+                  className="p-2.5 sm:p-3 bg-gray-700 hover:bg-gray-600 border border-gray-600 rounded-lg text-left transition-colors group text-sm sm:text-base"
                 >
                   <span className="text-white group-hover:text-blue-300">{option.label}</span>
                 </button>
@@ -355,7 +357,7 @@ export default function ProfileSetupPage() {
             </div>
             <button
               onClick={handleSkip}
-              className="w-full px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+              className="w-full px-4 py-2.5 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm sm:text-base"
             >
               スキップ
             </button>
@@ -364,7 +366,7 @@ export default function ProfileSetupPage() {
       
       case 'multi_select':
         return (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <div className="grid gap-2">
               {currentQuestion.options?.map((option) => (
                 <button
@@ -376,7 +378,7 @@ export default function ProfileSetupPage() {
                       : [...selectedOptions, optionValue]
                     setSelectedOptions(newSelection)
                   }}
-                  className={`p-3 border rounded-lg text-left transition-colors ${
+                  className={`p-2.5 sm:p-3 border rounded-lg text-left transition-colors text-sm sm:text-base ${
                     selectedOptions.includes(String(option.value))
                       ? 'bg-blue-600 border-blue-500 text-white'
                       : 'bg-gray-700 hover:bg-gray-600 border-gray-600 text-white'
@@ -386,17 +388,17 @@ export default function ProfileSetupPage() {
                 </button>
               ))}
             </div>
-            <div className="flex space-x-2">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
               <button
                 onClick={() => handleAnswer(selectedOptions)}
-                className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                className="flex-1 px-4 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm sm:text-base"
                 disabled={selectedOptions.length === 0}
               >
                 選択完了 ({selectedOptions.length})
               </button>
               <button
                 onClick={handleSkip}
-                className="px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2.5 sm:py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm sm:text-base"
               >
                 スキップ
               </button>
@@ -411,10 +413,10 @@ export default function ProfileSetupPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-300">読み込み中...</p>
+          <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500 mx-auto mb-3 sm:mb-4"></div>
+          <p className="text-gray-300 text-sm sm:text-base">読み込み中...</p>
         </div>
       </div>
     )
@@ -423,22 +425,22 @@ export default function ProfileSetupPage() {
   return (
     <div className="h-screen flex flex-col">
       {/* プログレスバー */}
-      <div className="max-w-4xl mx-auto px-4 py-4 flex-shrink-0">
-        <div className="bg-gray-700 rounded-full h-2">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex-shrink-0">
+        <div className="bg-gray-700 rounded-full h-1.5 sm:h-2">
           <div 
-            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 sm:h-2 rounded-full transition-all duration-500"
             style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
           />
         </div>
-        <p className="text-gray-400 text-sm mt-2 text-center">
+        <p className="text-gray-400 text-xs sm:text-sm mt-2 text-center">
           {currentQuestionIndex + 1} / {questions.length}
         </p>
       </div>
 
       {/* チャットエリア */}
       <div className="flex-1 overflow-y-auto pb-4">
-        <div className="max-w-4xl mx-auto px-4 pb-32">
-          <div className="space-y-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-32">
+          <div className="space-y-4 sm:space-y-6">
           <AnimatePresence>
             {messages.map((message, index) => (
               <motion.div
@@ -449,17 +451,17 @@ export default function ProfileSetupPage() {
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {message.type === 'ai' && (
-                  <div className="flex-shrink-0 mr-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                      <MessageCircle className="w-6 h-6 text-white" />
+                  <div className="flex-shrink-0 mr-2 sm:mr-3">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                      <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                     </div>
                   </div>
                 )}
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl whitespace-pre-line ${
+                  className={`px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl whitespace-pre-line text-sm sm:text-base leading-relaxed ${
                     message.type === 'user'
-                      ? 'bg-blue-600 text-white ml-12'
-                      : 'bg-gray-700 text-white'
+                      ? 'bg-blue-600 text-white ml-8 sm:ml-12 max-w-[75%] sm:max-w-[70%] rounded-br-md'
+                      : 'bg-gray-700 text-white max-w-[85%] sm:max-w-[80%] rounded-bl-md'
                   }`}
                 >
                   {message.content}
@@ -475,16 +477,16 @@ export default function ProfileSetupPage() {
               animate={{ opacity: 1, y: 0 }}
               className="flex justify-start"
             >
-              <div className="flex-shrink-0 mr-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                  <MessageCircle className="w-6 h-6 text-white" />
+              <div className="flex-shrink-0 mr-2 sm:mr-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                  <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                 </div>
               </div>
-              <div className="bg-gray-700 px-4 py-3 rounded-2xl">
+              <div className="bg-gray-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl rounded-bl-md max-w-[85%] sm:max-w-[80%]">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                 </div>
               </div>
             </motion.div>
@@ -496,12 +498,12 @@ export default function ProfileSetupPage() {
 
       {/* 入力エリア */}
       <div className="bg-gray-800/90 backdrop-blur-sm border-t border-gray-700 flex-shrink-0">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           {isComplete ? (
             <div className="text-center">
               <button
                 onClick={() => router.push('/')}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+                className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base"
               >
                 トップページへ戻る
               </button>

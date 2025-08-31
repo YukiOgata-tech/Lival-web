@@ -47,45 +47,46 @@ export default function ReceptionAILayout({
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       {/* カスタムヘッダー */}
       <header className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 py-4">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             {/* 左側: 戻るボタン */}
             <button
               onClick={() => router.back()}
-              className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors group"
+              className="flex items-center space-x-1 sm:space-x-2 text-gray-300 hover:text-white transition-colors group"
             >
-              <ArrowLeft className="w-5 h-5 group-hover:translate-x-[-2px] transition-transform" />
-              <span className="hidden sm:inline">戻る</span>
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-[-2px] transition-transform" />
+              <span className="hidden sm:inline text-sm sm:text-base">戻る</span>
             </button>
 
             {/* 中央: ページタイトル */}
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AI</span>
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xs sm:text-sm">AI</span>
               </div>
-              <h1 className="text-lg sm:text-xl font-bold">
-                受付AI・プロフィール設定
+              <h1 className="text-sm sm:text-lg md:text-xl font-bold truncate">
+                <span className="hidden sm:inline">受付AI・プロフィール設定</span>
+                <span className="sm:hidden">プロフィール設定</span>
               </h1>
             </div>
 
             {/* 右側: ナビゲーションボタン */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               {navigationItems.map((item, index) => (
                 <button
                   key={index}
                   onClick={item.onClick}
                   className={`
-                    flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                    flex items-center space-x-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200
                     ${item.variant === 'outline' 
                       ? 'border border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white' 
                       : 'text-gray-300 hover:text-white hover:bg-gray-700'
                     }
-                    ${index === 0 ? 'hidden sm:flex' : 'flex'}
+                    ${index === 0 ? 'hidden sm:flex' : index === 3 ? 'hidden md:flex' : 'flex'}
                   `}
                   title={item.label}
                 >
-                  <item.icon className="w-4 h-4" />
-                  <span className="hidden md:inline">{item.label}</span>
+                  <item.icon className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden lg:inline">{item.label}</span>
                 </button>
               ))}
             </div>
@@ -93,7 +94,7 @@ export default function ReceptionAILayout({
 
           {/* ユーザー情報バー（デスクトップのみ） */}
           {user && (
-            <div className="hidden lg:flex items-center justify-between mt-3 pt-3 border-t border-gray-700/50">
+            <div className="hidden xl:flex items-center justify-between mt-3 pt-3 border-t border-gray-700/50">
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center">
                   <span className="text-xs text-white font-medium">

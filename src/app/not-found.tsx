@@ -2,10 +2,9 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { 
-  Brain, 
-  Construction, 
   Home, 
   ArrowLeft, 
   Search,
@@ -29,11 +28,17 @@ export default function NotFound() {
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ duration: 0.8, type: "spring", bounce: 0.4 }}
-          className="flex justify-center mb-8"
+          className="flex justify-center mb-6 sm:mb-8"
         >
           <div className="relative">
-            <div className="w-32 h-32 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl">
-              <Construction className="w-16 h-16 text-white" />
+            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-white rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-2xl border-2 border-gray-100">
+              <Image
+                src="/images/AIs.png"
+                alt="LIVAL AI Characters"
+                width={128}
+                height={128}
+                className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 object-contain"
+              />
             </div>
             {isMounted && (
               <motion.div
@@ -46,9 +51,9 @@ export default function NotFound() {
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
-                className="absolute -top-2 -right-2 w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg"
+                className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg"
               >
-                <Sparkles className="w-5 h-5 text-gray-900" />
+                <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-gray-900" />
               </motion.div>
             )}
           </div>
@@ -59,12 +64,12 @@ export default function NotFound() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
-          <h1 className="text-8xl md:text-9xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2 sm:mb-4">
             404
           </h1>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-2 sm:mb-4">
             ページが見つかりません
           </h2>
         </motion.div>
@@ -76,20 +81,26 @@ export default function NotFound() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mb-8"
         >
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-white/50 shadow-lg">
-            <div className="flex items-center justify-center mb-4">
-              <Clock className="w-6 h-6 text-blue-500 mr-2" />
-              <span className="text-gray-700 font-medium">開発中・準備中</span>
+          <div className="bg-white/70 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/50 shadow-lg">
+            <div className="flex items-center justify-center mb-3 sm:mb-4">
+              <Clock className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-blue-500 mr-2" />
+              <span className="text-gray-700 font-medium text-sm sm:text-base">開発中・準備中</span>
             </div>
-            <p className="text-gray-600 leading-relaxed mb-4">
+            <p className="text-gray-600 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">
               お探しのページは存在しないか、現在開発中です。
               LIVAL AIでは日々新しい機能を開発しており、
               近日中に公開予定です。
             </p>
             <div className="flex items-center justify-center">
-              <Brain className="w-5 h-5 text-purple-500 mr-2" />
-              <span className="text-sm text-gray-500">
-                AIが24時間体制で開発を支援中...
+              <Image
+                src="/images/lival-circle.png"
+                alt="LIVAL AI"
+                width={22}
+                height={22}
+                className="w-4 h-4 sm:w-5 sm:h-5 mr-2"
+              />
+              <span className="text-xs sm:text-sm text-gray-500">
+                24時間体制で開発中...
               </span>
             </div>
           </div>
@@ -105,9 +116,9 @@ export default function NotFound() {
           {/* Primary Action */}
           <Link
             href="/"
-            className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl w-full justify-center"
+            className="group inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base sm:text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl w-full justify-center"
           >
-            <Home className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+            <Home className="w-4 h-4 sm:w-5 sm:h-5 mr-2 group-hover:scale-110 transition-transform" />
             ホームに戻る
           </Link>
 
@@ -115,17 +126,17 @@ export default function NotFound() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               onClick={() => window.history.back()}
-              className="group inline-flex items-center px-6 py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-full hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 justify-center"
+              className="group inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-gray-300 text-gray-700 font-medium rounded-full hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 justify-center text-sm sm:text-base"
             >
-              <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
               前のページ
             </button>
             
             <Link
               href="/contact"
-              className="group inline-flex items-center px-6 py-3 border-2 border-blue-300 text-blue-700 font-medium rounded-full hover:border-blue-400 hover:bg-blue-50 transition-all duration-300 justify-center"
+              className="group inline-flex items-center px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-blue-300 text-blue-700 font-medium rounded-full hover:border-blue-400 hover:bg-blue-50 transition-all duration-300 justify-center text-sm sm:text-base"
             >
-              <Search className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+              <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-2 group-hover:scale-110 transition-transform" />
               お問い合わせ
             </Link>
           </div>
