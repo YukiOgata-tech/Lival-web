@@ -143,11 +143,11 @@ function canAccessFullContent(blog: { visibility: string }, userRole: string): b
 // POST /api/blogs - Create new blog (draft)
 export async function POST(request: NextRequest) {
   try {
-    const userRole = await getServerUserRole(request)
-    const userId = request.headers.get('x-user-id') || 'mock-user-id'
+    await getServerUserRole(request)
+    request.headers.get('x-user-id') || 'mock-user-id'
     
     const body = await request.json()
-    const { title, content, categories, tags, visibility, coverPath } = body
+    const { title, content } = body
 
     // Validate required fields
     if (!title || !content) {

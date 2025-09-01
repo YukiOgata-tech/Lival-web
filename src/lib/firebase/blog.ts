@@ -6,7 +6,6 @@ import {
   getDoc, 
   setDoc, 
   updateDoc, 
-  deleteDoc, 
   query, 
   where, 
   orderBy, 
@@ -15,15 +14,11 @@ import {
   DocumentSnapshot,
   increment,
   serverTimestamp,
-  writeBatch,
-  CollectionReference
+  writeBatch
 } from 'firebase/firestore'
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
-import { db, storage } from '@/lib/firebase'
+import { db } from '@/lib/firebase'
 import { 
   Blog, 
-  BlogSubmission, 
-  AuditLog, 
   BlogCategory, 
   ReviewTemplate, 
   blogConverter, 

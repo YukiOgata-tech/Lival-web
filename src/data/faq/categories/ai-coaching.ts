@@ -1,5 +1,5 @@
 // src/data/faq/categories/ai-coaching.ts
-import { FAQArticle, createHeading, createParagraph, createList, createSteps, createInfo, createWarning, createCode } from '../types'
+import { FAQArticle, createHeading, createParagraph, createList, createSteps, createInfo, createCode } from '../types'
 
 export const aiCoachingArticles: FAQArticle[] = [
   {

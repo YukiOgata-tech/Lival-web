@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { title, content, categories, tags, visibility, coverPath } = body
+    const { title, content, categories } = body
 
     // Validate required fields
     if (!title || !content) {

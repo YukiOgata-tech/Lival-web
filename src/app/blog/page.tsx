@@ -18,7 +18,7 @@ interface BlogPageProps {
 }
 
 export default function BlogPage({ searchParams }: BlogPageProps) {
-  const { user, userData, loading } = useAuth()
+  const { user, userData } = useAuth()
   const params = use(searchParams)
   
   // Mock categories data

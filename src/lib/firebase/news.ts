@@ -13,8 +13,6 @@ import {
   orderBy,
   limit,
   startAfter,
-  QueryDocumentSnapshot,
-  DocumentData,
   increment,
   serverTimestamp
 } from 'firebase/firestore'

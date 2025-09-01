@@ -126,7 +126,7 @@ async function drawElementToCanvas(
   }
 }
 
-function getBackgroundColor(element: Element, computedStyle: CSSStyleDeclaration): string {
+function getBackgroundColor(element: Element, _computedStyle: CSSStyleDeclaration): string {
   // CSSクラスから背景色を決定
   const classList = Array.from(element.classList)
   

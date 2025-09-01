@@ -10,7 +10,7 @@ import {
 } from 'firebase/auth'
 import { httpsCallable } from 'firebase/functions'
 import { auth, functions } from '@/lib/firebase'
-import { supabase } from '@/lib/supabase/supabaseClient' // <-- Import Supabase client
+// import { supabase } from '@/lib/supabase/supabaseClient' // <-- Import Supabase client
 import { LivalUser } from '@/types'
 import { createUserInFirestore, getUserData } from '@/lib/user'
 
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         try {
           // 1. Get the ID Token and check claims
-          const idToken = await firebaseUser.getIdToken(true); // Force refresh to get latest claims
+          await firebaseUser.getIdToken(true); // Force refresh to get latest claims
           const decodedToken = await firebaseUser.getIdTokenResult();
           const customClaims = decodedToken.claims;
 

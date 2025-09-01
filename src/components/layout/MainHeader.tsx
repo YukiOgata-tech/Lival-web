@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth'
 const navigationItems = [
   { name: 'ホーム', href: '/' },
   { name: '機能', href: '/features' },
+  { name: 'AIチャット', href: '/lival-agent-mode/chat' },
   { name: '料金', href: '/subscription' },
   { name: 'ブログ', href: '/blog' },
   { name: 'お知らせ', href: '/news' },

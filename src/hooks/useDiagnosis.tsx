@@ -4,16 +4,13 @@ import { useState, useEffect, useCallback } from 'react'
 import { Timestamp } from 'firebase/firestore'
 import { 
   DiagnosisSession, 
-  DiagnosisQuestion, 
   DiagnosisResult,
-  DiagnosisProgress,
   DiagnosisSessionState 
 } from '@/types/diagnosis'
 import { 
   startDiagnosisSession,
   submitAnswer,
-  getDiagnosisResult,
-  getNextQuestion
+  getDiagnosisResult
 } from '@/lib/diagnosis'
 import { CORE_QUESTIONS } from '@/data/diagnosis/questions'
 import { useAuth } from './useAuth'

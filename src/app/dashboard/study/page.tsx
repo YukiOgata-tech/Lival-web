@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import Image from 'next/image';
 import { auth } from '../../../lib/firebase';
 import { StudyStats, StudyLog } from '../../../types/study';
 import StudyLogList from '../../../components/study/StudyLogList';
@@ -117,9 +118,11 @@ export default function StudyPage() {
                   {user.displayName || user.email}
                 </div>
                 {user.photoURL && (
-                  <img
+                  <Image
                     src={user.photoURL}
                     alt="Profile"
+                    width={32}
+                    height={32}
                     className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0"
                   />
                 )}

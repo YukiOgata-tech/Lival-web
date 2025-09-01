@@ -22,7 +22,7 @@ export const useImageDownload = () => {
     elementsToProcess.forEach(el => {
       if (el instanceof HTMLElement) {
         // インラインスタイルをチェック
-        const computedStyle = window.getComputedStyle(element.querySelector(`[data-element-id="${Math.random()}"]`) || element)
+        window.getComputedStyle(element.querySelector(`[data-element-id="${Math.random()}"]`) || element)
         
         // 背景関連のスタイルを安全な値に置換
         if (el.style.background || el.style.backgroundColor || el.style.backgroundImage) {

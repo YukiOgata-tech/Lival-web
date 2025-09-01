@@ -1,5 +1,5 @@
 // src/data/diagnosis/questions.ts
-import { DiagnosisQuestion, DiagnosisQuestionOption, ScoreWeights } from '@/types/diagnosis'
+import { DiagnosisQuestion } from '@/types/diagnosis'
 
 /**
  * コア質問（必須6問）

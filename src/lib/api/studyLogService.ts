@@ -37,7 +37,7 @@ export async function testSupabaseConnection(): Promise<boolean> {
 export async function checkTableExists(): Promise<boolean> {
   try {
     // study_logsテーブルに直接アクセスして存在確認
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('study_logs')
       .select('id')
       .limit(1);
