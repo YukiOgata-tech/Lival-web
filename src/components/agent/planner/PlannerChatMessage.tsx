@@ -85,14 +85,7 @@ export default function PlannerChatMessage({
               >
                 再作成
               </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => onPlanAction?.('new-thread', planCard)}
-                className="rounded-md border px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50"
-              >
-                別スレッドで新規
-              </motion.button>
+              {/* 別スレッドで新規はPlanCardから外し、キーボード上バーで案内 */}
             </div>
           </div>
         </div>

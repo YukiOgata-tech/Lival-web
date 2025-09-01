@@ -35,7 +35,12 @@ export default function PlannerInputBar({
       if (typeof detail === 'string') setText(detail)
     }
     window.addEventListener('planner-insert-text', handler as EventListener)
-    return () => window.removeEventListener('planner-insert-text', handler as EventListener)
+    const openGenerate = () => setGenerateOpen(true)
+    window.addEventListener('planner-open-generate', openGenerate)
+    return () => {
+      window.removeEventListener('planner-insert-text', handler as EventListener)
+      window.removeEventListener('planner-open-generate', openGenerate)
+    }
   }, [])
 
   const sendChat = () => {

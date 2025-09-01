@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import AgentChatSidebar, { type AgentKind, type ChatThread, AgentThreadsPanel } from '@/components/agent/common/AgentChatSidebar'
+import { Sparkles } from 'lucide-react'
 import { List, MessageSquare } from 'lucide-react'
 import PlannerInputBar, { type Mode } from '@/components/agent/planner/PlannerInputBar'
 import PlannerChatMessage, { type ChatMessage } from '@/components/agent/planner/PlannerChatMessage'
@@ -41,6 +42,7 @@ export default function PlannerChatPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalData, setModalData] = useState<any | null>(null)
   const bottomRef = useRef<HTMLDivElement | null>(null)
+  const [suggestNewThread, setSuggestNewThread] = useState(false)
 
   // 初回ロード: スレッド読み込み
   useEffect(() => {
@@ -96,6 +98,7 @@ export default function PlannerChatPage() {
         const q = query(col, orderBy('createdAt', 'asc'), limit(50))
         const snap = await getDocs(q)
         let lastPlanText: string | null = null
+        let hasPlan = false
         const remote = snap.docs.map((d) => {
           const data = d.data() as any
           const kind = data.kind as string | undefined
@@ -104,6 +107,7 @@ export default function PlannerChatPage() {
             lastPlanText = String(data.content || '')
           }
           if (kind === 'plan_json') {
+            hasPlan = true
             try {
               const payload = encodeURIComponent(
                 JSON.stringify({ text: lastPlanText || '', plan: data.plan, versionLabel: data.versionLabel })
@@ -126,6 +130,9 @@ export default function PlannerChatPage() {
           localStorage.setItem(messagesKey(user.uid, activeThreadId), JSON.stringify(list))
         }
       }
+      // プランが存在するスレッドでは別スレッド作成の提案を表示
+      setSuggestNewThread(list.some((m) => m.content.startsWith('__PLAN_CARD__')))
+
       if (list.length === 0) {
         // 直前にローカルへ保存された場合の競合に備え、短い遅延後に再読込
         setTimeout(() => {
@@ -133,6 +140,7 @@ export default function PlannerChatPage() {
           const retry = retryRaw ? JSON.parse(retryRaw) : []
           const retryClean = retry.map((m: any) => ({ id: m.id, role: m.role, content: m.content, createdAt: m.createdAt }))
           setMessages(retryClean.length > 0 ? retryClean : list)
+          setSuggestNewThread((retryClean.length > 0 ? retryClean : list).some((m: any) => String(m.content).startsWith('__PLAN_CARD__')))
         }, 50)
       } else {
         setMessages(list)
@@ -275,6 +283,7 @@ export default function PlannerChatPage() {
       const planCardMsg = `__PLAN_CARD__:${payload}`
       appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: planCardMsg, createdAt: Date.now() }, 'plan_json', threadId, false)
       requestAnimationFrame(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }))
+      setSuggestNewThread(true)
       // スレッドDoc更新（存在しない場合も含め）
       const threadRef = doc(db, 'users', user.uid, 'eduAI_threads', threadId)
       await setDoc(threadRef, { id: threadId, title: 'Planner スレッド', agent: 'planner', updatedAt: serverTimestamp(), createdAt: serverTimestamp() }, { merge: true })
@@ -477,6 +486,39 @@ export default function PlannerChatPage() {
         <PlanDetailModal open={modalOpen} onClose={() => setModalOpen(false)} data={modalData} />
 
         {/* 最下部固定インプットバー（モバイル対応: セーフエリア考慮） */}
+        {suggestNewThread && (
+          <div className="fixed inset-x-0 bottom-[74px] z-40 sm:left-80">
+            <div className="mx-auto max-w-3xl px-4">
+              <div className="flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50/90 px-3 py-2 shadow-sm backdrop-blur">
+                <div className="inline-flex items-center gap-2 text-sm text-blue-800">
+                  <Sparkles className="h-4 w-4" />
+                  <span>新しいプランは別スレッドで作成しましょう</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setSuggestNewThread(false)}
+                    className="rounded px-2 py-1 text-xs text-blue-700 hover:bg-blue-100"
+                  >
+                    非表示
+                  </button>
+                  <button
+                    onClick={() => {
+                      const newId = createThread('planner')
+                      setActiveThreadId(newId)
+                      setSuggestNewThread(false)
+                      if (typeof window !== 'undefined') {
+                        window.dispatchEvent(new Event('planner-open-generate'))
+                      }
+                    }}
+                    className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700"
+                  >
+                    新規スレッドで作成
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="fixed inset-x-0 bottom-0 z-30 bg-white sm:left-80">
           <div className="pb-[env(safe-area-inset-bottom)]">
             <PlannerInputBar
