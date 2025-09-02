@@ -3,6 +3,7 @@
 import HomeHeroSection from '@/components/sections/HomeHeroSection'
 import HomeStatsSection from '@/components/sections/HomeStatsSection'
 import HomeStudentTypesSection from '@/components/sections/HomeStudentTypesSection'
+import HomeAIAgentsSection from '@/components/sections/HomeAIAgentsSection'
 import HomeFeaturesSection from '@/components/sections/HomeFeaturesSection'
 import HomeCredibilitySection from '@/components/sections/HomeCredibilitySection'
 import HomeTestimonialsSection from '@/components/sections/HomeTestimonialsSection'
@@ -22,6 +23,9 @@ export default function HomePage() {
 
       {/* Student Types Section */}
       <HomeStudentTypesSection />
+
+      {/* AI Agents Section */}
+      <HomeAIAgentsSection />
 
       {/* Features Section */}
       <HomeFeaturesSection />

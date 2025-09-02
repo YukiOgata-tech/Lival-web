@@ -15,7 +15,12 @@ import {
   ChevronDown,
   ChevronUp,
   Eye,
-  EyeOff
+  EyeOff,
+  List,
+  Settings,
+  BarChart,
+  Download,
+  RefreshCw
 } from 'lucide-react'
 
 const aiFeatures = [
@@ -26,29 +31,38 @@ const aiFeatures = [
     icon: Calendar,
     color: 'from-blue-500 to-cyan-500',
     bgColor: 'blue',
-    description: '漠然とした悩みから具体的な学習計画まで、あなたの性格タイプに合わせて最適化された学習プランを提供',
+    description: '漠然とした悩みから具体的な学習計画まで、対話型AIがあなたの状況を理解して最適化された学習プランを提供',
     features: [
-      '抽象的な悩み相談からスタート',
-      '6つの性格タイプに基づくパーソナライズ',
-      '対話を通じた課題の深掘り',
-      '構造化されたカリキュラム自動生成',
-      '学年・年齢に応じた適切な難易度調整',
-      '継続的な学習サポート'
+      '対話形式での悩み相談・課題抽出',
+      'チャット画面でのインタラクティブなやり取り',
+      'スレッド管理による継続的な相談',
+      'プラン作成専用モードでの構造化された入力',
+      '期間・優先科目・目標・学習時間を考慮した計画',
+      'PDF出力機能でオフラインでも確認可能'
     ],
     userFlow: [
-      { step: 1, title: '悩み相談', description: '「テストやばい」などの漠然とした不安を相談' },
-      { step: 2, title: 'AI対話', description: 'AIが共感しながら具体的な課題を言語化' },
-      { step: 3, title: '情報収集', description: '目標・期間・科目などの必要情報を整理' },
-      { step: 4, title: '計画提案', description: 'AIが性格タイプに合わせた計画作成を提案' },
-      { step: 5, title: 'カリキュラム生成', description: '専用モードで構造化された学習計画を出力' }
+      { step: 1, title: 'チャット開始', description: '新規スレッドを作成して学習相談を開始' },
+      { step: 2, title: '対話で課題抽出', description: 'AIとの自然な会話で現在の状況や悩みを整理' },
+      { step: 3, title: 'プラン作成モード', description: '「作成モード」ボタンでプラン作成専用画面に移行' },
+      { step: 4, title: '詳細情報入力', description: '期間・重要視ポイント・目標・1日の学習時間を入力' },
+      { step: 5, title: '学習計画生成', description: 'AIが入力情報を基に構造化された学習計画を生成' },
+      { step: 6, title: '計画の活用', description: 'プランカード表示・詳細モーダル・PDF出力で計画を確認' }
+    ],
+    practicalFeatures: [
+      { title: 'インタラクティブチャット', description: 'リアルタイムでAIと対話しながら学習の悩みや課題を相談できます', icon: 'MessageCircle' },
+      { title: 'スレッド管理', description: '複数の相談テーマを整理して、継続的にサポートを受けられます', icon: 'List' },
+      { title: 'プラン作成専用UI', description: '期間・優先科目・目標・学習時間を構造化して入力する専用画面', icon: 'Settings' },
+      { title: '計画のビジュアル化', description: '生成された学習計画を分かりやすいカード形式で表示', icon: 'BarChart' },
+      { title: 'PDF出力', description: '作成した学習計画をPDFとしてダウンロードしてオフラインで活用', icon: 'Download' },
+      { title: 'プラン再生成', description: '状況変化に合わせて計画を調整・再生成できます', icon: 'RefreshCw' }
     ],
     personalizations: [
-      { type: '探求家', approach: '知的ガイド型', example: '「なぜ」を大切にした発見的学習をサポート' },
-      { type: '戦略家', approach: '論理的パートナー型', example: '目的から逆算した体系的な計画を提示' },
-      { type: '努力家', approach: '励ましコーチ型', example: 'プロセスを褒めて成長を可視化' },
-      { type: '挑戦家', approach: '競争パートナー型', example: 'ゲーム化して競争心を刺激' },
-      { type: '伴走者', approach: '共感メンター型', example: '「一緒に」を重視した協調的サポート' },
-      { type: '効率家', approach: '実務コンサルタント型', example: '結論から話す時間効率重視' }
+      { type: '探求家', approach: '発見重視型', example: '背景理論から学ぶアプローチで深い理解を促進' },
+      { type: '戦略家', approach: '体系的計画型', example: '目標から逆算した論理的で効率的な学習計画' },
+      { type: '努力家', approach: '段階的成長型', example: '小さな成功を積み重ねるステップバイステップ方式' },
+      { type: '挑戦家', approach: '競争刺激型', example: 'ライバルを意識した挑戦的な目標設定' },
+      { type: '伴走者', approach: '協調サポート型', example: '「一緒に頑張ろう」を重視した共感的サポート' },
+      { type: '効率家', approach: '結果重視型', example: '最短ルートでの成果達成を重視した実用的計画' }
     ]
   },
   {
@@ -168,19 +182,33 @@ export default function AIFeaturesSection() {
                         {/* 学習プランナーAIの詳細 */}
                         {isLearningPlanner && (
                           <div className="space-y-6 md:space-y-12">
-                            {/* 主要機能 */}
+                            {/* 実装済み機能 */}
                             <div>
                               <h4 className="text-lg md:text-2xl font-bold text-gray-900 mb-3 md:mb-6 flex items-center">
                                 <CheckCircle className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3 text-green-500" />
-                                主要機能
+                                実装済み機能
                               </h4>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                                {ai.features.map((feature, idx) => (
-                                  <div key={idx} className="flex items-start space-x-2 md:space-x-3 p-3 md:p-4 bg-blue-50 rounded-lg md:rounded-xl">
-                                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                                    <span className="text-gray-700 font-medium text-sm md:text-base">{feature}</span>
-                                  </div>
-                                ))}
+                                {ai.practicalFeatures?.map((feature, idx) => {
+                                  const iconMap = {
+                                    MessageCircle: MessageCircle,
+                                    List: List,
+                                    Settings: Settings,
+                                    BarChart: BarChart,
+                                    Download: Download,
+                                    RefreshCw: RefreshCw
+                                  }
+                                  const IconComponent = iconMap[feature.icon as keyof typeof iconMap] || CheckCircle
+                                  return (
+                                    <div key={idx} className="flex items-start space-x-2 md:space-x-3 p-3 md:p-4 bg-blue-50 rounded-lg md:rounded-xl">
+                                      <IconComponent className="w-4 h-4 md:w-5 md:h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                                      <div>
+                                        <div className="text-gray-900 font-semibold text-sm md:text-base">{feature.title}</div>
+                                        <div className="text-gray-600 text-xs md:text-sm mt-1">{feature.description}</div>
+                                      </div>
+                                    </div>
+                                  )
+                                })}
                               </div>
                             </div>
 
@@ -230,7 +258,7 @@ export default function AIFeaturesSection() {
                                   </div>
                                 ))}
                               </div>
-                              <div className="mt-4 md:mt-6 text-center">
+                              <div className="mt-4 md:mt-6 text-center space-y-3">
                                 <Link
                                   href="/diagnosis/types"
                                   className="inline-flex items-center text-purple-600 hover:text-purple-800 font-medium text-sm md:text-base"
@@ -238,6 +266,15 @@ export default function AIFeaturesSection() {
                                   6つの学習タイプについて詳しく
                                   <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-2" />
                                 </Link>
+                                <div className="pt-2">
+                                  <Link
+                                    href="/lival-agent-mode/chat"
+                                    className="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm md:text-base transition-colors"
+                                  >
+                                    プランナーAIを体験する
+                                    <ArrowRight className="w-3 h-3 md:w-4 md:h-4 ml-2" />
+                                  </Link>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -298,19 +335,33 @@ export default function AIFeaturesSection() {
                     {/* 学習プランナーAIの詳細 */}
                     {isLearningPlanner && (
                       <div className="space-y-12">
-                        {/* 主要機能 */}
+                        {/* 実装済み機能 */}
                         <div>
                           <h4 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                             <CheckCircle className="w-6 h-6 mr-3 text-green-500" />
-                            主要機能
+                            実装済み機能
                           </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {ai.features.map((feature, idx) => (
-                              <div key={idx} className={`flex items-start space-x-3 p-4 bg-${ai.bgColor}-50 rounded-xl`}>
-                                <div className={`w-2 h-2 bg-${ai.bgColor}-500 rounded-full mt-2 flex-shrink-0`}></div>
-                                <span className="text-gray-700 font-medium">{feature}</span>
-                              </div>
-                            ))}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {ai.practicalFeatures?.map((feature, idx) => {
+                              const iconMap = {
+                                MessageCircle: MessageCircle,
+                                List: List,
+                                Settings: Settings,
+                                BarChart: BarChart,
+                                Download: Download,
+                                RefreshCw: RefreshCw
+                              }
+                              const IconComponent = iconMap[feature.icon as keyof typeof iconMap] || CheckCircle
+                              return (
+                                <div key={idx} className="flex items-start space-x-4 p-6 bg-blue-50 rounded-xl">
+                                  <IconComponent className="w-6 h-6 text-blue-500 mt-1 flex-shrink-0" />
+                                  <div>
+                                    <div className="text-gray-900 font-bold text-lg mb-2">{feature.title}</div>
+                                    <div className="text-gray-600 text-sm leading-relaxed">{feature.description}</div>
+                                  </div>
+                                </div>
+                              )
+                            })}
                           </div>
                         </div>
 
@@ -358,7 +409,7 @@ export default function AIFeaturesSection() {
                               </div>
                             ))}
                           </div>
-                          <div className="mt-6 text-center">
+                          <div className="mt-6 text-center space-y-4">
                             <Link
                               href="/diagnosis/types"
                               className="inline-flex items-center text-purple-600 hover:text-purple-800 font-medium"
@@ -366,6 +417,15 @@ export default function AIFeaturesSection() {
                               6つの学習タイプについて詳しく
                               <ArrowRight className="w-4 h-4 ml-2" />
                             </Link>
+                            <div>
+                              <Link
+                                href="/lival-agent-mode/chat"
+                                className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold transition-colors shadow-lg"
+                              >
+                                プランナーAIを体験する
+                                <ArrowRight className="w-4 h-4 ml-2" />
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </div>
