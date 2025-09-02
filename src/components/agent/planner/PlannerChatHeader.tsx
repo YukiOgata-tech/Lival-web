@@ -2,14 +2,15 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState } from 'react'
-import { RefreshCcw, Share2, CreditCard } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { RefreshCcw, Share2, CreditCard, ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 type AgentKind = 'planner' | 'tutor' | 'counselor'
 
 export default function PlannerChatHeader() {
   const [sharedMsg, setSharedMsg] = useState<string | null>(null)
+  const [isThreads, setIsThreads] = useState(false)
 
   const sharePage = async () => {
     try {
@@ -30,14 +31,42 @@ export default function PlannerChatHeader() {
     }
   }
 
+  // Track hash to know when threads list is active on mobile
+  useEffect(() => {
+    const sync = () => {
+      if (typeof window !== 'undefined') {
+        setIsThreads(window.location.hash === '#threads')
+      }
+    }
+    sync()
+    window.addEventListener('hashchange', sync)
+    return () => window.removeEventListener('hashchange', sync)
+  }, [])
+
   return (
     <header className="sticky top-0 z-40 border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-3 py-2 sm:flex-nowrap sm:gap-3 sm:px-6 sm:py-3">
-        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:gap-3 sm:px-6 sm:py-3">
+        <div className="flex min-w-0 items-center gap-2 whitespace-nowrap sm:gap-3">
+          {/* Mobile: Back to threads button */}
+          {!isThreads && (
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                try { window.location.hash = '#threads' } catch {}
+                window.dispatchEvent(new Event('planner-show-threads'))
+              }
+            }}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 sm:hidden"
+            title="スレッド一覧へ"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          )}
           <Link href="/" className="inline-flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600">
             <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="inline-flex items-center gap-2">
-              <Image src="/images/Lival-text.png" alt="Lival" width={100} height={24} className="h-5 w-auto sm:h-6" />
-              <span className="text-sm sm:text-base">Lival Agent Mode</span>
+              <Image src="/images/Lival-text.png" alt="LIVAL AI" width={100} height={24} className="h-5 w-auto sm:h-6" />
+              <span className="text-sm font-semibold sm:text-base">LIVAL AI</span>
             </motion.div>
           </Link>
           <span className="inline-block rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700 sm:text-xs">
@@ -46,7 +75,7 @@ export default function PlannerChatHeader() {
           <span className="ml-1 truncate text-xs text-gray-500 sm:ml-2 sm:text-sm">Planner AI</span>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-1 whitespace-nowrap sm:gap-2">
           {sharedMsg && (
             <span className="hidden rounded bg-gray-800 px-2 py-1 text-xs text-white sm:inline-block">{sharedMsg}</span>
           )}

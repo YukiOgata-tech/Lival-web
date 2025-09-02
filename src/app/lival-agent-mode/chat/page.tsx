@@ -337,6 +337,15 @@ export default function PlannerChatPage() {
     const onFocus = () => bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
     const handler = () => onFocus()
     window.addEventListener('planner-input-focus', handler as EventListener)
+    const showThreads = () => setMobileView('threads')
+    window.addEventListener('planner-show-threads', showThreads)
+    const syncFromHash = () => {
+      if (typeof window !== 'undefined') {
+        setMobileView(window.location.hash === '#threads' ? 'threads' : 'chat')
+      }
+    }
+    syncFromHash()
+    window.addEventListener('hashchange', syncFromHash)
     // visualViewportがあれば、キーボード開閉でスクロール
     const vv: any = (window as any).visualViewport
     const onVv = () => onFocus()
@@ -348,6 +357,8 @@ export default function PlannerChatPage() {
     }
     return () => {
       window.removeEventListener('planner-input-focus', handler as EventListener)
+      window.removeEventListener('planner-show-threads', showThreads)
+      window.removeEventListener('hashchange', syncFromHash)
       if (vv?.removeEventListener) {
         vv.removeEventListener('resize', onVv)
         vv.removeEventListener('scroll', onVv)
@@ -391,24 +402,7 @@ export default function PlannerChatPage() {
       {/* コンテンツ領域（サイドバー幅を考慮） */}
       <div className="sm:pl-80">
         {/* モバイル: タブバー（スレッド/チャット） */}
-        <div className="sticky top-[3.25rem] z-10 border-b bg-white/80 px-2 py-2 backdrop-blur sm:hidden">
-          <div className="mx-auto flex max-w-3xl gap-2">
-            <button
-              onClick={() => setMobileView('threads')}
-              className={`flex-1 rounded-md px-3 py-2 text-sm inline-flex items-center justify-center gap-2 ${mobileView === 'threads' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
-            >
-              <List className="h-4 w-4" />
-              スレッド
-            </button>
-            <button
-              onClick={() => setMobileView('chat')}
-              className={`flex-1 rounded-md px-3 py-2 text-sm inline-flex items-center justify-center gap-2 ${mobileView === 'chat' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`}
-            >
-              <MessageSquare className="h-4 w-4" />
-              チャット
-            </button>
-          </div>
-        </div>
+        {/* モバイルのスレッド/チャット切替はヘッダーに集約（戻る矢印でスレッド一覧へ） */}
 
         {/* デスクトップ: タイトル行 */}
         <div className="sticky top-0 z-10 hidden border-b bg-white/70 px-4 py-2 backdrop-blur sm:block">
@@ -424,6 +418,7 @@ export default function PlannerChatPage() {
               onSelectThread={(id) => {
                 setActiveThreadId(id)
                 setMobileView('chat')
+                try { if (typeof window !== 'undefined') window.location.hash = '' } catch {}
               }}
             />
           </div>
@@ -487,7 +482,7 @@ export default function PlannerChatPage() {
 
         {/* 最下部固定インプットバー（モバイル対応: セーフエリア考慮） */}
         {suggestNewThread && (
-          <div className="fixed inset-x-0 bottom-[74px] z-40 sm:left-80">
+          <div className={`fixed inset-x-0 bottom-[74px] z-40 sm:left-80 ${mobileView === 'threads' ? 'hidden sm:block' : ''}`}>
             <div className="mx-auto max-w-3xl px-4">
               <div className="flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50/90 px-3 py-2 shadow-sm backdrop-blur">
                 <div className="inline-flex items-center gap-2 text-sm text-blue-800">
@@ -519,7 +514,7 @@ export default function PlannerChatPage() {
             </div>
           </div>
         )}
-        <div className="fixed inset-x-0 bottom-0 z-30 bg-white sm:left-80">
+        <div className={`fixed inset-x-0 bottom-0 z-30 bg-white sm:left-80 ${mobileView === 'threads' ? 'hidden sm:block' : ''}`}>
           <div className="pb-[env(safe-area-inset-bottom)]">
             <PlannerInputBar
               mode={mode}

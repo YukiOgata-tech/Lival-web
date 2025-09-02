@@ -18,11 +18,11 @@ import {
   DiagnosisSession, 
   DiagnosisResponse, 
   DiagnosisResult,
-  DiagnosisQuestion,
-  DiagnosisType
+  DiagnosisQuestion
 } from '@/types/diagnosis'
 import { CORE_QUESTIONS, FOLLOWUP_QUESTIONS } from '@/data/diagnosis/questions'
 import { DIAGNOSIS_TYPES, SCORING_FORMULAS } from '@/data/diagnosis/types'
+import { updateUserProfile } from '@/lib/supabase/userProfile'
 
 /**
  * 診断セッションを開始
@@ -121,7 +121,7 @@ export const submitAnswer = async (
     // フォローアップ質問の総数を動的に更新
     const scores = calculateRawScores(updatedResponses)
     const eligibleFollowupQuestions = FOLLOWUP_QUESTIONS.filter(q => 
-      shouldAskFollowupQuestion(q, scores, updatedResponses)
+      shouldAskFollowupQuestion(q, scores)
     )
     updateData.totalQuestions = CORE_QUESTIONS.length + eligibleFollowupQuestions.length
 
@@ -166,7 +166,7 @@ export const getNextQuestion = (responses: DiagnosisResponse[], questionIndex: n
   // まだ回答していないフォローアップ質問をチェック
   for (const question of FOLLOWUP_QUESTIONS) {
     if (!answeredFollowupIds.includes(question.id)) {
-      if (shouldAskFollowupQuestion(question, scores, responses)) {
+      if (shouldAskFollowupQuestion(question, scores)) {
         return question
       }
     }
@@ -180,8 +180,7 @@ export const getNextQuestion = (responses: DiagnosisResponse[], questionIndex: n
  */
 const shouldAskFollowupQuestion = (
   question: DiagnosisQuestion, 
-  scores: Record<string, number>,
-  responses: DiagnosisResponse[]
+  scores: Record<string, number>
 ): boolean => {
   if (!question.condition) return false
 
@@ -388,10 +387,27 @@ export const getUserDiagnosisHistory = async (userId: string): Promise<Diagnosis
 }
 
 /**
- * 診断結果をユーザーデータに保存
+ * 診断タイプの説明を取得
+ */
+const getDiagnosisTypeDescription = (typeId: string): string => {
+  const typeDescriptions: Record<string, string> = {
+    explorer: '好奇心・発見・理解の喜びを原動力とするタイプ。新しいことを学ぶこと自体に喜びを感じ、創造的で独創的なアプローチを好みます。',
+    strategist: '計画性・論理性・目標達成を重視するタイプ。明確な目標設定を好み、論理的で体系的なアプローチを取ります。',
+    achiever: '頑張り・認められたい・成長を大切にするタイプ。他者からの評価を重視し、努力することに価値を置きます。',
+    challenger: '競争・スピード・勝利を追求するタイプ。競争環境でパフォーマンスが向上し、スピード感のある学習を好みます。',
+    partner: '仲間・支え合い・安心感を重視するタイプ。他者との関係性を大切にし、協調的で思いやりがあります。',
+    pragmatist: '実用性・効率・結果重視を追求するタイプ。実用的な価値を重視し、効率的な方法を追求します。'
+  }
+  
+  return typeDescriptions[typeId] || 'タイプの説明が見つかりません'
+}
+
+/**
+ * 診断結果をユーザーデータに保存（FirebaseとSupabase両方）
  */
 export const saveDiagnosisToUserProfile = async (userId: string, result: DiagnosisResult): Promise<void> => {
   try {
+    // Firebase Firestoreに保存（既存の実装）
     const userRef = doc(db, 'users', userId)
     await updateDoc(userRef, {
       'diagnostics.studentType': result.primaryType.id,
@@ -399,6 +415,20 @@ export const saveDiagnosisToUserProfile = async (userId: string, result: Diagnos
       'diagnostics.confidence': result.confidence,
       'diagnostics.lastResultId': result.sessionId,
       updatedAt: serverTimestamp()
+    })
+
+    // Supabaseのuser_profilesテーブルにも保存
+    const typeDisplayName = result.primaryType.displayName
+    const typeDescription = getDiagnosisTypeDescription(result.primaryType.id)
+    
+    await updateUserProfile(userId, {
+      diag_rslt: typeDisplayName,
+      diag_rslt_desc: typeDescription
+    })
+    
+    console.log('✅ Diagnosis result saved to both Firebase and Supabase:', {
+      type: typeDisplayName,
+      userId
     })
   } catch (error) {
     console.error('Error saving diagnosis to user profile:', error)

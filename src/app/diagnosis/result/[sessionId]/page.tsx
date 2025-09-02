@@ -129,27 +129,27 @@ export default function SharedDiagnosisResultPage() {
         <meta property="line:image" content={ogImageUrl} />
       </Head>
       
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4">
+      <div className="min-h-screen bg-gray-50 py-4 md:py-8">
+        <div className="max-w-4xl mx-auto px-3 md:px-4">
         {/* ヘッダー */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="text-center mb-4 md:mb-8"
         >
-          <div className="flex items-center justify-center mb-4">
+          <div className="flex items-center justify-center mb-3 md:mb-4">
             <Link
               href="/diagnosis"
-              className="flex items-center text-blue-600 hover:text-blue-700 transition-colors mr-4"
+              className="flex items-center text-blue-600 hover:text-blue-700 transition-colors mr-4 text-sm md:text-base"
             >
-              <ArrowLeft className="w-5 h-5 mr-1" />
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-1" />
               新しく診断する
             </Link>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
             📊 診断結果
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-base md:text-lg text-gray-600">
             LIVAL AI 学習タイプ診断結果
           </p>
         </motion.div>
@@ -162,25 +162,25 @@ export default function SharedDiagnosisResultPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2 }}
-          className="mt-8 text-center bg-white rounded-xl shadow-lg border border-gray-200 p-6"
+          className="mt-4 md:mt-8 text-center bg-white rounded-xl shadow-lg border border-gray-200 p-4 md:p-6"
         >
-          <h3 className="text-lg font-bold text-gray-900 mb-4">
+          <h3 className="text-lg font-bold text-gray-900 mb-3 md:mb-4">
             あなたも診断してみませんか？
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 mb-4 md:mb-6 text-sm md:text-base">
             LIVAL AIであなたに最適な学習タイプを発見しましょう
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/diagnosis"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2 text-sm md:text-base"
             >
-              <Brain className="w-5 h-5" />
+              <Brain className="w-4 h-4 md:w-5 md:h-5" />
               <span>無料で診断を始める</span>
             </Link>
             <Link
               href="/signup"
-              className="border border-gray-300 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors"
+              className="border border-gray-300 text-gray-700 py-2.5 md:py-3 px-4 md:px-6 rounded-lg hover:bg-gray-50 transition-colors text-sm md:text-base"
             >
               AIコーチングを始める
             </Link>

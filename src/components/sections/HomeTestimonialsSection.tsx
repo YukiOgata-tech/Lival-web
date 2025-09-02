@@ -9,21 +9,24 @@ const testimonials = [
     name: '田中 さくら',
     grade: '高校2年生',
     comment: 'AIコーチのおかげで数学が20点もアップ！私の性格に合わせた勉強法が見つかりました。',
-    avatar: '👩‍🎓',
+    initial: 'さ',
+    bgColor: 'bg-pink-500',
     rating: 5
   },
   {
     name: '山田 健太',
     grade: '中学3年生', 
     comment: '24時間いつでも質問できるのが最高。夜遅くでもすぐに答えてくれるから助かってます。',
-    avatar: '👨‍🎓',
+    initial: '健',
+    bgColor: 'bg-blue-500',
     rating: 5
   },
   {
     name: '佐藤 美咲',
     grade: '高校1年生',
     comment: '不登校でしたが、AIコーチと一緒なら勉強が楽しい。自分のペースで進められるのが嬉しいです。',
-    avatar: '👩‍💼',
+    initial: '美',
+    bgColor: 'bg-green-500',
     rating: 5
   }
 ]
@@ -58,8 +61,8 @@ export default function HomeTestimonialsSection() {
               className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <div className="flex items-center mb-4 md:mb-6">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-lg md:text-2xl mr-3 md:mr-4">
-                  {testimonial.avatar}
+                <div className={`w-10 h-10 md:w-12 md:h-12 ${testimonial.bgColor} rounded-full flex items-center justify-center text-white text-sm md:text-lg font-bold mr-3 md:mr-4 shadow-md`}>
+                  {testimonial.initial}
                 </div>
                 <div>
                   <div className="font-bold text-gray-900 text-sm md:text-base">{testimonial.name}</div>
