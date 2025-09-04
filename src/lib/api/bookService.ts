@@ -147,14 +147,15 @@ async function searchBookFromOpenBD(isbn: string): Promise<BookSearchResult | nu
 }
 
 async function fetchGoogleVolumes(q: string): Promise<GoogleBooksItem[] | null> {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_BOOKS_API_KEY
-  if (!apiKey) return null
-  const res = await fetch(
-    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5&key=${apiKey}`
-  )
-  if (!res.ok) return null
-  const data = await res.json()
-  return data?.items || null
+  try {
+    const res = await fetch(`/api/books/google?q=${encodeURIComponent(q)}&maxResults=5`)
+    if (!res.ok) return null
+    const data = await res.json()
+    return data?.items || null
+  } catch (error) {
+    console.error('Google Books client error:', error)
+    return null
+  }
 }
 
 function mapGoogleItemToResult(item: GoogleBooksItem): BookSearchResult {
