@@ -24,6 +24,7 @@ export default function StudyLogList({
   const [editingLog, setEditingLog] = useState<StudyLog | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [showAllLogs, setShowAllLogs] = useState(false);
 
   // 初回データ読み込み
   useEffect(() => {
@@ -157,6 +158,11 @@ export default function StudyLogList({
   }
 
   const groupedLogs = groupLogsByDate(logs);
+  const INITIAL_DISPLAY_COUNT = 5;
+  
+  // 表示する記録の決定
+  const displayedLogs = showAllLogs ? groupedLogs : groupedLogs.slice(0, INITIAL_DISPLAY_COUNT);
+  const hasMoreLogs = groupedLogs.length > INITIAL_DISPLAY_COUNT;
 
   return (
     <div>
@@ -207,67 +213,99 @@ export default function StudyLogList({
           )}
         </div>
       ) : (
-        <div className="space-y-4 sm:space-y-6">
-          {groupedLogs.map(({ date, logs, totalMinutes }) => (
-            <div key={date} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              {/* 日付ヘッダー */}
-              <div className="bg-gray-50 px-4 sm:px-6 py-3 border-b border-gray-200">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-                  <h3 className="font-medium text-gray-900 text-sm sm:text-base">{date}</h3>
-                  <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-                    <svg className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="font-medium">
-                      {totalMinutes < 60 
-                        ? `${totalMinutes}分` 
-                        : `${Math.floor(totalMinutes / 60)}時間${totalMinutes % 60 > 0 ? `${totalMinutes % 60}分` : ''}`
-                      }
-                    </span>
-                    <span className="text-gray-400 hidden sm:inline">・</span>
-                    <span className="sm:hidden text-gray-400">/</span>
-                    <span>{logs.length}回</span>
+        <>
+          <div className="space-y-4 sm:space-y-6">
+            {displayedLogs.map(({ date, logs, totalMinutes }) => (
+              <div key={date} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                {/* 日付ヘッダー */}
+                <div className="bg-gray-50 px-4 sm:px-6 py-3 border-b border-gray-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                    <h3 className="font-medium text-gray-900 text-sm sm:text-base">{date}</h3>
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="font-medium">
+                        {totalMinutes < 60 
+                          ? `${totalMinutes}分` 
+                          : `${Math.floor(totalMinutes / 60)}時間${totalMinutes % 60 > 0 ? `${totalMinutes % 60}分` : ''}`
+                        }
+                      </span>
+                      <span className="text-gray-400 hidden sm:inline">・</span>
+                      <span className="sm:hidden text-gray-400">/</span>
+                      <span>{logs.length}回</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* その日の学習記録 */}
-              <div className="divide-y divide-gray-100">
-                {logs.map((log) => (
-                  <div key={log.id} className="p-3 sm:p-4">
-                    <StudyLogCard
-                      log={log}
-                      onEdit={openEditModal}
-                      onDelete={handleDelete}
-                      showActions={true}
-                    />
-                    {deleteConfirm === log.id && (
-                      <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                        <p className="text-xs sm:text-sm text-red-800 mb-2">
-                          この記録を削除しますか？この操作は取り消せません。
-                        </p>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleDelete(log.id)}
-                            className="px-2 sm:px-3 py-1 bg-red-600 text-white text-xs sm:text-sm rounded hover:bg-red-700"
-                          >
-                            削除する
-                          </button>
-                          <button
-                            onClick={() => setDeleteConfirm(null)}
-                            className="px-2 sm:px-3 py-1 bg-gray-300 text-gray-700 text-xs sm:text-sm rounded hover:bg-gray-400"
-                          >
-                            キャンセル
-                          </button>
+                {/* その日の学習記録 */}
+                <div className="divide-y divide-gray-100">
+                  {logs.map((log) => (
+                    <div key={log.id} className="p-3 sm:p-4">
+                      <StudyLogCard
+                        log={log}
+                        onEdit={openEditModal}
+                        onDelete={handleDelete}
+                        showActions={true}
+                      />
+                      {deleteConfirm === log.id && (
+                        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <p className="text-xs sm:text-sm text-red-800 mb-2">
+                            この記録を削除しますか？この操作は取り消せません。
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleDelete(log.id)}
+                              className="px-2 sm:px-3 py-1 bg-red-600 text-white text-xs sm:text-sm rounded hover:bg-red-700"
+                            >
+                              削除する
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirm(null)}
+                              className="px-2 sm:px-3 py-1 bg-gray-300 text-gray-700 text-xs sm:text-sm rounded hover:bg-gray-400"
+                            >
+                              キャンセル
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
+            ))}
+          </div>
+          
+          {/* もっと見る/閉じる ボタン */}
+          {hasMoreLogs && (
+            <div className="mt-4 sm:mt-6 text-center">
+              <button
+                onClick={() => setShowAllLogs(!showAllLogs)}
+                className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm sm:text-base"
+              >
+                <svg 
+                  className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${showAllLogs ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+                {showAllLogs ? (
+                  <>
+                    <span>最初の{INITIAL_DISPLAY_COUNT}件を表示</span>
+                    <span className="text-xs text-gray-500">({groupedLogs.length - INITIAL_DISPLAY_COUNT}件を隠す)</span>
+                  </>
+                ) : (
+                  <>
+                    <span>すべての記録を表示</span>
+                    <span className="text-xs text-gray-500">(+{groupedLogs.length - INITIAL_DISPLAY_COUNT}件)</span>
+                  </>
+                )}
+              </button>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       {/* モーダル */}

@@ -9,6 +9,9 @@ import { StudyStats, StudyLog } from '../../../types/study';
 import StudyLogList from '../../../components/study/StudyLogList';
 import StudyStatsCard from '../../../components/study/StudyStatsCard';
 import StudyTimeChart from '../../../components/study/StudyTimeChart';
+import PopularBooksSection from '../../../components/study/PopularBooksSection';
+import UserBookStatsSection from '../../../components/study/UserBookStatsSection';
+import BookComparisonCard from '../../../components/study/BookComparisonCard';
 import { getStudyStats, testSupabaseConnection, checkTableExists, getStudyLogs } from '../../../lib/api/studyLogService';
 import { StudyLogLoading } from '../../../components/ui/LoadingAnimation';
 
@@ -156,6 +159,20 @@ export default function StudyPage() {
               logs={logs}
               userId={user.uid}
             />
+          )}
+
+          {/* 新規追加セクション：2カラムレイアウト */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+            {/* 人気書籍ランキング */}
+            <PopularBooksSection />
+            
+            {/* あなたの書籍統計 */}
+            <UserBookStatsSection userId={user.uid} />
+          </div>
+
+          {/* みんなとの比較カード */}
+          {!isLoadingStats && (
+            <BookComparisonCard userId={user.uid} />
           )}
 
           {/* 学習記録リスト */}

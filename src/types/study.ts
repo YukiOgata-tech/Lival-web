@@ -8,6 +8,9 @@ export interface Book {
   author: string;
   cover_image_url?: string | null;
   company: string;
+  // 新規追加フィールド
+  usage_count_global?: number;     // グローバル使用回数
+  total_minutes_global?: number;   // グローバル総学習時間
 }
 
 export interface StudyLog {
@@ -39,6 +42,34 @@ export interface StudyStats {
   currentStreak: number;
   longestStreak: number;
   recentStudyLogs: StudyLog[];
+  // 新規追加フィールド
+  bookUsageStats?: BookUsageStats;
+}
+
+// 個別書籍使用統計
+export interface BookUsageStats {
+  [bookId: string]: {
+    used_times: number;
+    total_minutes: number;
+    last_used_at: string;
+  };
+}
+
+// 人気書籍ランキング
+export interface PopularBook extends Book {
+  rank: number;
+  usage_count_global: number;
+  total_minutes_global: number;
+  avg_minutes_per_session: number;
+}
+
+// ユーザー個別書籍統計
+export interface UserBookStat {
+  book: Book;
+  used_times: number;
+  total_minutes: number;
+  last_used_at: string;
+  avg_minutes_per_session: number;
 }
 
 export interface BookSearchResult {

@@ -1,6 +1,6 @@
 // src/lib/api/studyLogService.ts
 import { supabase } from '../supabase/supabaseClient';
-import { StudyLog, StudyLogInput, StudyStats } from '../../types/study';
+import { StudyLog, StudyLogInput, StudyStats, PopularBook, UserBookStat, BookUsageStats } from '../../types/study';
 
 const sanitizeNullable = (s?: string | null) => {
   const t = (s ?? '').trim()
@@ -375,5 +375,202 @@ export async function getDailyStudyLogs(
   } catch (error) {
     console.error('Error fetching daily study logs:', error);
     return [];
+  }
+}
+
+/** 人気書籍ランキングを取得 */
+export async function getPopularBooks(limit = 10): Promise<PopularBook[]> {
+  try {
+    const { data, error } = await supabase
+      .from('books')
+      .select(`
+        id,
+        isbn,
+        title,
+        author,
+        company,
+        cover_image_url,
+        created_at,
+        usage_count_global,
+        total_minutes_global
+      `)
+      .not('usage_count_global', 'is', null)
+      .gt('usage_count_global', 0)
+      .order('usage_count_global', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('Error fetching popular books:', error);
+      return [];
+    }
+
+    // ランキングと平均時間を計算
+    const popularBooks: PopularBook[] = data.map((book, index) => ({
+      ...book,
+      rank: index + 1,
+      usage_count_global: book.usage_count_global || 0,
+      total_minutes_global: book.total_minutes_global || 0,
+      avg_minutes_per_session: book.usage_count_global > 0 
+        ? Math.round((book.total_minutes_global || 0) / book.usage_count_global * 10) / 10
+        : 0
+    }));
+
+    return popularBooks;
+  } catch (error) {
+    console.error('Error fetching popular books:', error);
+    return [];
+  }
+}
+
+/** ユーザー個別の書籍使用統計を取得 */
+export async function getUserBookStats(userId: string): Promise<UserBookStat[]> {
+  try {
+    // user_profilesからbook_usage_statsを取得
+    const { data: profileData, error: profileError } = await supabase
+      .from('user_profiles')
+      .select('book_usage_stats')
+      .eq('uid', userId)
+      .single();
+
+    if (profileError || !profileData?.book_usage_stats) {
+      console.error('Error fetching user book stats from profile:', profileError);
+      return [];
+    }
+
+    const bookUsageStats = profileData.book_usage_stats as BookUsageStats;
+    const bookIds = Object.keys(bookUsageStats);
+
+    if (bookIds.length === 0) {
+      return [];
+    }
+
+    // 対応する書籍情報を取得
+    const { data: booksData, error: booksError } = await supabase
+      .from('books')
+      .select(`
+        id,
+        isbn,
+        title,
+        author,
+        company,
+        cover_image_url,
+        created_at
+      `)
+      .in('id', bookIds);
+
+    if (booksError || !booksData) {
+      console.error('Error fetching books data:', booksError);
+      return [];
+    }
+
+    // 統計データと書籍情報を結合
+    const userBookStats: UserBookStat[] = booksData
+      .map(book => {
+        const stats = bookUsageStats[book.id];
+        if (!stats) return null;
+
+        return {
+          book,
+          used_times: stats.used_times,
+          total_minutes: stats.total_minutes,
+          last_used_at: stats.last_used_at,
+          avg_minutes_per_session: stats.used_times > 0 
+            ? Math.round(stats.total_minutes / stats.used_times * 10) / 10
+            : 0
+        };
+      })
+      .filter((stat): stat is UserBookStat => stat !== null)
+      .sort((a, b) => b.used_times - a.used_times); // デフォルトは使用回数順
+
+    return userBookStats;
+  } catch (error) {
+    console.error('Error fetching user book stats:', error);
+    return [];
+  }
+}
+
+/** 特定書籍のグローバル統計を取得（比較用） */
+export async function getBookGlobalStats(bookId: string): Promise<{usage_count_global: number, total_minutes_global: number} | null> {
+  try {
+    const { data, error } = await supabase
+      .from('books')
+      .select('usage_count_global, total_minutes_global')
+      .eq('id', bookId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching book global stats:', error);
+      return null;
+    }
+
+    return {
+      usage_count_global: data.usage_count_global || 0,
+      total_minutes_global: data.total_minutes_global || 0
+    };
+  } catch (error) {
+    console.error('Error fetching book global stats:', error);
+    return null;
+  }
+}
+
+/** ユーザーの特定書籍使用統計と全体平均の比較データを取得 */
+export async function getBookComparisonData(
+  userId: string, 
+  bookId: string
+): Promise<{
+  bookTitle: string;
+  userUsage: number;
+  userTime: number;
+  globalAvgUsage: number;
+  globalAvgTime: number;
+  userRank: 'above_average' | 'average' | 'below_average';
+} | null> {
+  try {
+    // ユーザーの統計を取得
+    const userStats = await getUserBookStats(userId);
+    const userBookStat = userStats.find(stat => stat.book.id === bookId);
+    
+    if (!userBookStat) {
+      console.log('User has no stats for this book');
+      return null;
+    }
+
+    // グローバル統計を取得
+    const globalStats = await getBookGlobalStats(bookId);
+    if (!globalStats) {
+      console.log('No global stats found for this book');
+      return null;
+    }
+
+    // 全ユーザー数を大まかに推定（実際のユーザー数取得は重い処理のため簡易計算）
+    // usage_count_globalを利用してざっくりとした平均を算出
+    const estimatedAvgUsagePerUser = Math.max(1, Math.floor(globalStats.usage_count_global / 50)); // 50ユーザー程度と仮定
+    const estimatedAvgTimePerUser = Math.max(30, Math.floor(globalStats.total_minutes_global / 50));
+
+    // ランク判定
+    const usageRatio = userBookStat.used_times / estimatedAvgUsagePerUser;
+    const timeRatio = userBookStat.total_minutes / estimatedAvgTimePerUser;
+    const overallRatio = (usageRatio + timeRatio) / 2;
+
+    let userRank: 'above_average' | 'average' | 'below_average';
+    if (overallRatio >= 1.3) {
+      userRank = 'above_average';
+    } else if (overallRatio >= 0.7) {
+      userRank = 'average';
+    } else {
+      userRank = 'below_average';
+    }
+
+    return {
+      bookTitle: userBookStat.book.title,
+      userUsage: userBookStat.used_times,
+      userTime: userBookStat.total_minutes,
+      globalAvgUsage: estimatedAvgUsagePerUser,
+      globalAvgTime: estimatedAvgTimePerUser,
+      userRank
+    };
+  } catch (error) {
+    console.error('Error fetching book comparison data:', error);
+    return null;
   }
 }
