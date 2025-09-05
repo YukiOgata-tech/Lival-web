@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { db } from '@/lib/firebase'
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 
@@ -30,10 +31,12 @@ export default function AgentChatSidebar({
   open: boolean
   onClose: () => void
   activeThreadId: string | null
-  onCreateThread: (agent: AgentKind) => void
+  onCreateThread: (agent: AgentKind) => string | void
   onSelectThread: (id: string) => void
 }) {
   const [threads, setThreads] = useState<ChatThread[]>([])
+  const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     try {
@@ -64,7 +67,11 @@ export default function AgentChatSidebar({
       <div className="space-y-2 p-3">
         <button
           onClick={() => {
-            onCreateThread('planner')
+            const id = onCreateThread('planner') as string | undefined
+            try {
+              if (id) localStorage.setItem('lival_desired_thread', id)
+            } catch {}
+            router.push('/lival-agent-mode/threads/planner')
             onClose()
           }}
           className="flex w-full items-center justify-between rounded-md bg-blue-600 px-3 py-2 text-left text-sm font-medium text-white hover:bg-blue-700 shadow-sm"
@@ -74,10 +81,16 @@ export default function AgentChatSidebar({
         </button>
 
         <button
-          disabled
-          className="flex w-full cursor-not-allowed items-center justify-between rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-left text-sm text-gray-500"
+          onClick={() => {
+            const id = onCreateThread('tutor') as string | undefined
+            try { if (id) localStorage.setItem('lival_desired_thread', id) } catch {}
+            router.push('/lival-agent-mode/threads/tutor')
+            onClose()
+          }}
+          className="flex w-full items-center justify-between rounded-md bg-emerald-600 px-3 py-2 text-left text-sm font-medium text-white hover:bg-emerald-700 shadow-sm"
         >
-          新しくチャット（Tutor：開発中）
+          新しくチャット（Tutor）
+          <span className="rounded bg-white/20 px-2 py-0.5 text-xs text-white">新規</span>
         </button>
         <button
           disabled
@@ -108,6 +121,8 @@ export function AgentThreadsPanel({
 }) {
   const [threads, setThreads] = useState<ChatThread[]>([])
   const [query, setQuery] = useState('')
+  const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     try {
@@ -165,7 +180,25 @@ export function AgentThreadsPanel({
             t.id === activeThreadId ? 'bg-gray-300' : ''
           }`}
         >
-          <button onClick={() => onSelectThread(t.id)} className="flex-1 text-left">
+          <button
+            onClick={() => {
+              const inTutor = pathname?.startsWith('/lival-agent-mode/tutor')
+              // 画面移動が必要な場合はSPA遷移（リロード回避）
+              if (t.agent === 'tutor' && !inTutor) {
+                try { localStorage.setItem('lival_desired_thread', t.id) } catch {}
+                router.push('/lival-agent-mode/threads/tutor')
+                return
+              }
+              if (t.agent === 'planner' && inTutor) {
+                try { localStorage.setItem('lival_desired_thread', t.id) } catch {}
+                router.push('/lival-agent-mode/threads/planner')
+                return
+              }
+              // 同一画面内なら選択のみ
+              onSelectThread(t.id)
+            }}
+            className="flex-1 text-left"
+          >
             <div className="flex items-center gap-2 text-gray-900">
               <span
                 className={`inline-flex h-2 w-2 rounded-full ${

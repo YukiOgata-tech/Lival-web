@@ -164,7 +164,7 @@ export default function HomeAIAgentsSection() {
         >
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 sm:px-0">
             <Link
-              href="/lival-agent-mode/chat"
+              href="/lival-agent-mode/threads/planner"
               className="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-base sm:text-lg font-semibold w-full sm:w-auto text-center justify-center"
             >
               <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" />
@@ -173,11 +173,11 @@ export default function HomeAIAgentsSection() {
             </Link>
             
             <Link
-              href="/features"
+              href="/lival-agent-mode/threads"
               className="inline-flex items-center border-2 border-gray-300 text-gray-700 px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 text-base sm:text-lg font-semibold w-full sm:w-auto text-center justify-center"
             >
               <Target className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" />
-              全機能を詳しく見る
+              スレッド一覧を見る
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 sm:ml-3" />
             </Link>
           </div>

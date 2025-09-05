@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useMemo } from 'react'
+import MarkdownMessage from '@/components/agent/common/MarkdownMessage'
 import { motion } from 'framer-motion'
 
 export type ChatMessage = {
@@ -96,31 +97,23 @@ export default function PlannerChatMessage({
   const isUser = msg.role === 'user'
   const shouldAnimate = !isUser && !planCard && msg.animate
 
-  if (shouldAnimate) {
+  if (shouldAnimate && isUser === false) {
     return (
-      <div className="my-2 flex justify-start">
-        <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl bg-gray-100 px-4 py-2 text-sm text-gray-900">
-          <TypeReveal text={msg.content} />
-        </div>
+      <div className="my-3 text-gray-900">
+        <TypeReveal text={msg.content} />
+      </div>
+    )
+  }
+  if (!isUser) {
+    return (
+      <div className="my-3 text-gray-900">
+        <MarkdownMessage text={msg.content} />
       </div>
     )
   }
   return (
-    <motion.div
-      className={`my-2 flex ${isUser ? 'justify-end' : 'justify-start'}`}
-      initial={msg.animate ? { opacity: 0, y: 8 } : false}
-      animate={msg.animate ? { opacity: 1, y: 0 } : {}}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.18, ease: 'easeOut' }}
-    >
-      <motion.div
-        whileHover={!isUser ? { scale: 1.01 } : undefined}
-        className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-4 py-2 text-sm ${
-          isUser ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
-        }`}
-      >
-        {msg.content}
-      </motion.div>
+    <motion.div className="my-2 flex justify-end" initial={msg.animate ? { opacity: 0, y: 8 } : false} animate={msg.animate ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.18, ease: 'easeOut' }}>
+      <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl bg-blue-600 px-4 py-2 text-sm text-white">{msg.content}</div>
     </motion.div>
   )
 }

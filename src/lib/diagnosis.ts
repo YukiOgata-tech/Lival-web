@@ -22,7 +22,7 @@ import {
 } from '@/types/diagnosis'
 import { CORE_QUESTIONS, FOLLOWUP_QUESTIONS } from '@/data/diagnosis/questions'
 import { DIAGNOSIS_TYPES, SCORING_FORMULAS } from '@/data/diagnosis/types'
-import { updateUserProfile } from '@/lib/supabase/userProfile'
+import { updateUserProfile, upsertUserProfile } from '@/lib/supabase/userProfile'
 
 /**
  * 診断セッションを開始
@@ -417,11 +417,12 @@ export const saveDiagnosisToUserProfile = async (userId: string, result: Diagnos
       updatedAt: serverTimestamp()
     })
 
-    // Supabaseのuser_profilesテーブルにも保存
+    // Supabaseのuser_profilesテーブルにも保存（upsertで安全に保存）
     const typeDisplayName = result.primaryType.displayName
     const typeDescription = getDiagnosisTypeDescription(result.primaryType.id)
     
-    await updateUserProfile(userId, {
+    await upsertUserProfile({
+      uid: userId,
       diag_rslt: typeDisplayName,
       diag_rslt_desc: typeDescription
     })

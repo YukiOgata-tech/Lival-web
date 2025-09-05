@@ -96,7 +96,7 @@ export default function UserBookStatsSection({ userId, className = '' }: UserBoo
     <div className={`bg-white rounded-lg border border-gray-200 p-4 sm:p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-          📖 あなたの参考書統計
+          📖 あなたの参考書統計 TOP5
         </h3>
         
         {/* ソート選択 */}
@@ -130,7 +130,7 @@ export default function UserBookStatsSection({ userId, className = '' }: UserBoo
         </div>
       ) : (
         <div className="space-y-2 sm:space-y-3">
-          {sortedStats.map((stat, index) => (
+          {sortedStats.slice(0, 5).map((stat, index) => (
             <div key={stat.book.id} className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
               {/* 書籍カバー */}
               <div className="w-10 h-12 sm:w-12 sm:h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded flex items-center justify-center mr-3 flex-shrink-0">

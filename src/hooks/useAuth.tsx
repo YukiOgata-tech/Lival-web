@@ -12,7 +12,7 @@ import { httpsCallable } from 'firebase/functions'
 import { auth, functions } from '@/lib/firebase'
 // import { supabase } from '@/lib/supabase/supabaseClient' // <-- Import Supabase client
 import { LivalUser } from '@/types'
-import { createUserInFirestore, getUserData } from '@/lib/user'
+import { createUserInFirestore, getUserData, ensureSupabaseUserProfile } from '@/lib/user'
 
 interface AuthContextType {
   user: FirebaseUser | null
@@ -142,6 +142,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const existingData = await getUserData(firebaseUser.uid);
           if (existingData) {
             setUserData(existingData);
+            
+            // 既存ユーザーでもSupabaseプロファイルがない可能性があるため確認・作成
+            await ensureSupabaseUserProfile(firebaseUser, existingData);
           } else {
             await createUserInFirestore(firebaseUser);
             await refreshUserData();

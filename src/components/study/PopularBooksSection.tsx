@@ -85,7 +85,7 @@ export default function PopularBooksSection({ className = '' }: PopularBooksSect
     <div className={`bg-white rounded-lg border border-gray-200 p-4 sm:p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-          🔥 人気参考書ランキング
+          🔥 人気参考書ランキング TOP5
         </h3>
         <div className="flex items-center text-xs sm:text-sm text-gray-500">
           <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

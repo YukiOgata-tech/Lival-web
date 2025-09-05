@@ -73,7 +73,7 @@ export default function PlannerInputBar({
   const [generateOpen, setGenerateOpen] = useState(false)
 
   return (
-    <div className="border-t bg-white p-3">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white/95 backdrop-blur-sm p-3 pb-3 safe-area-inset-bottom">
       <div className="mx-auto flex max-w-4xl flex-col gap-2">
         {/* ヘッダー行: 通常モードはデフォルト。作成モードのみボタン表示 */}
         <div className="flex items-center justify-end">

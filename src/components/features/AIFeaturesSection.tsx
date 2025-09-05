@@ -268,7 +268,7 @@ export default function AIFeaturesSection() {
                                 </Link>
                                 <div className="pt-2">
                                   <Link
-                                    href="/lival-agent-mode/chat"
+                                    href="/lival-agent-mode/threads/planner"
                                     className="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium text-sm md:text-base transition-colors"
                                   >
                                     プランナーAIを体験する
@@ -419,7 +419,7 @@ export default function AIFeaturesSection() {
                             </Link>
                             <div>
                               <Link
-                                href="/lival-agent-mode/chat"
+                                href="/lival-agent-mode/threads/planner"
                                 className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-semibold transition-colors shadow-lg"
                               >
                                 プランナーAIを体験する

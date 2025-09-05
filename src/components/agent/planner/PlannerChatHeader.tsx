@@ -4,11 +4,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { RefreshCcw, Share2, CreditCard, ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 
-type AgentKind = 'planner' | 'tutor' | 'counselor'
 
 export default function PlannerChatHeader() {
+  const router = useRouter()
   const [sharedMsg, setSharedMsg] = useState<string | null>(null)
   const [isThreads, setIsThreads] = useState(false)
 
@@ -48,21 +49,15 @@ export default function PlannerChatHeader() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:gap-3 sm:px-6 sm:py-3">
         <div className="flex min-w-0 items-center gap-2 whitespace-nowrap sm:gap-3">
           {/* Mobile: Back to threads button */}
-          {!isThreads && (
           <button
             type="button"
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                try { window.location.hash = '#threads' } catch {}
-                window.dispatchEvent(new Event('planner-show-threads'))
-              }
-            }}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-gray-200 text-gray-700 hover:bg-gray-300 sm:hidden"
+            onClick={() => router.push('/lival-agent-mode/threads/')}
+            className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
             title="スレッド一覧へ"
           >
             <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">スレッド一覧</span>
           </button>
-          )}
           <Link href="/" className="inline-flex items-center gap-2 font-semibold text-gray-900 hover:text-blue-600">
             <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="inline-flex items-center gap-2">
               <Image src="/images/Lival-text.png" alt="LIVAL AI" width={100} height={24} className="h-5 w-auto sm:h-6" />

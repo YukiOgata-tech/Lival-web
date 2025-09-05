@@ -10,7 +10,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   // reception AI パスの場合はヘッダー・フッターを表示しない
   const hideHeaderFooter =
     pathname === '/dashboard/receptionAI' ||
-    pathname.startsWith('/lival-agent-mode/chat')
+    pathname.startsWith('/lival-agent-mode/')
   
   if (hideHeaderFooter) {
     return <>{children}</>
