@@ -287,13 +287,13 @@ export default function ProfileSetupPage() {
               uid: user.uid,
               display_name: updatedProfile.display_name || user.displayName || undefined,
               grade: updatedProfile.grade,
+              deviation_score: updatedProfile.deviation_score || 50,
               target_universities: updatedProfile.target_universities,
               career_interests: updatedProfile.career_interests,
               avg_study_min: updatedProfile.avg_study_min,
               prefers_video: updatedProfile.prefers_video || false,
               prefers_text: updatedProfile.prefers_text || false,
-              recency_mark: updatedProfile.recency_mark,
-              deviation_score: 50
+              recency_mark: updatedProfile.recency_mark
             }
 
             const savedProfile = await upsertUserProfile(profileToSave)
