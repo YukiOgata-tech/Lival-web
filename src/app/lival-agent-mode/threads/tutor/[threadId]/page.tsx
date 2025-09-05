@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 import TutorInputBar from '@/components/agent/tutor/TutorInputBar'
 import TutorChatMessageView, { type TutorChatMessage, type TutorTag } from '@/components/agent/tutor/TutorChatMessage'
 import LottieLoader from '@/components/agent/common/LottieLoader'
@@ -166,10 +167,24 @@ export default function TutorThreadPage() {
 
   return (
     <div className="relative mx-auto min-h-[100dvh] max-w-7xl">
+      {/* 背景ロゴ */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="opacity-[0.8] select-none">
+          <Image 
+            src="/images/header-livalAI.png" 
+            alt="LIVAL AI" 
+            width={400}
+            height={100}
+            className="max-w-sm w-auto h-auto"
+            priority
+          />
+        </div>
+      </div>
+      
       {toast && (
         <div className="pointer-events-none fixed right-4 top-16 z-50 rounded-md border border-emerald-200 bg-white/95 px-3 py-2 text-sm text-emerald-700 shadow-md">{toast}</div>
       )}
-      <div className="mx-auto max-w-3xl space-y-3 p-4 pb-32 sm:pb-40">
+      <div className="relative z-10 mx-auto max-w-3xl space-y-3 p-4 pb-32 sm:pb-40">
         {messages.map((m) => (
           <div key={m.id} className="animate-fade-in">
             <TutorChatMessageView msg={m} enableTagging uid={user?.uid ?? null} threadId={threadId || null} onChangeTags={(id, tags) => setMessages(prev => prev.map(x => x.id===id?{...x, tags}:x))} onOpenReport={(p)=> setReportPreview(p)} />

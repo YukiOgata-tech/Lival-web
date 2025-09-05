@@ -25,12 +25,14 @@ export default function AgentThreadsPage() {
         <div className="sticky top-0 z-40 border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:gap-3 sm:px-6 sm:py-3">
             <div className="flex min-w-0 items-center gap-2 whitespace-nowrap sm:gap-3">
-              <Image src="/images/Lival-text.png" alt="LIVAL AI" width={100} height={24} className="h-5 w-auto sm:h-6" />
+              <button onClick={() => router.push('/')} className="cursor-pointer">
+                <Image src="/images/Lival-text.png" alt="LIVAL AI" width={100} height={24} className="h-5 w-auto sm:h-6 hover:opacity-80 transition-opacity" />
+              </button>
               <span className="inline-block rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-700 sm:text-xs">Threads</span>
               <span className="ml-1 truncate text-xs text-gray-600 sm:ml-2 sm:text-sm">{initialFilter==='all'?'すべて':initialFilter} のスレッド一覧</span>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => setCreateOpen(true)} className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700">new chat</button>
+              <button onClick={() => setCreateOpen(true)} className="rounded-md bg-emerald-600 px-2 py-1 text-xs font-medium text-white hover:bg-emerald-700">New Chat</button>
             </div>
           </div>
         </div>

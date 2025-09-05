@@ -11,6 +11,7 @@ export type AnyThread = {
   title: string
   agent: AgentKind
   updatedAt: number
+  lastMessage?: string
 }
 
 function storageKey(uid: string | null) { return `lival_chat_threads_${uid ?? 'guest'}` }
@@ -42,18 +43,44 @@ export default function ThreadsPanel({
           const col = collection(db, 'users', uid, 'eduAI_threads')
           const q = query(col, orderBy('updatedAt', 'desc'), limit(100))
           const snap = await getDocs(q)
-          const remote = snap.docs.map((d) => {
+          const remote = await Promise.all(snap.docs.map(async (d) => {
             const v = d.data() as any
             if (v.archived) return null
+            
+            // 最後のAIメッセージを取得
+            let lastMessage = ''
+            try {
+              const messagesCol = collection(d.ref, 'messages')
+              const messagesQuery = query(messagesCol, orderBy('createdAt', 'desc'), limit(5))
+              const messagesSnap = await getDocs(messagesQuery)
+              
+              // assistantの最後のメッセージを探す
+              for (const messageDoc of messagesSnap.docs) {
+                const messageData = messageDoc.data()
+                if (messageData.role === 'assistant' || messageData.agent) {
+                  const content = messageData.content || ''
+                  // プランカード形式は除外し、通常のテキストメッセージのみ表示
+                  if (!content.startsWith('__PLAN_CARD__')) {
+                    lastMessage = content.length > 60 ? content.substring(0, 60) + '...' : content
+                    break
+                  }
+                }
+              }
+            } catch (error) {
+              console.warn('Failed to fetch last message for thread:', d.id, error)
+            }
+            
             return {
               id: d.id,
               title: v.title || `${v.agent || 'thread'}`,
               agent: (v.agent || 'planner') as AgentKind,
               updatedAt: v.updatedAt?.toMillis?.() || Date.now(),
+              lastMessage,
             } as AnyThread
-          }).filter(Boolean) as AnyThread[]
+          }))
+          const filteredRemote = remote.filter(Boolean) as AnyThread[]
           const map = new Map<string, AnyThread>()
-          ;[...remote, ...list].forEach((t) => { const prev = map.get(t.id); if (!prev || t.updatedAt > prev.updatedAt) map.set(t.id, t) })
+          ;[...filteredRemote, ...list].forEach((t) => { const prev = map.get(t.id); if (!prev || t.updatedAt > prev.updatedAt) map.set(t.id, t) })
           list = Array.from(map.values()).sort((a, b) => b.updatedAt - a.updatedAt)
           localStorage.setItem(storageKey(uid), JSON.stringify(list))
         }
@@ -141,6 +168,11 @@ export default function ThreadsPanel({
             </div>
             <button onClick={() => onOpen(t.agent, t.id)} className="block w-full text-left">
               <div className="truncate text-sm font-semibold text-gray-900">{t.title || `${t.agent} スレッド`}</div>
+              {t.lastMessage && (
+                <div className="mt-1 text-xs text-gray-500 line-clamp-2">
+                  {t.lastMessage}
+                </div>
+              )}
             </button>
             <div className="mt-2 flex items-center justify-end gap-2 text-xs">
               <button onClick={()=>rename(t)} className="rounded border px-2 py-1 text-gray-700 hover:bg-gray-50">名前変更</button>
@@ -159,15 +191,28 @@ export default function ThreadsPanel({
             <p className="mb-3 text-sm text-gray-600">種類を選択してください</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {([
-                { key: 'tutor', label: 'Tutor', color: 'bg-emerald-600', agent: 'tutor' as AgentKind },
-                { key: 'planner', label: 'Planner', color: 'bg-blue-600', agent: 'planner' as AgentKind },
-                { key: 'counselor', label: 'Counselor', color: 'bg-purple-600', agent: 'counselor' as AgentKind },
+                { key: 'tutor', label: 'Tutor', color: 'bg-emerald-600', agent: 'tutor' as AgentKind, disabled: false },
+                { key: 'planner', label: 'Planner', color: 'bg-blue-600', agent: 'planner' as AgentKind, disabled: false },
+                { key: 'counselor', label: 'Counselor', color: 'bg-purple-600', agent: 'counselor' as AgentKind, disabled: true },
               ]).map(item => (
-                <button
-                  key={item.key}
-                  onClick={async () => { await onCreate(item.agent); setCreateOpen(false) }}
-                  className={`rounded-md ${item.color} px-3 py-3 text-sm font-medium text-white hover:opacity-90`}
-                >{item.label}</button>
+                <div key={item.key} className="relative">
+                  <button
+                    onClick={async () => {
+                      if (item.disabled) return
+                      await onCreate(item.agent)
+                      setCreateOpen(false)
+                    }}
+                    disabled={item.disabled}
+                    className={`${item.disabled ? 'bg-gray-400 cursor-not-allowed' : item.color} w-full rounded-md px-3 py-3 text-sm font-medium text-white hover:opacity-90 disabled:hover:opacity-100 relative`}
+                  >
+                    {item.label}
+                    {item.disabled && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-md">
+                        <span className="text-xs bg-white/90 text-gray-700 px-2 py-1 rounded">開発中</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
               ))}
             </div>
             <div className="mt-3 flex justify-end">

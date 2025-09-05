@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 import PlannerInputBar, { type Mode } from '@/components/agent/planner/PlannerInputBar'
 import PlannerChatMessage, { type ChatMessage } from '@/components/agent/planner/PlannerChatMessage'
 import PlanDetailModal from '@/components/agent/planner/PlanDetailModal'
@@ -137,7 +138,21 @@ export default function PlannerThreadPage() {
 
   return (
     <div className="relative mx-auto min-h-[100dvh] max-w-7xl">
-      <div className="mx-auto max-w-3xl space-y-3 p-4 pb-32 sm:pb-40">
+      {/* 背景ロゴ */}
+      <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="opacity-[0.8] select-none">
+          <Image 
+            src="/images/header-livalAI.png" 
+            alt="LIVAL AI" 
+            width={400}
+            height={100}
+            className="max-w-sm w-auto h-auto"
+            priority
+          />
+        </div>
+      </div>
+      
+      <div className="relative z-10 mx-auto max-w-3xl space-y-3 p-4 pb-32 sm:pb-40">
         {messages.map((m) => (
           <div key={m.id} className="animate-fade-in">
             <PlannerChatMessage
