@@ -93,7 +93,8 @@ export default function PlannerInputBar({
               onFocus={() => window.dispatchEvent(new CustomEvent('planner-input-focus'))}
               placeholder="メッセージを入力..."
               rows={1}
-              className="min-h-[44px] flex-1 resize-none rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="min-h-[44px] flex-1 resize-none rounded-md border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              style={{ fontSize: '16px' }}
             />
             <button
               onClick={sendChat}

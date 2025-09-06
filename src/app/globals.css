@@ -114,3 +114,23 @@ h4, h5, h6 {
   font-weight: 500;
   letter-spacing: 0.01em;
 }
+
+/* Mobile zoom prevention for input elements */
+@media screen and (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  /* Prevent zoom on focus for iOS Safari */
+  input[type="text"], 
+  input[type="email"], 
+  input[type="password"], 
+  input[type="search"], 
+  input[type="tel"], 
+  input[type="url"], 
+  textarea {
+    font-size: 16px !important;
+    transform: translateZ(0);
+    -webkit-appearance: none;
+  }
+}
