@@ -8,7 +8,7 @@ const teamRoles = [
     icon: Code,
     title: 'エンジニアチーム',
     description: '大学生を中心としたフルスタック開発者',
-    members: '5名',
+    members: '3名',
     skills: ['React/Next.js', 'Firebase', 'AI/ML', 'モバイル開発'],
     color: 'from-blue-500 to-indigo-600',
     highlight: '平均年齢: 21歳'
@@ -17,8 +17,8 @@ const teamRoles = [
     icon: Brain,
     title: 'AI研究チーム',
     description: '機械学習・自然言語処理の専門家',
-    members: '3名',
-    skills: ['Python', 'TensorFlow', 'NLP', 'データサイエンス'],
+    members: '2名',
+    skills: ['Python', 'NLP', 'データサイエンス', 'Lang Chain'],
     color: 'from-purple-500 to-violet-600',
     highlight: '博士・修士課程在籍'
   },
@@ -29,13 +29,13 @@ const teamRoles = [
     members: '4名',
     skills: ['教育心理学', '学習指導', 'カリキュラム設計', '進路指導'],
     color: 'from-green-500 to-emerald-600',
-    highlight: '平均指導歴: 8年'
+    highlight: '平均指導歴: 14年'
   },
   {
     icon: Palette,
     title: 'デザインチーム',
     description: 'UI/UXデザイナー・クリエイター',
-    members: '2名',
+    members: '1名',
     skills: ['UI/UXデザイン', 'Figma', 'ユーザビリティ', 'ブランディング'],
     color: 'from-pink-500 to-rose-600',
     highlight: 'デザイン学部生'
@@ -44,7 +44,7 @@ const teamRoles = [
     icon: BarChart3,
     title: 'ビジネスチーム',
     description: '事業戦略・マーケティング・運営',
-    members: '3名',
+    members: '2名',
     skills: ['事業開発', 'マーケティング', 'データ分析', '営業'],
     color: 'from-orange-500 to-amber-600',
     highlight: '経営学部・MBA'
@@ -81,7 +81,7 @@ const teamValues = [
 
 export default function AboutTeamSection() {
   return (
-    <section className="py-20 bg-gray-900">
+    <section className="py-12 sm:py-20 bg-gray-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -90,19 +90,19 @@ export default function AboutTeamSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
             多様なチームが創る未来
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+          <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto mb-6 sm:mb-8 px-4 sm:px-0">
             大学生の新鮮な発想力と、現場を知る教育者の経験が融合。
             世代を超えたコラボレーションで、革新的な教育プラットフォームを開発しています。
           </p>
         </motion.div>
 
         {/* Team Roles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-20">
           {teamRoles.map((role, index) => (
             <motion.div
               key={role.title}
@@ -112,16 +112,16 @@ export default function AboutTeamSection() {
               viewport={{ once: true }}
               className="group"
             >
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
-                <div className={`w-14 h-14 bg-gradient-to-r ${role.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                  <role.icon className="w-7 h-7 text-white" />
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r ${role.color} rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <role.icon className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                 </div>
                 
-                <h3 className="text-xl font-bold text-white mb-2">{role.title}</h3>
-                <p className="text-gray-400 mb-3 text-sm">{role.description}</p>
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">{role.title}</h3>
+                <p className="text-gray-400 mb-3 text-xs sm:text-sm">{role.description}</p>
                 
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-lg font-semibold text-blue-400">{role.members}</span>
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <span className="text-base sm:text-lg font-semibold text-blue-400">{role.members}</span>
                   <span className="text-xs text-gray-500 bg-gray-700/50 px-2 py-1 rounded">{role.highlight}</span>
                 </div>
                 
@@ -148,9 +148,9 @@ export default function AboutTeamSection() {
           viewport={{ once: true }}
           className="bg-gradient-to-r from-gray-800/50 to-slate-800/50 rounded-3xl p-8 border border-gray-700/50"
         >
-          <h3 className="text-3xl font-bold text-white mb-8 text-center">チームの価値観</h3>
+          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8 text-center">チームの価値観</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {teamValues.map((value, index) => (
               <motion.div
                 key={value.title}
@@ -160,8 +160,8 @@ export default function AboutTeamSection() {
                 viewport={{ once: true }}
                 className="text-center"
               >
-                <h4 className="text-lg font-semibold text-white mb-3">{value.title}</h4>
-                <p className="text-gray-400 text-sm leading-relaxed">{value.description}</p>
+                <h4 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">{value.title}</h4>
+                <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">{value.description}</p>
               </motion.div>
             ))}
           </div>

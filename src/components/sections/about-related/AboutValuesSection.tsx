@@ -83,7 +83,7 @@ const impactMetrics = [
 
 export default function AboutValuesSection() {
   return (
-    <section className="py-20 bg-slate-800/30">
+    <section className="py-12 sm:py-20 bg-slate-800/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -92,19 +92,19 @@ export default function AboutValuesSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
             私たちの価値観
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto px-4 sm:px-0">
             技術力だけでなく、教育への情熱と社会への責任感が、
             LIVAL AIの原動力です。
           </p>
         </motion.div>
 
         {/* Core Values Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-8 mb-12 sm:mb-20">
           {coreValues.map((value, index) => (
             <motion.div
               key={value.title}
@@ -114,20 +114,20 @@ export default function AboutValuesSection() {
               viewport={{ once: true }}
               className="group"
             >
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
-                <div className={`w-16 h-16 bg-gradient-to-r ${value.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <value.icon className="w-8 h-8 text-white" />
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
+                <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r ${value.color} rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <value.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
                 
-                <h3 className="text-xl font-bold text-white mb-4">{value.title}</h3>
-                <p className="text-gray-300 mb-6 leading-relaxed">{value.description}</p>
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4">{value.title}</h3>
+                <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6 leading-relaxed">{value.description}</p>
                 
                 <div className="space-y-2">
-                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">具体的な取り組み</h4>
+                  <h4 className="text-xs sm:text-sm font-semibold text-gray-400 uppercase tracking-wider">具体的な取り組み</h4>
                   {value.examples.map((example, exampleIndex) => (
                     <div key={exampleIndex} className="flex items-center">
                       <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-3"></div>
-                      <span className="text-gray-400 text-sm">{example}</span>
+                      <span className="text-gray-400 text-xs sm:text-sm">{example}</span>
                     </div>
                   ))}
                 </div>
@@ -144,9 +144,9 @@ export default function AboutValuesSection() {
           viewport={{ once: true }}
           className="bg-gradient-to-r from-gray-800/50 to-slate-800/50 rounded-3xl p-8 border border-gray-700/50"
         >
-          <h3 className="text-3xl font-bold text-white mb-8 text-center">私たちの実績</h3>
+          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8 text-center">私たちの実績</h3>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-6">
             {impactMetrics.map((metric, index) => (
               <motion.div
                 key={metric.label}
@@ -156,8 +156,8 @@ export default function AboutValuesSection() {
                 viewport={{ once: true }}
                 className="text-center"
               >
-                <div className="text-3xl lg:text-4xl font-bold text-white mb-2">{metric.number}</div>
-                <div className="text-blue-400 font-semibold mb-1">{metric.label}</div>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2">{metric.number}</div>
+                <div className="text-blue-400 font-semibold mb-1 text-sm sm:text-base">{metric.label}</div>
                 <div className="text-gray-400 text-xs leading-tight">{metric.description}</div>
               </motion.div>
             ))}
@@ -172,18 +172,18 @@ export default function AboutValuesSection() {
           viewport={{ once: true }}
           className="text-center mt-16"
         >
-          <h3 className="text-2xl font-bold text-white mb-4">一緒に教育の未来を創りませんか？</h3>
-          <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
+          <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">一緒に教育の未来を創りませんか？</h3>
+          <p className="text-sm sm:text-base text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4 sm:px-0">
             私たちの価値観に共感し、教育の革新に貢献したい方を募集しています。
             エンジニア、デザイナー、教育者、ビジネス... あらゆる分野の専門家との出会いをお待ちしています。
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0">
             <motion.a
               href="/careers"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+              className="inline-flex items-center justify-center px-6 sm:px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 text-sm sm:text-base"
             >
               採用情報を見る
             </motion.a>
@@ -192,7 +192,7 @@ export default function AboutValuesSection() {
               href="/contact"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center px-8 py-3 border border-gray-600 text-gray-300 font-semibold rounded-full hover:border-gray-500 hover:text-white transition-all duration-300"
+              className="inline-flex items-center justify-center px-6 sm:px-8 py-3 border border-gray-600 text-gray-300 font-semibold rounded-full hover:border-gray-500 hover:text-white transition-all duration-300 text-sm sm:text-base"
             >
               お問い合わせ
             </motion.a>

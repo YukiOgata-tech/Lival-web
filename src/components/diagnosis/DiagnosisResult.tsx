@@ -465,15 +465,12 @@ export default function DiagnosisResult({
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">詳細な特徴</h4>
                         <div className="space-y-2">
-                          {detailedInfo.detailedCharacteristics.slice(0, 3).map((char, index) => (
+                          {detailedInfo.detailedCharacteristics.map((char, index) => (
                             <div key={index} className="flex items-start space-x-2">
                               <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
                               <span className="text-gray-700 text-xs md:text-sm">{char}</span>
                             </div>
                           ))}
-                          {detailedInfo.detailedCharacteristics.length > 3 && (
-                            <p className="text-xs text-gray-500 mt-2">他{detailedInfo.detailedCharacteristics.length - 3}項目...</p>
-                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -508,43 +505,34 @@ export default function DiagnosisResult({
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">🎯 あなたの強み</h4>
                         <div className="grid grid-cols-1 gap-2">
-                          {detailedInfo.strengths.slice(0, 3).map((strength, index) => (
+                          {detailedInfo.strengths.map((strength, index) => (
                             <div key={index} className="bg-green-100 px-3 py-2 rounded-lg text-xs md:text-sm text-green-800">
                               {strength}
                             </div>
                           ))}
-                          {detailedInfo.strengths.length > 3 && (
-                            <p className="text-xs text-gray-500 mt-1">他{detailedInfo.strengths.length - 3}項目...</p>
-                          )}
                         </div>
                       </div>
                       
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">📚 効果的な学習方法</h4>
                         <div className="space-y-2">
-                          {detailedInfo.studyTips.slice(0, 3).map((tip, index) => (
+                          {detailedInfo.studyTips.map((tip, index) => (
                             <div key={index} className="flex items-start space-x-2">
                               <div className="w-1.5 h-1.5 bg-amber-500 rounded-full mt-2 flex-shrink-0"></div>
                               <span className="text-gray-700 text-xs md:text-sm">{tip}</span>
                             </div>
                           ))}
-                          {detailedInfo.studyTips.length > 3 && (
-                            <p className="text-xs text-gray-500 mt-1">他{detailedInfo.studyTips.length - 3}項目...</p>
-                          )}
                         </div>
                       </div>
                       
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2 text-sm md:text-base">🌱 成長できる領域</h4>
                         <div className="space-y-2">
-                          {detailedInfo.developmentAreas.slice(0, 2).map((area, index) => (
+                          {detailedInfo.developmentAreas.map((area, index) => (
                             <div key={index} className="bg-blue-50 px-3 py-2 rounded-lg text-xs md:text-sm text-blue-700">
                               {area}
                             </div>
                           ))}
-                          {detailedInfo.developmentAreas.length > 2 && (
-                            <p className="text-xs text-gray-500 mt-1">他{detailedInfo.developmentAreas.length - 2}項目...</p>
-                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -604,7 +592,7 @@ export default function DiagnosisResult({
                     <div>
                       <h4 className="font-semibold text-gray-900 mb-2 text-sm">AIからの声かけ例</h4>
                       <div className="space-y-2">
-                        {primaryType.aiCoachingStyle.languagePatterns.slice(0, 1).map((pattern, index) => (
+                        {primaryType.aiCoachingStyle.languagePatterns.map((pattern, index) => (
                           <div key={index} className="bg-white/80 rounded-lg p-2 text-gray-700 italic text-xs">
                             「{pattern}」
                           </div>
@@ -643,7 +631,7 @@ export default function DiagnosisResult({
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-2">AIからの声かけ例</h4>
                     <div className="space-y-2">
-                      {primaryType.aiCoachingStyle.languagePatterns.slice(0, 2).map((pattern, index) => (
+                      {primaryType.aiCoachingStyle.languagePatterns.map((pattern, index) => (
                         <div key={index} className="bg-white/80 rounded-lg p-3 text-gray-700 italic text-sm">
                           「{pattern}」
                         </div>

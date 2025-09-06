@@ -9,9 +9,9 @@ const partnerCategories = [
     title: '教育機関',
     description: '全国の学校・塾との協力関係',
     partners: [
-      { name: '私立中高一貫校', count: '3校', region: '東京・大阪' },
-      { name: '個人経営塾', count: '8塾', region: '全国' },
-      { name: '学習支援NPO', count: '2団体', region: '関東・関西' }
+      { name: '私立中高一貫校', count: '3校', region: '東京・山形' },
+      { name: '個人経営塾', count: '6塾', region: '全国' },
+      { name: '学習支援NPO', count: '1団体', region: '東北' }
     ],
     color: 'from-blue-500 to-indigo-600'
   },
@@ -20,8 +20,8 @@ const partnerCategories = [
     title: '教育専門家',
     description: '現場経験豊富な教育者たち',
     partners: [
-      { name: '現役教師', count: '4名', region: '小中高' },
-      { name: '塾経営者', count: '3名', region: '個別・集団指導' },
+      { name: '現役教師', count: '3名', region: '中高' },
+      { name: '塾経営者', count: '2名', region: '個別・集団指導' },
       { name: '教育心理学者', count: '1名', region: '大学・研究機関' }
     ],
     color: 'from-green-500 to-emerald-600'
@@ -33,7 +33,7 @@ const partnerCategories = [
     partners: [
       { name: 'スタートアップ', count: '1社', region: 'Tech・AI' },
       { name: '大学研究室', count: '1研究室', region: 'AI・教育工学' },
-      { name: 'フリーランス', count: '2名', region: 'デザイン・開発' }
+      { name: 'フリーランス', count: '1名', region: 'デザイン・開発' }
     ],
     color: 'from-purple-500 to-violet-600'
   },
@@ -52,20 +52,20 @@ const partnerCategories = [
 
 const testimonials = [
   {
-    name: '田中 先生',
-    role: '私立高校 数学教師（指導歴15年）',
+    name: '大原 先生',
+    role: '私立高校 国語教師（指導歴15年）',
     comment: '生徒一人ひとりの特性を理解し、最適化された指導ができる。これまでの経験とAIの力が組み合わさることで、教育の可能性が大きく広がります。',
     avatar: '👨‍🏫'
   },
   {
     name: '山田 塾長',
     role: '個人塾経営（生徒数120名）',
-    comment: '人手不足が深刻な中、AIコーチングは救世主。講師の負担を減らしながら、生徒により質の高い指導を提供できるようになりました。',
+    comment: 'この新しい競合が生まれることにより、私たち側のサービス向上に繋がる。いいライバル(LIVAL)ですね（笑）',
     avatar: '👩‍💼'
   },
   {
     name: '佐藤 教授',
-    role: '教育心理学（大学教授）',
+    role: '情報学（大学教授）',
     comment: '学習者の心理特性を科学的に分析し、個別最適化を実現するアプローチは画期的。若いチームの技術力と教育への情熱に期待しています。',
     avatar: '👨‍🎓'
   }
@@ -73,7 +73,7 @@ const testimonials = [
 
 export default function AboutPartnersSection() {
   return (
-    <section className="py-20 bg-slate-800/30">
+    <section className="py-12 sm:py-20 bg-slate-800/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -82,19 +82,19 @@ export default function AboutPartnersSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
             協力パートナー
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto px-4 sm:px-0">
             現場を知る教育者、最新技術を持つ企業、そして支援してくださる機関。
             多くの方々との協力により、LIVAL AIは成長しています。
           </p>
         </motion.div>
 
         {/* Partners Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-20">
           {partnerCategories.map((category, index) => (
             <motion.div
               key={category.title}
@@ -104,8 +104,8 @@ export default function AboutPartnersSection() {
               viewport={{ once: true }}
               className="group"
             >
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
-                <div className={`w-16 h-16 bg-gradient-to-r ${category.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
+                <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r ${category.color} rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
                   <category.icon className="w-8 h-8 text-white" />
                 </div>
                 
@@ -139,7 +139,7 @@ export default function AboutPartnersSection() {
           viewport={{ once: true }}
           className="bg-gradient-to-r from-gray-800/50 to-slate-800/50 rounded-3xl p-8 border border-gray-700/50"
         >
-          <h3 className="text-3xl font-bold text-white mb-8 text-center">パートナーの声</h3>
+          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8 text-center">パートナーの声</h3>
           
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (

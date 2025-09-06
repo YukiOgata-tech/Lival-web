@@ -3,7 +3,7 @@ import AboutHeroSection from '@/components/sections/about-related/AboutHeroSecti
 import AboutMissionSection from '@/components/sections/about-related/AboutMissionSection'
 import AboutTeamSection from '@/components/sections/about-related/AboutTeamSection'
 import AboutPartnersSection from '@/components/sections/about-related/AboutPartnersSection'
-import AboutTimelineSection from '@/components/sections/about-related/AboutTimelineSection'
+import AboutPrototypeBetaSection from '@/components/sections/about-related/AboutPrototypeBetaSection'
 import AboutValuesSection from '@/components/sections/about-related/AboutValuesSection'
 import AboutContactSection from '@/components/sections/about-related/AboutContactSection'
 import ScrollToTop from '@/components/ui/ScrollToTop'
@@ -53,8 +53,8 @@ export default function AboutPage() {
       {/* Partners Section */}
       <AboutPartnersSection />
 
-      {/* Timeline Section */}
-      <AboutTimelineSection />
+      {/* Prototype & Beta Testing Section */}
+      <AboutPrototypeBetaSection />
 
       {/* Values Section */}
       <AboutValuesSection />

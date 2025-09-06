@@ -1,357 +1,337 @@
-'use client'
-
-import { motion } from 'framer-motion'
+import { Metadata } from 'next'
+import { ArrowLeft, Scale, Shield, Users, CreditCard } from 'lucide-react'
 import Link from 'next/link'
-import { FileText, AlertTriangle, Users, CreditCard, Shield, Scale, Clock, Mail } from 'lucide-react'
 
-const sections = [
-  {
-    id: 'overview',
-    title: '第1条（本規約の適用）',
-    icon: FileText,
-    content: `1. 本利用規約（以下「本規約」）は、LIVAL AI（以下「当社」）が提供するパーソナルAIコーチングサービス「LIVAL AI」（以下「本サービス」）の利用条件を定めるものです。
-
-2. 利用者は、本サービスを利用することによって、本規約に同意したものとみなされます。
-
-3. 本規約に同意いただけない場合、本サービスをご利用いただくことはできません。`
+export const metadata: Metadata = {
+  title: '利用規約 | LIVAL AI',
+  description: 'LIVAL AI（リバル エーアイ）の利用規約です。サービスをご利用いただく前に必ずお読みください。',
+  robots: {
+    index: true,
+    follow: true,
   },
-  {
-    id: 'service',
-    title: '第2条（サービス内容）',
-    icon: Users,
-    content: `1. 本サービスは、AIを活用したパーソナライズされた学習コーチングサービスです。
+}
 
-2. 主な機能は以下の通りです：
-• 性格診断に基づく学習タイプの判定
-• 個別最適化されたAIコーチング
-• 学習計画の作成・管理
-• 学習進捗の分析・レポート
-• 24時間対応のAIサポート
-
-3. サービス内容は、当社の判断により変更・追加・削除される場合があります。
-
-4. 本サービスはオンラインでの提供となり、インターネット接続環境が必要です。`
-  },
-  {
-    id: 'account',
-    title: '第3条（アカウント登録）',
-    icon: Users,
-    content: `1. 本サービスの利用には、アカウント登録が必要です。
-
-2. 登録時には、正確かつ最新の情報を提供してください。
-
-3. 登録情報に変更が生じた場合は、速やかに更新してください。
-
-4. アカウントのIDおよびパスワードの管理は、利用者の責任において行ってください。
-
-5. 18歳未満の方が利用される場合は、保護者の同意が必要です。
-
-6. 13歳未満の方の利用には、保護者による代理登録が必要です。`
-  },
-  {
-    id: 'payment',
-    title: '第4条（料金・支払い）',
-    icon: CreditCard,
-    content: `1. 本サービスの利用料金は、当社が別途定める料金表に従います。
-
-2. 料金は月額制とし、毎月同日に自動的に課金されます。
-
-3. 支払い方法は、クレジットカードまたは当社が指定する方法とします。
-
-4. 料金の支払いが確認できない場合、サービスの利用を停止する場合があります。
-
-5. 既にお支払いいただいた料金の返金は、原則として行いません。
-
-6. 料金は事前の通知により変更される場合があります。`
-  },
-  {
-    id: 'cancellation',
-    title: '第5条（解約・退会）',
-    icon: Clock,
-    content: `1. 利用者はいつでも本サービスを解約することができます。
-
-2. 解約手続きは、サービス内の設定画面または当社指定の方法で行ってください。
-
-3. 解約後も、当月分の利用料金は返金されません。
-
-4. 解約後、当社は利用者のアカウントおよびデータを削除する場合があります。
-
-5. データの削除前に必要な情報はバックアップを取得してください。
-
-6. 解約後のデータ復旧には応じかねます。`
-  },
-  {
-    id: 'ai_disclaimer',
-    title: '第6条（AIサービスに関する免責）',
-    icon: AlertTriangle,
-    content: `1. AIによる提案・回答は参考情報であり、絶対的な正確性を保証するものではありません。
-
-2. 学習効果や成績向上を保証するものではなく、効果には個人差があります。
-
-3. AIが生成するコンテンツについて、当社は完全性や適切性を保証しません。
-
-4. 重要な判断や専門的な判断が必要な場合は、適切な専門家にご相談ください。
-
-5. AIの技術的制約により、サービスが一時的に利用できない場合があります。
-
-6. AI技術の改善に伴い、応答内容や機能が変更される場合があります。`
-  },
-  {
-    id: 'data_usage',
-    title: '第7条（データの利用）',
-    icon: Shield,
-    content: `1. 当社は、サービス提供のために利用者の学習データを収集・利用します。
-
-2. 収集したデータは、以下の目的で利用されます：
-• パーソナライズされたサービス提供
-• AIモデルの改善・向上
-• サービス品質の向上
-• 統計データの作成（匿名化後）
-
-3. 個人を特定可能な形での第三者への提供は行いません。
-
-4. データの取り扱いについては、プライバシーポリシーをご確認ください。
-
-5. 利用者は、自身のデータの利用停止を求めることができます。`
-  },
-  {
-    id: 'prohibited',
-    title: '第8条（禁止事項）',
-    icon: AlertTriangle,
-    content: `利用者は、以下の行為を行ってはなりません：
-
-1. 法令に違反する行為
-2. 当社または第三者の権利を侵害する行為
-3. 不正アクセスやシステムへの攻撃
-4. 虚偽の情報の登録・提供
-5. 営利目的での無断利用
-6. AIを悪用した不適切なコンテンツ生成
-7. その他、当社が不適切と判断する行為
-
-これらの行為が確認された場合、警告なくサービス利用を停止する場合があります。`
-  },
-  {
-    id: 'liability',
-    title: '第9条（免責・責任制限）',
-    icon: Scale,
-    content: `1. 当社は、本サービスの利用により生じた損害について、法令で定める場合を除き責任を負いません。
-
-2. システム障害、通信障害等により本サービスが利用できない場合の責任は負いません。
-
-3. 利用者同士または利用者と第三者間のトラブルについて、当社は責任を負いません。
-
-4. 当社の責任は、損害の発生原因となった月の月額利用料相当額を上限とします。
-
-5. 天災地変その他の不可抗力による損害については責任を負いません。`
-  },
-  {
-    id: 'intellectual_property',
-    title: '第10条（知的財産権）',
-    icon: Shield,
-    content: `1. 本サービスに関する知的財産権は、当社または正当な権利者に帰属します。
-
-2. 利用者は、本サービスのコンテンツを無断で複製・転載・配布することはできません。
-
-3. 利用者が投稿したコンテンツの著作権は利用者に帰属しますが、当社はサービス提供に必要な範囲で利用できるものとします。
-
-4. 当社の事前の書面による同意なく、商用利用は禁止されています。`
-  },
-  {
-    id: 'changes',
-    title: '第11条（規約の変更）',
-    icon: FileText,
-    content: `1. 当社は、必要に応じて本規約を変更することがあります。
-
-2. 重要な変更については、事前に利用者に通知します。
-
-3. 軽微な変更については、サービス内またはウェブサイトでの公表をもって通知とします。
-
-4. 変更後の規約は、通知または公表した日から効力を生じます。
-
-5. 変更後も継続してサービスを利用された場合、変更に同意したものとみなします。`
-  },
-  {
-    id: 'contact',
-    title: '第12条（準拠法・管轄裁判所）',
-    icon: Scale,
-    content: `1. 本規約の解釈・適用については、日本法を準拠法とします。
-
-2. 本サービスに関する紛争については、東京地方裁判所を第一審の専属的合意管轄裁判所とします。
-
-3. 本規約についてご不明な点がございましたら、以下までお問い合わせください：
-
-**お問い合わせ先**
-LIVAL AI カスタマーサポート
-Email: support@lival-ai.com
-営業時間: 平日 10:00-18:00`
-  }
-]
-
-export default function TermsOfServicePage() {
+export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-gray-700 to-slate-800 text-white py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                <FileText className="w-8 h-8 text-white" />
-              </div>
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className="flex items-center space-x-4 mb-4">
+            <Link
+              href="/"
+              className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              トップページに戻る
+            </Link>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Scale className="w-8 h-8 text-blue-600" />
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">利用規約</h1>
+              <p className="text-gray-600">Terms of Service</p>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4">
-              利用規約
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              LIVAL AIサービスご利用時の重要な取り決め
-            </p>
-            <div className="mt-6 text-sm text-gray-400">
-              最終更新日：2024年12月21日 | 施行日：2024年4月1日
-            </div>
-          </motion.div>
+          </div>
+          <p className="mt-4 text-sm text-gray-500">
+            最終更新日：2024年12月1日　｜　施行日：2024年6月1日
+          </p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
           
-          {/* Introduction */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-12 bg-blue-50 rounded-2xl p-8 border border-blue-100 mt-8"
-          >
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">ご利用前に必ずお読みください</h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              この利用規約は、LIVAL AI（株式会社LIVAL AI）が提供するパーソナルAIコーチングサービスの
-              利用条件を定めたものです。
-            </p>
+          {/* 前文 */}
+          <div className="mb-12">
             <p className="text-gray-700 leading-relaxed">
-              本サービスをご利用いただく前に、必ず全ての条項をお読みいただき、
-              内容にご同意いただいた上でご利用ください。
+              本利用規約（以下「本規約」）は、LIVAL AI（以下「当社」）が提供するサービス「LIVAL AI」（以下「本サービス」）の利用に関する条件を定めるものです。
+              本サービスをご利用いただく際には、本規約に同意いただく必要があります。
             </p>
-          </motion.div>
-
-          {/* Sections */}
-          <div className="space-y-8">
-            {sections.map((section, index) => (
-              <motion.div
-                key={section.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.05 }}
-                viewport={{ once: true }}
-                className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100"
-              >
-                <div className="flex items-start mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-r from-gray-600 to-slate-700 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                    <section.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <h2 className="text-xl font-bold text-gray-900">{section.title}</h2>
-                </div>
-                
-                <div className="prose prose-lg max-w-none">
-                  {section.content.split('\n\n').map((paragraph, pIndex) => {
-                    if (paragraph.includes('•')) {
-                      const lines = paragraph.split('\n')
-                      const title = lines[0]
-                      const items = lines.slice(1).filter(line => line.startsWith('•'))
-                      
-                      return (
-                        <div key={pIndex}>
-                          <p className="text-gray-700 leading-relaxed mb-3">{title}</p>
-                          <ul className="list-none space-y-2 mb-4 ml-4">
-                            {items.map((item, iIndex) => (
-                              <li key={iIndex} className="flex items-start">
-                                <div className="w-2 h-2 bg-gray-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                                <span className="text-gray-700">{item.substring(2)}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )
-                    } else {
-                      return (
-                        <p key={pIndex} className="text-gray-700 leading-relaxed mb-4">
-                          {paragraph}
-                        </p>
-                      )
-                    }
-                  })}
-                </div>
-              </motion.div>
-            ))}
           </div>
 
-          {/* Important Notice */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="mt-12 bg-yellow-50 border border-yellow-200 rounded-2xl p-8"
-          >
-            <div className="flex items-start">
-              <AlertTriangle className="w-8 h-8 text-yellow-600 mr-4 flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">重要なお知らせ</h3>
-                <div className="space-y-3 text-gray-700">
-                  <p>• AIによる学習効果には個人差があり、成績向上を保証するものではありません</p>
-                  <p>• サービスの利用には安定したインターネット接続環境が必要です</p>
-                  <p>• 18歳未満の方は保護者の同意が必要です</p>
-                  <p>• 本規約は予告なく変更される場合があります</p>
+          {/* 目次 */}
+          <div className="mb-12 bg-gray-50 rounded-lg p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">目次</h2>
+            <ol className="space-y-2 text-sm">
+              <li><a href="#section1" className="text-blue-600 hover:underline">1. 定義</a></li>
+              <li><a href="#section2" className="text-blue-600 hover:underline">2. サービス概要</a></li>
+              <li><a href="#section3" className="text-blue-600 hover:underline">3. 利用登録</a></li>
+              <li><a href="#section4" className="text-blue-600 hover:underline">4. 利用料金</a></li>
+              <li><a href="#section5" className="text-blue-600 hover:underline">5. 利用者の義務</a></li>
+              <li><a href="#section6" className="text-blue-600 hover:underline">6. 未成年者の利用</a></li>
+              <li><a href="#section7" className="text-blue-600 hover:underline">7. 個人情報・学習データの取扱い</a></li>
+              <li><a href="#section8" className="text-blue-600 hover:underline">8. 知的財産権</a></li>
+              <li><a href="#section9" className="text-blue-600 hover:underline">9. 禁止事項</a></li>
+              <li><a href="#section10" className="text-blue-600 hover:underline">10. サービスの変更・停止</a></li>
+              <li><a href="#section11" className="text-blue-600 hover:underline">11. 免責事項</a></li>
+              <li><a href="#section12" className="text-blue-600 hover:underline">12. 規約の変更</a></li>
+              <li><a href="#section13" className="text-blue-600 hover:underline">13. 準拠法・管轄裁判所</a></li>
+              <li><a href="#section14" className="text-blue-600 hover:underline">14. 問い合わせ先</a></li>
+            </ol>
+          </div>
+
+          {/* 各セクション */}
+          <div className="space-y-10">
+            
+            {/* 1. 定義 */}
+            <section id="section1">
+              <div className="flex items-center space-x-2 mb-4">
+                <Users className="w-5 h-5 text-blue-600" />
+                <h2 className="text-xl font-bold text-gray-900">1. 定義</h2>
+              </div>
+              <div className="space-y-3 text-gray-700">
+                <p><strong>「当社」</strong>とは、LIVAL AI を指します。</p>
+                <p><strong>「本サービス」</strong>とは、当社が提供するAI学習支援サービス「LIVAL AI」を指します。</p>
+                <p><strong>「利用者」</strong>とは、本サービスを利用する個人を指します。</p>
+                <p><strong>「AIコーチング」</strong>とは、当社が開発した3つの専門AI（家庭教師AI・進路カウンセラーAI・学習プランナーAI）による学習支援機能を指します。</p>
+                <p><strong>「学習タイプ診断」</strong>とは、利用者の学習特性を6つのタイプに分類する診断機能を指します。</p>
+                <p><strong>「プレミアムプラン」</strong>とは、月額4,980円の有料プランを指します。</p>
+                <p><strong>「フリープラン」</strong>とは、Web版限定の無料プランを指します。</p>
+              </div>
+            </section>
+
+            {/* 2. サービス概要 */}
+            <section id="section2">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">2. サービス概要</h2>
+              <div className="space-y-3 text-gray-700">
+                <p>本サービスは、中学生・高校生を主な対象とした AI 学習支援サービスです。</p>
+                <h3 className="font-semibold text-gray-900 mt-4">2.1 主な機能</h3>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>学習タイプ診断（6つの学習タイプ分類）</li>
+                  <li>AIコーチング（家庭教師AI・進路カウンセラーAI・学習プランナーAI）</li>
+                  <li>個別最適化された学習サポート</li>
+                  <li>学習進捗の記録・分析</li>
+                  <li>教育コンテンツの配信</li>
+                </ul>
+                <h3 className="font-semibold text-gray-900 mt-4">2.2 提供プラットフォーム</h3>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>モバイルアプリ（iOS・Android）</li>
+                  <li>Webアプリケーション</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* 3. 利用登録 */}
+            <section id="section3">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">3. 利用登録</h2>
+              <div className="space-y-3 text-gray-700">
+                <p>本サービスを利用するには、当社の定める方法により利用登録を行う必要があります。</p>
+                <h3 className="font-semibold text-gray-900 mt-4">3.1 登録情報</h3>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>メールアドレス</li>
+                  <li>パスワード</li>
+                  <li>ニックネーム（表示名）</li>
+                  <li>学年（任意）</li>
+                  <li>その他、当社が必要と判断する情報</li>
+                </ul>
+                <p className="mt-4">登録情報は正確かつ最新の内容で入力してください。虚偽の情報による登録は禁止されています。</p>
+              </div>
+            </section>
+
+            {/* 4. 利用料金 */}
+            <section id="section4">
+              <div className="flex items-center space-x-2 mb-4">
+                <CreditCard className="w-5 h-5 text-blue-600" />
+                <h2 className="text-xl font-bold text-gray-900">4. 利用料金</h2>
+              </div>
+              <div className="space-y-3 text-gray-700">
+                <h3 className="font-semibold text-gray-900">4.1 料金プラン</h3>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="border border-gray-200 rounded p-4 bg-white">
+                      <h4 className="font-semibold text-gray-900">フリープラン</h4>
+                      <p className="text-lg font-bold text-green-600">無料</p>
+                      <p className="text-sm text-gray-600">Web版限定・基本機能のみ</p>
+                    </div>
+                    <div className="border border-blue-200 rounded p-4 bg-blue-50">
+                      <h4 className="font-semibold text-gray-900">プレミアムプラン</h4>
+                      <p className="text-lg font-bold text-blue-600">月額 4,980円（税込）</p>
+                      <p className="text-sm text-gray-600">全機能利用可・モバイルアプリ対応</p>
+                    </div>
+                  </div>
+                </div>
+                <h3 className="font-semibold text-gray-900 mt-4">4.2 決済・解約</h3>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>プレミアムプランの料金は毎月自動課金されます</li>
+                  <li>決済はStripeを通じて安全に処理されます</li>
+                  <li>解約はいつでも可能で、解約後は次回課金日まで利用できます</li>
+                  <li>一度お支払いいただいた料金の返金は、当社の判断により行います</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* 5. 利用者の義務 */}
+            <section id="section5">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">5. 利用者の義務</h2>
+              <div className="space-y-3 text-gray-700">
+                <p>利用者は以下の義務を負います。</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>本規約及び関連する法令を遵守すること</li>
+                  <li>登録情報を正確かつ最新の状態に保つこと</li>
+                  <li>アカウント情報の管理責任を負うこと</li>
+                  <li>本サービスを学習目的以外に使用しないこと</li>
+                  <li>他の利用者の学習を妨げる行為をしないこと</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* 6. 未成年者の利用 */}
+            <section id="section6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">6. 未成年者の利用</h2>
+              <div className="space-y-3 text-gray-700">
+                <p>18歳未満の方が本サービスを利用する場合は、保護者の同意が必要です。</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>保護者は未成年者の本サービス利用について責任を負います</li>
+                  <li>プレミアムプランへの加入は保護者の承諾が必要です</li>
+                  <li>当社は必要に応じて保護者の同意確認を求める場合があります</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* 7. 個人情報・学習データの取扱い */}
+            <section id="section7">
+              <div className="flex items-center space-x-2 mb-4">
+                <Shield className="w-5 h-5 text-blue-600" />
+                <h2 className="text-xl font-bold text-gray-900">7. 個人情報・学習データの取扱い</h2>
+              </div>
+              <div className="space-y-3 text-gray-700">
+                <p>当社は、利用者の個人情報及び学習データを適切に管理します。</p>
+                <h3 className="font-semibold text-gray-900 mt-4">7.1 収集する情報</h3>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>アカウント情報（メールアドレス、表示名など）</li>
+                  <li>学習タイプ診断の回答・結果</li>
+                  <li>AIコーチングでの対話履歴</li>
+                  <li>学習進捗・時間・成果データ</li>
+                  <li>アプリ・Web利用状況</li>
+                </ul>
+                <h3 className="font-semibold text-gray-900 mt-4">7.2 利用目的</h3>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>個別最適化された学習支援の提供</li>
+                  <li>サービス品質の向上・機能開発</li>
+                  <li>利用者サポートの提供</li>
+                  <li>統計データの作成（個人を特定しない形式）</li>
+                </ul>
+                <p className="mt-4">詳細は「<Link href="/privacy" className="text-blue-600 hover:underline">プライバシーポリシー</Link>」をご確認ください。</p>
+              </div>
+            </section>
+
+            {/* 8. 知的財産権 */}
+            <section id="section8">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">8. 知的財産権</h2>
+              <div className="space-y-3 text-gray-700">
+                <p>本サービスに関する全ての知的財産権は当社に帰属します。</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>AIアルゴリズム・診断システム</li>
+                  <li>アプリケーション・Webサイトのデザイン</li>
+                  <li>教育コンテンツ・学習教材</li>
+                  <li>商標・ロゴ・サービス名称</li>
+                </ul>
+                <p className="mt-4">利用者は本サービスを個人の学習目的でのみ使用でき、商用利用・複製・配布は禁止されています。</p>
+              </div>
+            </section>
+
+            {/* 9. 禁止事項 */}
+            <section id="section9">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">9. 禁止事項</h2>
+              <div className="space-y-3 text-gray-700">
+                <p>利用者は以下の行為を禁止します。</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>虚偽情報による登録・診断回答</li>
+                  <li>他人のアカウントの不正利用</li>
+                  <li>本サービスの改ざん・解析・リバースエンジニアリング</li>
+                  <li>システムへの負荷をかける行為</li>
+                  <li>不正アクセス・ウイルス送信等のサイバー攻撃</li>
+                  <li>他の利用者への迷惑行為・嫌がらせ</li>
+                  <li>法令に違反する行為</li>
+                  <li>その他、当社が不適切と判断する行為</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* 10. サービスの変更・停止 */}
+            <section id="section10">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">10. サービスの変更・停止</h2>
+              <div className="space-y-3 text-gray-700">
+                <p>当社は、以下の場合にサービスの全部または一部を変更・停止することがあります。</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>システムメンテナンス・アップデートの実施</li>
+                  <li>技術的問題・障害の発生</li>
+                  <li>法令変更・規制への対応</li>
+                  <li>事業方針の変更</li>
+                  <li>その他、運営上必要と判断される場合</li>
+                </ul>
+                <p className="mt-4">重要な変更については事前に通知いたします。</p>
+              </div>
+            </section>
+
+            {/* 11. 免責事項 */}
+            <section id="section11">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">11. 免責事項</h2>
+              <div className="space-y-3 text-gray-700">
+                <p>以下について、当社は責任を負いません。</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>利用者の学習成果・進学結果に関する保証</li>
+                  <li>AIコーチングの内容・精度に関する保証</li>
+                  <li>サービス利用による間接的・付随的損害</li>
+                  <li>第三者によるサービスの妨害・中断</li>
+                  <li>利用者の端末・ネットワーク環境に起因する問題</li>
+                  <li>利用者同士のトラブル</li>
+                </ul>
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
+                  <p className="text-yellow-800">
+                    <strong>重要：</strong>本サービスは学習支援を目的としており、特定の学習成果や進学実績を保証するものではありません。
+                  </p>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </section>
 
-          {/* Footer Actions */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="mt-12 bg-gradient-to-r from-gray-50 to-slate-50 rounded-2xl p-8 text-center"
-          >
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              ご質問・ご不明な点がございましたら
-            </h3>
-            <p className="text-gray-700 mb-6">
-              利用規約についてご不明な点がございましたら、
-              お気軽にカスタマーサポートまでお問い合わせください。
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/contact"
-                className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-gray-600 to-slate-700 text-white font-semibold rounded-full hover:from-gray-700 hover:to-slate-800 transition-all duration-300"
-              >
-                <Mail className="w-5 h-5 mr-2" />
-                お問い合わせ
-              </Link>
-              
-              <Link
-                href="/privacy"
-                className="inline-flex items-center px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-full hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
-              >
-                プライバシーポリシー
-              </Link>
-              
-              <Link
-                href="/"
-                className="inline-flex items-center px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-full hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
-              >
-                ホームに戻る
-              </Link>
-            </div>
-          </motion.div>
+            {/* 12. 規約の変更 */}
+            <section id="section12">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">12. 規約の変更</h2>
+              <div className="space-y-3 text-gray-700">
+                <p>当社は必要に応じて本規約を変更することがあります。</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>重要な変更は21日前に事前通知いたします</li>
+                  <li>軽微な変更は本ページでの更新により行います</li>
+                  <li>変更後の規約は、公開時点で効力を有します</li>
+                  <li>変更に同意できない場合は、サービスの利用を停止してください</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* 13. 準拠法・管轄裁判所 */}
+            <section id="section13">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">13. 準拠法・管轄裁判所</h2>
+              <div className="space-y-3 text-gray-700">
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  <li>本規約は日本法に準拠します</li>
+                  <li>本サービスに関する一切の紛争は、東京地方裁判所を第一審の専属的合意管轄裁判所とします</li>
+                </ul>
+              </div>
+            </section>
+
+            {/* 14. 問い合わせ先 */}
+            <section id="section14">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">14. 問い合わせ先</h2>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <div className="space-y-3 text-gray-700">
+                  <p><strong>LIVAL AI サポートチーム</strong></p>
+                  <p>メール：support@lival.ai</p>
+                  <p>受付時間：平日 9:00-18:00（土日祝日除く）</p>
+                  <p>※お問い合わせには順次回答いたします。お急ぎの場合は、メールの件名に「【至急】」とご記載ください。</p>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+          {/* フッター */}
+          <div className="mt-12 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
+            <p>LIVAL AI 利用規約</p>
+            <p>Copyright © 2025 LIVAL AI. All rights reserved.</p>
+          </div>
         </div>
       </div>
     </div>

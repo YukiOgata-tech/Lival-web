@@ -28,7 +28,7 @@ export default function AboutHeroSection() {
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-0">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-gray-900/40" />
       
@@ -63,12 +63,12 @@ export default function AboutHeroSection() {
         </div>
       )}
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <div className="container mx-auto px-2 sm:px-6 lg:px-8 text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: isMounted ? 1 : 0, y: isMounted ? 0 : 50 }}
           transition={{ duration: 0.8 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto px-2 sm:px-0"
         >
           {/* Icon Animation */}
           <motion.div
@@ -97,20 +97,20 @@ export default function AboutHeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <h1 className="text-5xl md:text-6xl lg:text-7xl mb-6 text-white">
-              <span className="font-display font-bold">若い力で</span>
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent block text-hero">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 sm:mb-6 text-white leading-tight">
+              <span className=" font-bold block sm:inline">若い力で</span>
+              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent block text-hero mt-2 sm:mt-0">
                 教育を革新
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed max-w-3xl mx-auto font-soft">
+            <p className="text-base sm:text-xl md:text-2xl text-gray-300 mb-6 sm:mb-8 leading-relaxed max-w-3xl mx-auto font-soft px-2 sm:px-0">
               <span className="font-playful text-blue-200">大学生を中心とした若いチーム</span>と、<span className="font-accent text-purple-200">現場を知る教育者たち</span>が手を取り合い、
               次世代の学習体験を創造しています。
             </p>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mt-8 sm:mt-12">
               {[
                 { icon: Users, label: 'チームメンバー', value: '15+' },
                 { icon: GraduationCap, label: '大学生開発者', value: '8' },
@@ -122,11 +122,11 @@ export default function AboutHeroSection() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
-                  className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10"
+                  className="bg-white/5 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/10"
                 >
-                  <stat.icon className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-white">{stat.value}</div>
-                  <div className="text-sm text-gray-400">{stat.label}</div>
+                  <stat.icon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 mx-auto mb-2" />
+                  <div className="text-lg sm:text-2xl font-bold text-white">{stat.value}</div>
+                  <div className="text-xs sm:text-sm text-gray-400 leading-tight">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
