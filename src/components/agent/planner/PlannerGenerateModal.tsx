@@ -53,14 +53,14 @@ export default function PlannerGenerateModal({
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 p-0 sm:items-center sm:p-3"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-3 pb-20 sm:pb-3"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={(e) => e.target === e.currentTarget && onClose()}
         >
           <motion.div
-            className="relative w-full max-w-2xl overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl"
+            className="relative w-full max-w-2xl max-h-full overflow-y-auto rounded-2xl bg-white shadow-2xl"
             initial={{ y: 24, scale: 0.98 }}
             animate={{ y: 0, scale: 1 }}
             exit={{ y: 24, scale: 0.98 }}
@@ -87,7 +87,8 @@ export default function PlannerGenerateModal({
                   value={horizonText}
                   onChange={(e) => setHorizonText(e.target.value)}
                   placeholder="例: 45日 / 1m"
-                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style={{ fontSize: '16px' }}
                 />
                 <div className="mt-1 flex flex-wrap gap-2 text-xs">
                   {['1w', '2w', '1m', '2m'].map((h) => (
@@ -111,7 +112,8 @@ export default function PlannerGenerateModal({
                   value={priorities}
                   onChange={(e) => setPriorities(e.target.value)}
                   placeholder="例: 英語 長文, 数学 微積"
-                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style={{ fontSize: '16px' }}
                 />
                 <div className="mt-1 flex flex-wrap gap-2 text-xs">
                   {['英語 長文', '数学 微積', '理科 基礎', '社会 暗記'].map((p) => (
@@ -135,7 +137,8 @@ export default function PlannerGenerateModal({
                   value={goalText}
                   onChange={(e) => setGoalText(e.target.value)}
                   placeholder="例: 定期テストで+10点 / 模試偏差値+5"
-                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style={{ fontSize: '16px' }}
                 />
               </label>
 
@@ -149,7 +152,8 @@ export default function PlannerGenerateModal({
                   type="number"
                   min={0}
                   placeholder="例: 60"
-                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-base text-gray-900 placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style={{ fontSize: '16px' }}
                 />
               </label>
             </div>
