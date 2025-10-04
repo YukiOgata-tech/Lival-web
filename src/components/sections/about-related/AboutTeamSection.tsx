@@ -6,57 +6,39 @@ import { Code, Brain, Users, BookOpen, Palette, BarChart3 } from 'lucide-react'
 const teamRoles = [
   {
     icon: Code,
-    title: 'エンジニアチーム',
-    description: '大学生を中心としたフルスタック開発者',
-    members: '3名',
-    skills: ['React/Next.js', 'Firebase', 'AI/ML', 'モバイル開発'],
-    color: 'from-blue-500 to-indigo-600',
-    highlight: '平均年齢: 21歳'
+    title: 'エンジニア',
+    description: '最新技術を活用し、スケーラブルで安全なプラットフォームを構築。フロントエンドからバックエンド、AIインフラまで幅広い技術領域をカバーしています。',
+    color: 'from-blue-500 to-indigo-600'
   },
   {
     icon: Brain,
-    title: 'AI研究チーム',
-    description: '機械学習・自然言語処理の専門家',
-    members: '2名',
-    skills: ['Python', 'NLP', 'データサイエンス', 'Lang Chain'],
-    color: 'from-purple-500 to-violet-600',
-    highlight: '博士・修士課程在籍'
+    title: 'AI研究',
+    description: '機械学習と自然言語処理のスペシャリストが、教育に特化したAIシステムを研究開発。学習者一人ひとりに最適化されたパーソナライズを実現しています。',
+    color: 'from-purple-500 to-violet-600'
   },
   {
     icon: BookOpen,
-    title: '教育専門家',
-    description: '現役教師・塾経営者・教育心理学者',
-    members: '4名',
-    skills: ['教育心理学', '学習指導', 'カリキュラム設計', '進路指導'],
-    color: 'from-green-500 to-emerald-600',
-    highlight: '平均指導歴: 14年'
+    title: '教育専門',
+    description: '現場での豊富な指導経験を持つ教育者たちが、学習理論とテクノロジーを融合。効果的な学習体験をデザインしています。',
+    color: 'from-green-500 to-emerald-600'
   },
   {
     icon: Palette,
-    title: 'デザインチーム',
-    description: 'UI/UXデザイナー・クリエイター',
-    members: '1名',
-    skills: ['UI/UXデザイン', 'Figma', 'ユーザビリティ', 'ブランディング'],
-    color: 'from-pink-500 to-rose-600',
-    highlight: 'デザイン学部生'
+    title: 'デザイン',
+    description: '直感的で使いやすいユーザーインターフェースを設計。学習者が集中できる環境と、魅力的な学習体験を創造しています。',
+    color: 'from-pink-500 to-rose-600'
   },
   {
     icon: BarChart3,
-    title: 'ビジネスチーム',
-    description: '事業戦略・マーケティング・運営',
-    members: '2名',
-    skills: ['事業開発', 'マーケティング', 'データ分析', '営業'],
-    color: 'from-orange-500 to-amber-600',
-    highlight: '経営学部・MBA'
+    title: 'ビジネス',
+    description: '事業戦略からマーケティング、運営まで幅広く担当。教育の社会的意義とビジネスの持続可能性を両立させています。',
+    color: 'from-orange-500 to-amber-600'
   },
   {
     icon: Users,
     title: 'コミュニティ',
-    description: 'ベータテスター・アドバイザー',
-    members: '50+名',
-    skills: ['フィードバック', 'テスト', 'コミュニティ運営', 'サポート'],
-    color: 'from-teal-500 to-cyan-600',
-    highlight: '全国の学習者'
+    description: '全国の学習者やベータテスターと連携し、リアルなフィードバックを収集。ユーザー目線でのプロダクト改善を推進しています。',
+    color: 'from-teal-500 to-cyan-600'
   }
 ]
 
@@ -102,7 +84,7 @@ export default function AboutTeamSection() {
         </motion.div>
 
         {/* Team Roles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-20">
           {teamRoles.map((role, index) => (
             <motion.div
               key={role.title}
@@ -110,31 +92,18 @@ export default function AboutTeamSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="group"
+              className="group relative"
             >
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
-                <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r ${role.color} rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                  <role.icon className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
+              <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl blur-xl" 
+                   style={{ background: `linear-gradient(to right, var(--tw-gradient-stops))` }} />
+              
+              <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
+                <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r ${role.color} rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <role.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
                 
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">{role.title}</h3>
-                <p className="text-gray-400 mb-3 text-xs sm:text-sm">{role.description}</p>
-                
-                <div className="flex items-center justify-between mb-3 sm:mb-4">
-                  <span className="text-base sm:text-lg font-semibold text-blue-400">{role.members}</span>
-                  <span className="text-xs text-gray-500 bg-gray-700/50 px-2 py-1 rounded">{role.highlight}</span>
-                </div>
-                
-                <div className="flex flex-wrap gap-1">
-                  {role.skills.map((skill, skillIndex) => (
-                    <span 
-                      key={skillIndex}
-                      className="text-xs bg-gray-700/30 text-gray-300 px-2 py-1 rounded"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-4">{role.title}</h3>
+                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">{role.description}</p>
               </div>
             </motion.div>
           ))}

@@ -1,54 +1,6 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { School, Users, Building, Award, ChevronRight } from 'lucide-react'
-
-const partnerCategories = [
-  {
-    icon: School,
-    title: '教育機関',
-    description: '全国の学校・塾との協力関係',
-    partners: [
-      { name: '私立中高一貫校', count: '3校', region: '東京・山形' },
-      { name: '個人経営塾', count: '6塾', region: '全国' },
-      { name: '学習支援NPO', count: '1団体', region: '東北' }
-    ],
-    color: 'from-blue-500 to-indigo-600'
-  },
-  {
-    icon: Users,
-    title: '教育専門家',
-    description: '現場経験豊富な教育者たち',
-    partners: [
-      { name: '現役教師', count: '3名', region: '中高' },
-      { name: '塾経営者', count: '2名', region: '個別・集団指導' },
-      { name: '教育心理学者', count: '1名', region: '大学・研究機関' }
-    ],
-    color: 'from-green-500 to-emerald-600'
-  },
-  {
-    icon: Building,
-    title: '技術パートナー',
-    description: 'AI・システム開発の協力企業',
-    partners: [
-      { name: 'スタートアップ', count: '1社', region: 'Tech・AI' },
-      { name: '大学研究室', count: '1研究室', region: 'AI・教育工学' },
-      { name: 'フリーランス', count: '1名', region: 'デザイン・開発' }
-    ],
-    color: 'from-purple-500 to-violet-600'
-  },
-  {
-    icon: Award,
-    title: '支援・認定',
-    description: '公的機関からの支援と認定',
-    partners: [
-      { name: '自治体', count: '2自治体', region: '教育DX支援' },
-      { name: '大学インキュベーター', count: '1機関', region: 'ビジネス支援' },
-      { name: '教育関連協会', count: '3団体', region: '認定・推薦' }
-    ],
-    color: 'from-orange-500 to-red-600'
-  }
-]
 
 const testimonials = [
   {
@@ -85,51 +37,13 @@ export default function AboutPartnersSection() {
           className="text-center mb-8 sm:mb-16"
         >
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
-            協力パートナー
+            パートナーの声
           </h2>
           <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto px-4 sm:px-0">
-            現場を知る教育者、最新技術を持つ企業、そして支援してくださる機関。
-            多くの方々との協力により、LIVAL AIは成長しています。
+            現場を知る教育者、技術専門家、研究者の方々から
+            いただいた貴重なご意見とメッセージです。
           </p>
         </motion.div>
-
-        {/* Partners Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-20">
-          {partnerCategories.map((category, index) => (
-            <motion.div
-              key={category.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="group"
-            >
-              <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
-                <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r ${category.color} rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <category.icon className="w-8 h-8 text-white" />
-                </div>
-                
-                <h3 className="text-2xl font-bold text-white mb-3">{category.title}</h3>
-                <p className="text-gray-400 mb-6">{category.description}</p>
-                
-                <div className="space-y-3">
-                  {category.partners.map((partner, partnerIndex) => (
-                    <div key={partnerIndex} className="flex items-center justify-between py-2 border-b border-gray-700/30 last:border-b-0">
-                      <div>
-                        <span className="text-white font-medium">{partner.name}</span>
-                        <span className="text-gray-400 text-sm block">{partner.region}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-blue-400 font-semibold">{partner.count}</span>
-                        <ChevronRight className="w-4 h-4 text-gray-500" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
 
         {/* Testimonials */}
         <motion.div
@@ -137,11 +51,9 @@ export default function AboutPartnersSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="bg-gradient-to-r from-gray-800/50 to-slate-800/50 rounded-3xl p-8 border border-gray-700/50"
+          className="max-w-6xl mx-auto"
         >
-          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8 text-center">パートナーの声</h3>
-          
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={testimonial.name}
@@ -149,19 +61,25 @@ export default function AboutPartnersSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-gray-700/30 rounded-xl p-6"
+                className="group relative"
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-2xl mr-4">
-                    {testimonial.avatar}
-                  </div>
-                  <div>
-                    <div className="font-bold text-white">{testimonial.name}</div>
-                    <div className="text-gray-400 text-sm">{testimonial.role}</div>
-                  </div>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl blur-xl" />
                 
-                <p className="text-gray-300 leading-relaxed">”{testimonial.comment}”</p>
+                <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
+                  <div className="flex items-center mb-6">
+                    <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-2xl mr-4 group-hover:scale-110 transition-transform duration-300">
+                      {testimonial.avatar}
+                    </div>
+                    <div>
+                      <div className="font-bold text-white text-lg">{testimonial.name}</div>
+                      <div className="text-gray-400 text-sm">{testimonial.role}</div>
+                    </div>
+                  </div>
+                  
+                  <blockquote className="text-gray-300 leading-relaxed italic">
+                    "{testimonial.comment}"
+                  </blockquote>
+                </div>
               </motion.div>
             ))}
           </div>

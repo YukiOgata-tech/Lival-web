@@ -20,7 +20,7 @@ export const contactArticles: FAQArticle[] = [
 
       createHeading('メールサポート（推奨）'),
       createList([
-        'メールアドレス: support@lival-ai.com',
+        'メールアドレス: info@lival-ai.com',
         '対応時間: 平日 9:00-18:00',
         '返信時間: 24時間以内（営業日ベース）',
         '対応言語: 日本語、英語',
@@ -94,10 +94,10 @@ export const contactArticles: FAQArticle[] = [
       createHeading('緊急時の対応'),
       
       createList([
-        'セキュリティ問題: security@lival-ai.com（24時間監視）',
+        'セキュリティ問題: info@lival-ai.com（24時間監視）',
         'システム障害: 公式サイト・アプリ内で障害情報を確認',
         'アカウント乗っ取り: 即座にパスワード変更後、緊急連絡',
-        '決済問題: billing@lival-ai.com（平日優先対応）'
+        '決済問題: info@lival-ai.com（平日優先対応）'
       ]),
 
       createWarning('緊急時以外は、通常のサポート窓口をご利用ください。緊急窓口の不適切な利用は対応が遅れる原因となります。'),
@@ -212,7 +212,7 @@ export const contactArticles: FAQArticle[] = [
 
       createHeading('よくある質問'),
       createParagraph('**Q: 回答時間を過ぎても返信がありません**'),
-      createParagraph('A: 申し訳ございません。迷惑メールフォルダをご確認の上、support@lival-ai.com まで再度ご連絡ください。'),
+      createParagraph('A: 申し訳ございません。迷惑メールフォルダをご確認の上、info@lival-ai.com まで再度ご連絡ください。'),
       
       createParagraph('**Q: 緊急時の対応はどこまで対応してもらえますか？**'),
       createParagraph('A: セキュリティ問題やシステム障害など、サービス継続に関わる問題は24時間対応いたします。')
@@ -312,7 +312,7 @@ AIの回答が専門的すぎて理解できませんでした
 
       createHeading('メールでのフィードバック', 3),
       createList([
-        'メールアドレス: feedback@lival-ai.com',
+        'メールアドレス: info@lival-ai.com',
         '件名: [フィードバック] 具体的な内容',
         '本文: 詳細な状況と提案',
         '添付: 必要に応じて画像や動画',

@@ -98,7 +98,7 @@ export default function RootLayout({
               "contactPoint": {
                 "@type": "ContactPoint",
                 "contactType": "customer service",
-                "email": "support@lival.ai"
+                "email": "info@lival-ai.com"
               }
             })
           }}

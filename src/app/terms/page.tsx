@@ -318,7 +318,7 @@ export default function TermsPage() {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                 <div className="space-y-3 text-gray-700">
                   <p><strong>LIVAL AI サポートチーム</strong></p>
-                  <p>メール：support@lival.ai</p>
+                  <p>メール：info@lival-ai.com</p>
                   <p>受付時間：平日 9:00-18:00（土日祝日除く）</p>
                   <p>※お問い合わせには順次回答いたします。お急ぎの場合は、メールの件名に「【至急】」とご記載ください。</p>
                 </div>

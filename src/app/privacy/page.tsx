@@ -211,12 +211,11 @@ const sections = [
 
 **個人情報保護責任者**
 LIVAL AI 個人情報保護担当
-Email: privacy@lival-ai.com
+Email: info@lival-ai.com
 
 **お問い合わせ窓口**
 営業時間：平日10:00-18:00
-Email: support@lival-ai.com
-電話：03-XXXX-XXXX
+Email: info@lival-ai.com
 
 **所在地**
 〒XXX-XXXX

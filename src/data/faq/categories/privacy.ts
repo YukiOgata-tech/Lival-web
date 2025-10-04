@@ -472,7 +472,7 @@ export const privacyArticles: FAQArticle[] = [
 
       createHeading('緊急時の連絡先'),
       createList([
-        'セキュリティ専用: security@lival-ai.com',
+        'セキュリティ専用: info@lival-ai.com',
         '24時間対応: 重大なセキュリティ問題は即座に対応',
         'サポートチャット: アプリ内の緊急サポート機能',
         '電話サポート: エンタープライズプランのみ',

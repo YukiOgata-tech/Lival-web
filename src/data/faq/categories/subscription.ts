@@ -291,7 +291,7 @@ export const subscriptionArticles: FAQArticle[] = [
 
       createHeading('満足保証申請手順'),
       createSteps([
-        'support@lival-ai.com に返金申請メールを送信',
+        'info@lival-ai.com に返金申請メールを送信',
         '件名に「30日間満足保証による返金申請」と記載',
         'アカウント情報（登録メールアドレス）を記載',
         '簡単な理由をお聞かせください（任意）',

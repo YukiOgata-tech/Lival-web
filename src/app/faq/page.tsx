@@ -579,7 +579,7 @@ export default function FAQPage() {
               </Link>
               
               <Link
-                href="mailto:support@lival-ai.com"
+                href="mailto:info@lival-ai.com"
                 className="inline-flex items-center px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-full hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
               >
                 メールで問い合わせ

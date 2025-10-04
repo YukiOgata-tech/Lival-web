@@ -60,7 +60,7 @@ Ctrl+Shift+Delete → 全期間 → データを削除
 
       createHeading('よくある質問'),
       createParagraph('**Q: パスワードリセットメールが届きません**'),
-      createParagraph('A: 迷惑メールフォルダを確認し、noreply@lival-ai.com からのメールを許可してください。'),
+      createParagraph('A: 迷惑メールフォルダを確認し、info@lival-ai.com からのメールを許可してください。'),
       
       createParagraph('**Q: 複数のデバイスで同じアカウントを使えますか？**'),
       createParagraph('A: はい。最大5台のデバイスで同時利用可能です。')
