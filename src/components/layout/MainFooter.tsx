@@ -35,7 +35,7 @@ const footerSections = [
       { name: '個人プラン', href: '/pricing#individual' },
       { name: '塾・学校向け', href: '/pricing#enterprise' },
       { name: '無料体験', href: '/trial' },
-      { name: '法人お問い合わせ', href: '/contact/enterprise' },
+      { name: 'お問い合わせ（統一窓口）', href: '/contact' },
     ]
   },
   {
@@ -146,10 +146,6 @@ export default function MainFooter() {
               <div className="flex items-center space-x-3 text-gray-300">
                 <Mail className="w-5 h-5 text-blue-400" />
                 <span>info@lival-ai.com</span>
-              </div>
-              <div className="flex items-center space-x-3 text-gray-300">
-                <Phone className="w-5 h-5 text-blue-400" />
-                <span>03-XXXX-XXXX</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-300">
                 <MapPin className="w-5 h-5 text-blue-400" />
