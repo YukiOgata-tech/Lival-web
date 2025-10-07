@@ -3,6 +3,7 @@ import { Resend } from 'resend'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 // In-memory, very light rate limit (process lifetime). TODO: replace with durable store if厳密化
 const rateMap = new Map<string, { count: number; ts: number }>()
@@ -21,8 +22,6 @@ const schema = z.object({
   startedAt: z.number().optional(),
 })
 
-const resendApiKey = process.env.RESEND_API_KEY
-const resend = new Resend(resendApiKey)
 
 function getClientIp(headers: Headers): string {
   const xfwd = headers.get('x-forwarded-for') || ''
@@ -34,10 +33,6 @@ function sameOrigin(request: Request): boolean {
   const origin = request.headers.get('origin')
   if (!origin) return true // allow when missing (non-browser or curl)
   try {
-    if (!resendApiKey) {
-      console.error('[contact] missing_api_key', { requestId })
-      return NextResponse.json({ ok: false, error: 'missing_api_key' }, { status: 500 })
-    }
     const reqHost = new URL(request.url).host
     const originHost = new URL(origin).host
     return reqHost === originHost
@@ -145,6 +140,13 @@ export async function POST(request: Request) {
     const emailSubject = `[Contact] ${subject}`
     const html = buildHtml({ name, email, subject, message })
     const text = buildText({ name, email, subject, message })
+
+    const resendApiKey = process.env.RESEND_API_KEY
+    if (!resendApiKey) {
+      console.error('[contact] missing_api_key', { requestId })
+      return NextResponse.json({ ok: false, error: 'missing_api_key' }, { status: 500 })
+    }
+    const resend = new Resend(resendApiKey)
 
     const { error } = await resend.emails.send({
       from: FROM,
