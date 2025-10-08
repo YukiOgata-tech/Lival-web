@@ -102,10 +102,18 @@ export default function AboutContactSection() {
             ? '送信が早すぎます。数秒待ってからお試しください。'
             : data?.error === 'blocked'
             ? '送信がブロックされました。しばらくしてからお試しください。'
+            : data?.error === 'message_too_short'
+            ? 'メッセージは15文字以上でご記入ください。'
+            : data?.error === 'too_many_links'
+            ? 'URLの記載が多すぎます。リンクは2件以内にしてください。'
+            : data?.error === 'disposable_email'
+            ? 'そのメールアドレスのドメインは使用できません。別のアドレスをご利用ください。'
             : data?.error === 'missing_api_key'
             ? 'サーバー設定エラー（APIキー未設定）。管理者にお問い合わせください。'
             : data?.error === 'send_failed' && data?.hint === 'verify_from_domain_or_set_RESEND_FROM_onboarding'
             ? '送信元ドメイン未認証の可能性があります。管理者は RESEND_FROM に onboarding@resend.dev を設定してテストしてください。'
+            : data?.error === 'rate_limited_email'
+            ? '同じメールアドレスからの短時間の連続送信は制限しています。しばらく時間を置いて再度お試しください。'
             : '送信に失敗しました。時間をおいて再度お試しください。'
         setResult({ type: 'error', message: msg })
       } else {

@@ -9,6 +9,10 @@ export const dynamic = 'force-dynamic'
 const rateMap = new Map<string, { count: number; ts: number }>()
 const WINDOW_MS = 60_000
 const MAX_REQ_PER_WINDOW = 5
+// Per-email light rate limit (process lifetime)
+const emailRateMap = new Map<string, number[]>()
+const EMAIL_WINDOW_MS = 5 * 60_000 // 5 minutes
+const MAX_EMAIL_PER_WINDOW = 3
 
 const schema = z.object({
   name: z.string().min(1).max(80),
@@ -82,6 +86,20 @@ function isValidFromFormat(input: string): boolean {
   return plainEmail.test(input) || nameWithEmail.test(input)
 }
 
+function countUrls(text: string): number {
+  const re = /(https?:\/\/|www\.)/gi
+  return (text.match(re) || []).length
+}
+
+const DISPOSABLE_DOMAINS = new Set([
+  'mailinator.com',
+  '10minutemail.com',
+  'yopmail.com',
+  'guerrillamail.com',
+  'tempmail.com',
+  'dispostable.com',
+])
+
 export async function POST(request: Request) {
   const requestId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
   try {
@@ -111,6 +129,12 @@ export async function POST(request: Request) {
 
     const { name, email, subject, message, company, _hp, hv, startedAt } = parsed.data
 
+    // trim values
+    const tName = name.trim()
+    const tEmail = email.trim()
+    const tSubject = subject.trim()
+    const tMessage = message.trim()
+
     // honeypot: 現在はブロックせず警告のみ（誤検知回避のため）
     if ((company && company.trim().length > 0) || (_hp && _hp.trim().length > 0)) {
       console.warn('[contact] honeypot_triggered', { requestId, ip })
@@ -126,6 +150,30 @@ export async function POST(request: Request) {
       console.warn('[contact] human_validation_missing', { requestId, ip })
     }
 
+    // server-side additional checks
+    if (tMessage.length < 15) {
+      return NextResponse.json({ ok: false, error: 'message_too_short' }, { status: 400 })
+    }
+    if (countUrls(tMessage) > 2) {
+      return NextResponse.json({ ok: false, error: 'too_many_links' }, { status: 400 })
+    }
+    const emailDomain = tEmail.split('@')[1]?.toLowerCase() || ''
+    if (DISPOSABLE_DOMAINS.has(emailDomain)) {
+      return NextResponse.json({ ok: false, error: 'disposable_email' }, { status: 400 })
+    }
+
+    // per-email rate limit
+    {
+      const nowTs = Date.now()
+      const list = emailRateMap.get(tEmail) || []
+      const recent = list.filter((ts) => nowTs - ts < EMAIL_WINDOW_MS)
+      if (recent.length >= MAX_EMAIL_PER_WINDOW) {
+        return NextResponse.json({ ok: false, error: 'rate_limited_email' }, { status: 429 })
+      }
+      recent.push(nowTs)
+      emailRateMap.set(tEmail, recent)
+    }
+
     const TO = process.env.CONTACT_TO || 'info@lival-ai.com'
     // 既定は自社ドメインの送信元に設定（ドメイン認証済み前提）
     let FROM = process.env.RESEND_FROM || 'Lival AI <no-reply@lival-ai.com>'
@@ -137,9 +185,9 @@ export async function POST(request: Request) {
     // 将来的に保存（Supabase/Firebase）に対応可能: ここでDB挿入を行う
     // 例: await saveContact({ name, email, subject, message, ipHash, userAgent })
 
-    const emailSubject = `[Contact] ${subject}`
-    const html = buildHtml({ name, email, subject, message })
-    const text = buildText({ name, email, subject, message })
+    const emailSubject = `[Contact] ${tSubject}`
+    const html = buildHtml({ name: tName, email: tEmail, subject: tSubject, message: tMessage })
+    const text = buildText({ name: tName, email: tEmail, subject: tSubject, message: tMessage })
 
     const resendApiKey = process.env.RESEND_API_KEY
     if (!resendApiKey) {
@@ -154,7 +202,7 @@ export async function POST(request: Request) {
       subject: emailSubject,
       html,
       text,
-      reply_to: email,
+      reply_to: tEmail,
     })
 
     if (error) {
