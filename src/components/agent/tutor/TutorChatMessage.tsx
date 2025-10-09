@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState, useEffect } from 'react'
+import { getCachedImage, cacheImage } from '@/lib/tutorImageCache'
 import { db } from '@/lib/firebase'
 import { doc, setDoc } from 'firebase/firestore'
 import MarkdownMessage from '@/components/agent/common/MarkdownMessage'
@@ -14,6 +15,7 @@ export type TutorChatMessage = {
   content: string
   createdAt: number
   hasImage?: boolean
+  imageStorageUrls?: string[]
   aiCode?: 'Sc' | 'Ja' | 'En' | 'Kn' | 'Ca' | 'general'
   tags?: TutorTag[]
   animate?: boolean
@@ -113,6 +115,46 @@ export default function TutorChatMessageView({
   )}
 
 function MessageContent({ msg }: { msg: TutorChatMessage }) {
+  // 画像表示（Storage URL → IndexedDB キャッシュ）
+  if (msg.imageStorageUrls && msg.imageStorageUrls.length > 0) {
+    const [urls, setUrls] = useState<string[]>([])
+    useEffect(() => {
+      let revoked: string[] = []
+      let cancelled = false
+      ;(async () => {
+        const out: string[] = []
+        for (const u of msg.imageStorageUrls || []) {
+          const cached = await getCachedImage(u)
+          if (cached) {
+            out.push(cached)
+            continue
+          }
+          const res = await fetch(u)
+          const blob = await res.blob()
+          await cacheImage(u, blob)
+          const obj = URL.createObjectURL(blob)
+          out.push(obj)
+          revoked.push(obj)
+        }
+        if (!cancelled) setUrls(out)
+      })()
+      return () => {
+        cancelled = true
+        revoked.forEach((o) => URL.revokeObjectURL(o))
+      }
+    }, [msg.imageStorageUrls?.join('|')])
+
+    return (
+      <div className="space-y-2">
+        <div className="flex flex-wrap gap-2">
+          {urls.map((u, i) => (
+            <img key={i} src={u} alt={`img-${i}`} className="h-24 w-24 rounded object-cover border" />
+          ))}
+        </div>
+        {msg.content && <div className="whitespace-pre-wrap leading-relaxed break-words">{msg.content}</div>}
+      </div>
+    )
+  }
   // ユーザー発話はそのまま（改行保持）
   if (msg.role === 'user') {
     return <div className="whitespace-pre-wrap leading-relaxed break-words">{msg.content}</div>

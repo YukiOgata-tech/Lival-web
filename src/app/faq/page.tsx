@@ -63,7 +63,7 @@ const faqCategories = [
       {
         id: 'ai-types',
         title: '3つのAIエージェントの違い',
-        preview: '家庭教師AI、進路カウンセラーAI、学習計画AIの特徴...',
+        preview: '家庭教師AI（写真でも質問OK）/ 進路カウンセラーAI（モバイル限定）/ 学習プランナーAIの違い',
         isPopular: true
       },
       {
@@ -347,6 +347,23 @@ export default function FAQPage() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-6xl mx-auto">
           
+          {/* お知らせ（サービス最新情報） */}
+          {!searchQuery && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-8 rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 sm:p-5"
+            >
+              <h3 className="text-base sm:text-lg font-bold text-emerald-800 mb-2">最近のアップデート</h3>
+              <ul className="text-sm sm:text-base text-emerald-900 space-y-1 list-disc pl-5">
+                <li>家庭教師AIで「写真からの質問」に対応しました。手書きノートや問題用紙でもOKです。</li>
+                <li>進路カウンセラーAIは<strong>モバイルアプリ限定</strong>でご利用いただけます。</li>
+                <li>AIでも解決しづらい内容は、会員限定のLINEオープンチャット（現役プロが複数人体制）でフォロー予定です。</li>
+              </ul>
+            </motion.div>
+          )}
+
           {/* Popular Articles */}
           {!searchQuery && (
             <motion.div

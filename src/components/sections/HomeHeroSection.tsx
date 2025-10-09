@@ -66,7 +66,10 @@ export default function HomeHeroSection() {
   }, [])
 
   return (
-    <section ref={heroRef} className="relative min-h-screen/2 md:pt-14 pt-4 flex items-center justify-center overflow-hidden">
+    <section
+      ref={heroRef}
+      className="relative md:min-h-[80vh] md:flex md:items-center md:justify-center overflow-hidden pt-8 pb-6 md:pt-14 md:pb-12"
+    >
       {/* Background Animation */}
       <motion.div 
         className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10"
@@ -113,9 +116,9 @@ export default function HomeHeroSection() {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="mb-6 md:mb-8"
+            className="mb-4 md:mb-8"
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl mb-4 md:mb-6">
+            <h1 className="text-3xl md:text-6xl lg:text-7xl mb-3 md:mb-6">
               <span className="font-bold text-hero bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 あなただけの
               </span>
@@ -126,11 +129,11 @@ export default function HomeHeroSection() {
                   alt="Lival AI"
                   width={300}
                   height={80}
-                  className="h-12 md:h-16 lg:h-20 w-auto bg-emerald-300/40 rounded-4xl"
+                  className="h-10 md:h-16 lg:h-20 w-auto bg-emerald-300/40 rounded-4xl"
                   priority
                 />
                 <motion.span
-                  className="inline-block ml-4 text-stylish text-3xl md:text-4xl lg:text-5xl"
+                  className="inline-block ml-3 md:ml-4 text-stylish text-2xl md:text-4xl lg:text-5xl"
                   animate={{ rotate: [0, 10, 0] }}
                   transition={{ duration: 1, repeat: Infinity, delay: 1 }}
                 >
@@ -139,7 +142,7 @@ export default function HomeHeroSection() {
               </div>
             </h1>
             
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed font-soft">
+            <p className="text-base sm:text-lg md:text-2xl text-gray-600 mb-6 md:mb-8 leading-relaxed font-soft">
               <span className="font-playful text-blue-700">6つの学習タイプ別</span>に最適化された
               <span className="block md:inline"><br className="md:hidden" /></span>
               <span className="font-accent text-purple-700">教育特化AIコーチング</span>で、学習効果を最大化
@@ -151,11 +154,11 @@ export default function HomeHeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-2"
+            className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-1 md:mb-2"
           >
             <Link
               href="/diagnosis"
-              className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-cta"
+              className="group relative px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base md:text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 md:transform md:hover:scale-105 shadow-lg hover:shadow-xl text-cta"
             >
               <span className="flex items-center justify-center">
                 <Sparkles className="w-5 h-5 mr-2" />
@@ -164,7 +167,7 @@ export default function HomeHeroSection() {
               </span>
             </Link>
             
-            <button className="group flex items-center justify-center px-8 py-4 border-2 border-gray-300 text-gray-700 text-lg font-semibold rounded-full hover:border-gray-400 transition-all duration-300 text-accent">
+            <button className="group flex items-center justify-center px-6 py-3 md:px-8 md:py-4 border-2 border-gray-300 text-gray-700 text-base md:text-lg font-semibold rounded-full hover:border-gray-400 transition-all duration-300 text-accent">
               <Play className="w-5 h-5 mr-2" />
               デモ動画を見る
             </button>
@@ -178,7 +181,7 @@ export default function HomeHeroSection() {
             className="relative mx-auto max-w-4xl px-4 md:px-0"
           >
             <LottieAnimation 
-              className="h-64 md:h-96 lg:h-[500px]" 
+              className="h-48 sm:h-60 md:h-96 lg:h-[500px]" 
               fallback={
                 <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl md:rounded-3xl p-8 md:p-16 relative">
                   <motion.div
@@ -215,7 +218,7 @@ export default function HomeHeroSection() {
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10"
+          className="hidden md:block absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10"
         >
           <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
             <div className="w-1 h-3 bg-gray-400 rounded-full mt-2" />

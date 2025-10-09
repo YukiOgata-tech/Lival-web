@@ -5,6 +5,7 @@ import AIFeaturesSection from '@/components/features/AIFeaturesSection'
 import MobileAppFeaturesSection from '@/components/features/MobileAppFeaturesSection'
 import BlogFeaturesSection from '@/components/features/BlogFeaturesSection'
 import FeaturesCTASection from '@/components/features/FeaturesCTASection'
+import OpenChatSection from '@/components/features/OpenChatSection'
 
 export const metadata: Metadata = {
   title: 'AIチャット機能 | Lival AI - 3種の専門AIコーチ',
@@ -22,6 +23,7 @@ export default function FeaturesPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <FeaturesHeroSection />
       <AIFeaturesSection />
+      <OpenChatSection />
       <MobileAppFeaturesSection />
       <BlogFeaturesSection />
       <FeaturesCTASection />

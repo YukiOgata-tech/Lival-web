@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { db } from '@/lib/firebase'
 import { collection, doc, getDocs, limit, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore'
+import { deleteThreadImages } from '@/lib/tutorImageStorage'
 
 export type TutorThread = {
   id: string
@@ -106,6 +107,8 @@ export default function TutorThreadsPanel({
                       const { doc, setDoc, serverTimestamp } = await import('firebase/firestore')
                       const { db } = await import('@/lib/firebase')
                       await setDoc(doc(db, 'users', uid, 'eduAI_threads', t.id), { archived: true, deletedAt: serverTimestamp(), updatedAt: serverTimestamp() }, { merge: true })
+                      // Storage 内の画像削除（仕様に準拠）
+                      try { await deleteThreadImages(t.id) } catch {}
                     }
                     setThreads((prev) => prev.filter((x) => x.id !== t.id))
                   } catch {}

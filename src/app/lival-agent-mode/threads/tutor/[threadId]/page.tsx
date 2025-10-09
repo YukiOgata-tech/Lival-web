@@ -9,11 +9,12 @@ import TutorChatMessageView, { type TutorChatMessage, type TutorTag } from '@/co
 import LottieLoader from '@/components/agent/common/LottieLoader'
 import { httpsCallable } from 'firebase/functions'
 import { db, functions } from '@/lib/firebase'
-import { addDoc, collection, doc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, updateDoc, writeBatch } from 'firebase/firestore'
 import { recognizeMultiple } from '@/lib/ocr/recognize'
 import { tutorCategorize } from '@/lib/agent/tutor/categorize'
 import { generateTutorReportWithGemini } from '@/lib/ai/gemini'
 import TutorReportModal from '@/components/agent/tutor/TutorReportModal'
+import { uploadTutorImageWeb } from '@/lib/tutorImageStorage'
 
 function messagesKey(uid: string | null, threadId: string) { return `lival_tutor_messages_${uid ?? 'guest'}_${threadId}` }
 
@@ -43,7 +44,7 @@ export default function TutorThreadPage() {
         const snap = await getDocs(q)
         const remote = snap.docs.map(d => {
           const v = d.data() as any
-          const base: TutorChatMessage = { id: d.id, fsId: d.id, role: v.role, content: v.content, createdAt: v.createdAt?.toMillis?.() || Date.now(), hasImage: !!v.hasImage, tags: v.tags || [] }
+          const base: TutorChatMessage = { id: d.id, fsId: d.id, role: v.role, content: v.content, createdAt: v.createdAt?.toMillis?.() || Date.now(), hasImage: !!v.hasImage, imageStorageUrls: v.imageStorageUrls || [], tags: v.tags || [] }
           if (v.kind === 'report_log') {
             base.type = 'report_log'
             base.reportEngine = v.reportEngine
@@ -73,44 +74,112 @@ export default function TutorThreadPage() {
     const next = [...base, msg]
     persistMessages(next)
     if (user && (opts?.saveRemote ?? true)) {
-      const threadRef = doc(db, 'users', user.uid, 'eduAI_threads', threadId)
-      const col = collection(threadRef, 'messages')
-      const docData: any = { role: msg.role, agent: 'tutor', content: msg.content, hasImage: !!msg.hasImage, tags: msg.tags || [], kind: opts?.kind || (msg.role === 'user' ? 'ask' : 'chitchat'), createdAt: serverTimestamp() }
-      if (opts?.kind === 'report_log' || msg.type === 'report_log') {
-        docData.reportEngine = msg.reportEngine
-        docData.reportTextContent = msg.reportTextContent
-        docData.reportTitle = msg.reportTitle
+      try {
+        const threadRef = doc(db, 'users', user.uid, 'eduAI_threads', threadId)
+        const col = collection(threadRef, 'messages')
+        const docData: any = { role: msg.role, agent: 'tutor', content: msg.content, hasImage: !!msg.hasImage, imageStorageUrls: msg.imageStorageUrls || [], tags: msg.tags || [], kind: opts?.kind || (msg.role === 'user' ? 'ask' : 'chitchat'), createdAt: serverTimestamp() }
+        if (opts?.kind === 'report_log' || msg.type === 'report_log') {
+          docData.reportEngine = msg.reportEngine
+          docData.reportTextContent = msg.reportTextContent
+          docData.reportTitle = msg.reportTitle
+        }
+        const batch = writeBatch(db)
+        const newMsgRef = doc(col)
+        batch.set(newMsgRef, docData)
+        const updates: any = { updatedAt: serverTimestamp() }
+        // 初回ユーザー発話でスレッドタイトルを生成
+        if (base.length === 0 && msg.role === 'user') {
+          const t = (msg.content || 'Tutor スレッド').slice(0, 30)
+          updates.title = t
+        }
+        batch.set(threadRef, updates, { merge: true })
+        await batch.commit()
+        // fsId をローカルにも反映
+        setMessages((prev) => {
+          const patched = prev.map((m, idx) => (idx === prev.length - 1 && m.id === msg.id) ? { ...m, fsId: newMsgRef.id } : m)
+          const sanitized = patched.map(({ animate, ...rest }) => rest)
+          if (threadId) localStorage.setItem(messagesKey(user?.uid ?? null, threadId), JSON.stringify(sanitized))
+          return patched
+        })
+      } catch (e) {
+        console.error('Failed to write message batch:', e)
+        setToast('メッセージの保存に失敗しました（ローカルには保存されました）')
       }
-      await addDoc(col, docData)
-      await updateDoc(threadRef, { updatedAt: serverTimestamp() })
     }
   }
 
   const recentMessagesForFn = () => messages.slice(-8).map(m => ({ role: m.role, content: m.content }))
 
-  const onSend = async ({ text, images }: { text: string; images: string[] }) => {
+  const onSend = async ({ text, images, files }: { text: string; images: string[]; files: File[] }) => {
     if (!user || !threadId) return
     setBusy(true)
-    const userMsg: TutorChatMessage = { id: crypto.randomUUID(), role: 'user', content: text || (images.length ? '画像を送信しました' : ''), createdAt: Date.now(), hasImage: images.length > 0 }
+    const messageId = crypto.randomUUID()
+    let imageStorageUrls: string[] = []
+    try {
+      // 直近履歴に今回のユーザー発話を含めた配列を作成（状態反映の遅延対策）
+      const historyForApi = [
+        ...recentMessagesForFn(),
+        { role: 'user' as const, content: userMsg.content },
+      ]
+      if (files?.length) {
+        const results = await Promise.all(files.map((f) => uploadTutorImageWeb(f, threadId, messageId)))
+        imageStorageUrls = results.map(r => r.storageUrl)
+      }
+    } catch {}
+    const userMsg: TutorChatMessage = { id: messageId, role: 'user', content: text || ((images.length || imageStorageUrls.length) ? '画像を送信しました' : ''), createdAt: Date.now(), hasImage: (images.length + imageStorageUrls.length) > 0, imageStorageUrls }
     await appendMessage(userMsg, { kind: 'ask' })
     requestAnimationFrame(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }))
     try {
-      if (images.length > 0) {
-        const ocrText = await recognizeMultiple(images)
-        const pillar = await tutorCategorize(text, ocrText, recentMessagesForFn())
-        const map: Record<string, string> = { science: 'scienceTutor', japanese: 'JapaneseTutor', english: 'EnglishTutor', knowledge: 'knowledgeTutor', other: 'knowledgeTutor' }
-        const fnName = pillar ? map[pillar] : 'knowledgeTutor'
-        const tutorFn = httpsCallable(functions, fnName)
-        const resp = await tutorFn({ messages: recentMessagesForFn(), images })
-        const textAns = (resp.data as any)?.text || '回答を生成できませんでした。'
+      // 1st choice: Cloud Run API 経由
+      const payload = { threadId, messages: historyForApi, images, storageUrls: imageStorageUrls }
+      const token = await user.getIdToken()
+      const res = await fetch('/api/tutor/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) })
+      if (res.ok) {
+        const data = await res.json()
+        const textAns = data?.text || '回答を生成できませんでした。'
         await appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: textAns, createdAt: Date.now(), hasImage: false, animate: true })
       } else {
-        const tutorText = httpsCallable(functions, 'tutorTextAnswer')
-        const resp = await tutorText({ userText: text, history: recentMessagesForFn() })
-        const textAns = (resp.data as any)?.text || '回答を生成できませんでした。'
-        await appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: textAns, createdAt: Date.now(), animate: true })
+        // Fallback: Firebase Functions 経由（後方互換）
+        let ocrText = ''
+        try {
+          if ((images.length + imageStorageUrls.length) > 0 && images.length) {
+            ocrText = await recognizeMultiple(images)
+          }
+        } catch {}
+
+        try {
+          if ((images.length + imageStorageUrls.length) > 0) {
+            // 画像あり用 Functions（科目分類→関数分岐）
+            const pillar = await tutorCategorize(text, ocrText, historyForApi)
+            const map: Record<string, string> = { science: 'scienceTutor', japanese: 'JapaneseTutor', english: 'EnglishTutor', knowledge: 'knowledgeTutor', other: 'knowledgeTutor' }
+            const fnName = pillar ? map[pillar] : 'knowledgeTutor'
+            const tutorFn = httpsCallable(functions, fnName)
+            const resp = await tutorFn({ messages: historyForApi, images })
+            const textAns = (resp.data as any)?.text || '回答を生成できませんでした。'
+            await appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: textAns, createdAt: Date.now(), hasImage: false, animate: true })
+          } else {
+            // テキストのみ
+            const tutorText = httpsCallable(functions, 'tutorTextAnswer')
+            const resp = await tutorText({ userText: text, history: historyForApi })
+            const textAns = (resp.data as any)?.text || '回答を生成できませんでした。'
+            await appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: textAns, createdAt: Date.now(), animate: true })
+          }
+        } catch (e) {
+          // 最終フォールバック: OCR文字列を本文に付与してテキスト関数へ
+          try {
+            const fallbackText = ocrText ? `${text}\n\n【画像テキスト】\n${ocrText}` : text
+            const tutorText = httpsCallable(functions, 'tutorTextAnswer')
+            const resp = await tutorText({ userText: fallbackText, history: historyForApi })
+            const textAns = (resp.data as any)?.text || '回答を生成できませんでした。'
+            await appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: textAns, createdAt: Date.now(), animate: true })
+          } catch (e2) {
+            throw e2
+          }
+        }
       }
     } catch (e) {
+      // 失敗詳細を一時ログ（開発支援用）
+      try { console.error('[tutor] send_error', e) } catch {}
       await appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: 'エラーが発生しました。時間をおいて再試行してください。', createdAt: Date.now() })
     } finally { setBusy(false) }
   }

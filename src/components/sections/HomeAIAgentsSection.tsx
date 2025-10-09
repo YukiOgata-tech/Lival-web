@@ -27,16 +27,15 @@ export default function HomeAIAgentsSection() {
       description: '24時間質問対応',
       icon: BookOpen,
       color: 'from-green-500 to-emerald-500',
-      features: ['個別指導', '解説付き', '弱点分析'],
-      comingSoon: true
+      features: ['個別指導', '解説付き', '弱点分析']
     },
     {
       name: '進路カウンセラーAI',
-      description: '将来の目標設定をサポート',
+      description: '将来の目標設定をサポート（モバイルアプリ限定）',
       icon: Users,
       color: 'from-purple-500 to-indigo-500',
       features: ['適性分析', '進路提案', 'キャリア相談'],
-      comingSoon: true
+      mobileOnly: true
     }
   ]
 
@@ -129,11 +128,15 @@ export default function HomeAIAgentsSection() {
                     <div className="flex-1">
                       <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
                         <h3 className="text-base sm:text-lg font-bold text-gray-900">{agent.name}</h3>
-                        {agent.comingSoon && (
-                          <span className="bg-orange-100 text-orange-800 text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full font-medium text-xs">
+                        {agent.comingSoon ? (
+                          <span className="bg-orange-100 text-orange-800 text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full font-medium">
                             開発中
                           </span>
-                        )}
+                        ) : agent.mobileOnly ? (
+                          <span className="bg-emerald-100 text-emerald-800 text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full font-medium">
+                            モバイルアプリ限定
+                          </span>
+                        ) : null}
                       </div>
                       <p className="text-sm sm:text-base text-gray-600 mb-2 sm:mb-3">{agent.description}</p>
                       <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -183,7 +186,7 @@ export default function HomeAIAgentsSection() {
           </div>
           
           <p className="text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4 px-4 sm:px-0">
-            ※ 家庭教師AI・進路カウンセラーAIは現在開発中です
+            ※ 進路カウンセラーAIはモバイルアプリ限定です
           </p>
         </motion.div>
       </div>

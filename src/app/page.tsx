@@ -5,6 +5,7 @@ import HomeStatsSection from '@/components/sections/HomeStatsSection'
 import HomeStudentTypesSection from '@/components/sections/HomeStudentTypesSection'
 import HomeAIAgentsSection from '@/components/sections/HomeAIAgentsSection'
 import HomeFeaturesSection from '@/components/sections/HomeFeaturesSection'
+import OpenChatSection from '@/components/features/OpenChatSection'
 import HomeCredibilitySection from '@/components/sections/HomeCredibilitySection'
 import HomeTestimonialsSection from '@/components/sections/HomeTestimonialsSection'
 import HomeCTASection from '@/components/sections/HomeCTASection'
@@ -29,6 +30,9 @@ export default function HomePage() {
 
       {/* Features Section */}
       <HomeFeaturesSection />
+
+      {/* Open Chat Section */}
+      <OpenChatSection />
 
       {/* Credibility Section */}
       <HomeCredibilitySection />

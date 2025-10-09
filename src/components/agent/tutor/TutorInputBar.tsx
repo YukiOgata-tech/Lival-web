@@ -9,7 +9,7 @@ export default function TutorInputBar({
   onSend,
 }: {
   disabled?: boolean
-  onSend: (payload: { text: string; images: string[] }) => void
+  onSend: (payload: { text: string; images: string[]; files: File[] }) => void
 }) {
   const [text, setText] = useState('')
   const [images, setImages] = useState<ImageItem[]>([])
@@ -32,7 +32,7 @@ export default function TutorInputBar({
       const f = files[i]
       if (!f.type.startsWith('image/')) continue
       const dataUrl = await resizeImageToDataURL(f, 1024)
-      toAdd.push({ id: crypto.randomUUID(), url: dataUrl })
+      toAdd.push({ id: crypto.randomUUID(), url: dataUrl, file: f })
     }
     setImages((prev) => {
       const next = [...prev, ...toAdd].slice(0, 4)
@@ -44,7 +44,7 @@ export default function TutorInputBar({
 
   const send = () => {
     if (disabled) return
-    const payload = { text: text.trim(), images: images.map((x) => x.url) }
+    const payload = { text: text.trim(), images: images.map((x) => x.url), files: images.map((x) => x.file!).filter(Boolean) }
     if (!payload.text && payload.images.length === 0) return
     onSend(payload)
     setText('')
@@ -130,4 +130,3 @@ async function resizeImageToDataURL(file: File, maxSide = 1024, quality = 0.8): 
   // toDataURL でEXIFは剥がれる（ブラウザ実装依存）
   return canvas.toDataURL('image/jpeg', quality)
 }
-

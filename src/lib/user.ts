@@ -93,11 +93,17 @@ export const ensureSupabaseUserProfile = async (
   firebaseUser: FirebaseUser,
   livalUserData?: LivalUser
 ): Promise<void> => {
+  // 重複実行を避けるための簡易ガード（同UIDの連続チェックを抑止）
+  const uid = firebaseUser.uid
+  if (profileEnsureGuard.shouldSkip(uid)) {
+    return
+  }
+  profileEnsureGuard.mark(uid)
   try {
-    console.log('🔍 Checking Supabase user profile for:', firebaseUser.uid)
+    console.log('🔍 Checking Supabase user profile for:', uid)
     
     // 既存のSupabaseプロファイルをチェック
-    const existingProfile = await getUserProfile(firebaseUser.uid)
+    const existingProfile = await getUserProfile(uid)
     
     if (existingProfile) {
       console.log('✅ Supabase user profile already exists:', existingProfile.uid)
@@ -116,6 +122,22 @@ export const ensureSupabaseUserProfile = async (
     console.warn('⚠️ Continuing despite Supabase profile ensure error')
   }
 }
+
+// 同一UIDの短時間の重複実行を抑止するガード
+const profileEnsureGuard = (() => {
+  const lastRun = new Map<string, number>()
+  const WINDOW_MS = 10_000 // 10秒間は再実行を抑止
+  return {
+    shouldSkip(uid: string) {
+      const now = Date.now()
+      const ts = lastRun.get(uid)
+      return ts !== undefined && (now - ts) < WINDOW_MS
+    },
+    mark(uid: string) {
+      lastRun.set(uid, Date.now())
+    }
+  }
+})()
 
 /**
  * ユーザープロフィールを更新

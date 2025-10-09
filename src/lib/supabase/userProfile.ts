@@ -86,32 +86,51 @@ export async function upsertUserProfile(profileData: CreateUserProfileData): Pro
 /**
  * ユーザープロファイルを取得
  */
+const inFlight = new Map<string, Promise<UserProfile | null>>()
+const cache = new Map<string, { at: number; data: UserProfile | null }>()
+const CACHE_MS = 10_000 // 10秒キャッシュ
+
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
-  try {
-    console.log('🔍 Getting user profile for:', uid)
-    
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('uid', uid)
-      .single()
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        // プロファイルが見つからない場合
-        console.log('📄 No profile found for user:', uid)
-        return null
-      }
-      console.error('❌ Error getting user profile:', error)
-      throw error
-    }
-
-    console.log('✅ User profile retrieved:', data)
-    return data
-  } catch (error) {
-    console.error('❌ Failed to get user profile:', error)
-    return null
+  const now = Date.now()
+  const cached = cache.get(uid)
+  if (cached && (now - cached.at) < CACHE_MS) {
+    return cached.data
   }
+  const existing = inFlight.get(uid)
+  if (existing) return existing
+
+  const p = (async () => {
+    try {
+      console.log('🔍 Getting user profile for:', uid)
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('uid', uid)
+        .single()
+
+      if (error) {
+        if ((error as any).code === 'PGRST116') {
+          console.log('📄 No profile found for user:', uid)
+          cache.set(uid, { at: Date.now(), data: null })
+          return null
+        }
+        console.error('❌ Error getting user profile:', error)
+        throw error
+      }
+      console.log('✅ User profile retrieved:', data)
+      cache.set(uid, { at: Date.now(), data })
+      return data
+    } catch (e) {
+      console.error('❌ Failed to get user profile:', e)
+      cache.set(uid, { at: Date.now(), data: null })
+      return null
+    } finally {
+      inFlight.delete(uid)
+    }
+  })()
+
+  inFlight.set(uid, p)
+  return p
 }
 
 /**
