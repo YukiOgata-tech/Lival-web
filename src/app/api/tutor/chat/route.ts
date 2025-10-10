@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { adminAuth } from '@/lib/firebase/admin'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -9,6 +8,7 @@ type ChatMessage = { role: 'user' | 'assistant'; content: string }
 export async function POST(req: Request) {
   const requestId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
   try {
+    const { adminAuth } = await import('@/lib/firebase/admin')
     // Verify Firebase ID token from Authorization header
     const authz = req.headers.get('authorization') || ''
     const token = authz.startsWith('Bearer ') ? authz.slice(7) : ''
