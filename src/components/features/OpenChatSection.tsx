@@ -20,7 +20,8 @@ export default function OpenChatSection() {
             </h2>
             <p className="text-gray-700 text-sm md:text-base leading-relaxed max-w-3xl mb-5 md:mb-6">
               Tutor AIでほとんどの疑問はその場で解決できます。それでも難しい問題や、答案の添削・表現の工夫など「人の目」が必要な場面のために、
-              会員だけが参加できる招待制のLINEオープンチャットを準備中です。現役のプロ講師が複数人体制で、あなたの学びをしっかり支えます。
+              会員だけが参加できる招待制のLINEオープンチャットを準備中です。現役のプロ講師に加え、
+              東北大学大学院生・新潟大学生・外国語大学などの現役大学生チューターも在籍し、複数人体制であなたの学びをしっかり支えます。
             </p>
 
             {/* ポイント群 */}
@@ -31,8 +32,8 @@ export default function OpenChatSection() {
               <Feature icon={<MessageCircle className="w-4 h-4" />} title="写真・動画でも相談OK">
                 宿題や答案の写真を送って具体的なアドバイス。
               </Feature>
-              <Feature icon={<ShieldCheck className="w-4 h-4" />} title="現役プロが複数名で対応">
-                シフト制で素早いレスポンスを目指します。
+              <Feature icon={<ShieldCheck className="w-4 h-4" />} title="現役プロ＋大学生が対応">
+                東北大院・新潟大・外語大の大学生チューターとプロ講師が連携。
               </Feature>
             </div>
 
@@ -46,7 +47,7 @@ export default function OpenChatSection() {
             </details>
             <div className="hidden md:block text-gray-700 text-sm mb-2">
               学校や塾の課題、記述式の表現、学習方法の相談、進路の悩みなど、人だからこそ寄り添えるテーマにも対応します。
-              AIとプロのハイブリッドで、学びの安心と成果をさらに高めます。
+              AIと人のハイブリッドで、学びの安心と成果をさらに高めます。大学生ならではの等身大の視点と、プロ講師の専門性を両立します。
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
@@ -87,4 +88,3 @@ function Feature({ icon, title, children }: { icon: React.ReactNode; title: stri
     </motion.div>
   )
 }
-

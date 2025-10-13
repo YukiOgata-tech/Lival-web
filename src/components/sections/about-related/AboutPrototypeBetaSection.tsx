@@ -7,14 +7,13 @@ const developmentPhases = [
   {
     id: 'prototype',
     title: 'プロトタイプ開発',
-    period: '2023年10月 - 2024年1月',
+    period: '試作期',
     icon: Code2,
-    description: '科学的根拠に基づく学習診断とAIコーチング機能の初期バージョンを開発',
+    description: '学習診断とAIコーチングの基盤を短期間で試作し、体験価値を検証',
     achievements: [
-      '自己決定理論（SDT）とBig Five理論に基づく診断システム構築',
-      '6つの学習タイプ分類アルゴリズムの実装',
-      '3つの専門AIエージェント（家庭教師・進路カウンセラー・学習プランナー）の基礎開発',
-      'React Native モバイルアプリとFirebaseバックエンドの構築'
+      '診断システムと学習タイプ分類の初期実装',
+      '3つのAIコーチ（家庭教師/進路/プランナー）の基盤構築',
+      'モバイルアプリとバックエンドの初期版を作成'
     ],
     technologies: ['React Native', 'Firebase', 'OpenAI API', 'Node.js', 'TypeScript'],
     status: 'completed'
@@ -22,14 +21,13 @@ const developmentPhases = [
   {
     id: 'beta',
     title: 'ベータテスト実施',
-    period: '2024年2月 - 2024年5月',
+    period: 'ベータ期間',
     icon: TestTube,
-    description: '協力校・塾での実証実験により、実際の学習環境での効果を検証',
+    description: '実際の学習環境で使ってもらい、使い勝手や効果を検証・改善',
     achievements: [
-      '県立高等学校1校、私立学習塾2校での実証実験',
-      '中高生30名による3ヶ月間の継続利用テスト',
-      '診断精度77.4%の達成（学習行動パターンとの整合率）',
-      '学習継続率85%を記録（従来の塾平均65%を大幅改善）'
+      '継続利用による定性/定量フィードバックを反映',
+      '診断と学習継続に関する改善ポイントを抽出',
+      'UI/UX の改良と学習導線の最適化'
     ],
     technologies: ['データ分析', 'ユーザビリティテスト', 'A/Bテスト', 'フィードバック分析'],
     status: 'completed'
@@ -37,14 +35,13 @@ const developmentPhases = [
   {
     id: 'web',
     title: 'Webプラットフォーム開発',
-    period: '2024年6月 - 現在',
+    period: '現在',
     icon: Target,
-    description: 'モバイルアプリの成果を踏まえ、より幅広いユーザーに対応するWebプラットフォームを開発',
+    description: 'より幅広いユーザーに向けたWeb版の開発・改善を継続',
     achievements: [
-      'Next.js 15とReact 19を活用した最新Web技術の導入',
-      'モバイルアプリとのデータ完全同期システム構築',
-      'プレミアムプラン（月額4,980円）の設計・実装',
-      'レスポンシブデザインによる全デバイス対応'
+      'Next.js/React ベースで Web 化',
+      'モバイルとデータ連携',
+      '全デバイス対応のUI'
     ],
     technologies: ['Next.js 15', 'React 19', 'TypeScript 5', 'Tailwind CSS 4', 'Framer Motion'],
     status: 'in-progress'
@@ -96,11 +93,10 @@ export default function AboutPrototypeBetaSection() {
           className="text-center mb-8 sm:mb-16"
         >
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
-            プロトタイプ開発とベータテスト
+            プロトタイプとベータ
           </h2>
           <p className="text-base sm:text-xl text-gray-300 max-w-4xl mx-auto px-4 sm:px-0">
-            科学的根拠に基づく学習支援システムの開発から実証実験まで。
-            実際の教育現場での検証を通じて、確かな効果を実証しています。
+            短期間の試作とベータテストで、使いやすさと効果を確認しました。
           </p>
         </motion.div>
 
@@ -205,8 +201,7 @@ export default function AboutPrototypeBetaSection() {
           <div className="text-center mb-12">
             <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">ベータテスト結果</h3>
             <p className="text-sm sm:text-base text-gray-300 max-w-3xl mx-auto px-4 sm:px-0">
-              3ヶ月間のベータテストで実証された、LIVAL AIの学習効果。
-              科学的な手法による測定で確かな成果を確認しています。
+              約3ヶ月のテストで、使い心地や学習の続けやすさを数値でも確認しています。
             </p>
           </div>
 
@@ -233,19 +228,19 @@ export default function AboutPrototypeBetaSection() {
 
           <div className="mt-12 text-center">
             <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-600/30">
-              <h4 className="text-lg sm:text-xl font-bold text-white mb-4">実証実験の詳細</h4>
+              <h4 className="text-lg sm:text-xl font-bold text-white mb-4">ベータテストの概要</h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center">
                 <div>
-                  <div className="text-xl sm:text-2xl font-bold text-blue-400">30名</div>
-                  <p className="text-gray-300 text-sm sm:text-base">参加学習者数</p>
+                  <div className="text-xl sm:text-2xl font-bold text-blue-400">約30名</div>
+                  <p className="text-gray-300 text-sm sm:text-base">テスト参加者</p>
                 </div>
                 <div>
-                  <div className="text-xl sm:text-2xl font-bold text-purple-400">3校</div>
-                  <p className="text-gray-300 text-sm sm:text-base">協力教育機関</p>
+                  <div className="text-xl sm:text-2xl font-bold text-purple-400">複数グループ</div>
+                  <p className="text-gray-300 text-sm sm:text-base">テスト構成</p>
                 </div>
                 <div>
-                  <div className="text-xl sm:text-2xl font-bold text-green-400">3ヶ月</div>
-                  <p className="text-gray-300 text-sm sm:text-base">実証期間</p>
+                  <div className="text-xl sm:text-2xl font-bold text-green-400">約3ヶ月</div>
+                  <p className="text-gray-300 text-sm sm:text-base">実施期間</p>
                 </div>
               </div>
             </div>
