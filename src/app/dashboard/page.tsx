@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import StudySummaryCard from '@/components/study/StudySummaryCard'
+import FeatureSurveyResults from '@/components/enterprise/FeatureSurveyResults'
 
 export default function DashboardPage() {
   const { user, userData, loading, isAdmin } = useAuth()
@@ -296,6 +297,16 @@ export default function DashboardPage() {
             >
               <StudySummaryCard userId={user.uid} />
             </motion.div>
+
+            {isAdmin && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+              >
+                <FeatureSurveyResults max={50} />
+              </motion.div>
+            )}
 
             {/* Current Plan */}
             <motion.div

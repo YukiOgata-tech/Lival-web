@@ -33,7 +33,7 @@ const footerSections = [
     title: '料金・プラン',
     links: [
       { name: '個人プラン', href: '/pricing#individual' },
-      { name: '塾・学校向け', href: '/pricing#enterprise' },
+      { name: '塾・学校向け（エンタープライズ）', href: '/enterprise' },
       { name: '無料体験', href: '/trial' },
       { name: 'お問い合わせ（統一窓口）', href: '/contact' },
     ]
@@ -44,7 +44,6 @@ const footerSections = [
       { name: '私たちについて', href: '/about' },
       { name: 'ブログ', href: '/blog' },
       { name: 'お知らせ', href: '/news' },
-      { name: 'プレスリリース', href: '/press' },
     ]
   },
   {
@@ -54,7 +53,6 @@ const footerSections = [
       { name: 'よくある質問', href: '/faq' },
       { name: 'お問い合わせ', href: '/contact' },
       { name: 'システム状況', href: '/status' },
-      { name: 'APIドキュメント', href: '/docs' },
     ]
   }
 ]

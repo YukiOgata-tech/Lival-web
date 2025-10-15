@@ -40,9 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# claude code related
+# cli related
 CLAUDE.md
 /.claude/
 /codex/
 AGENT.md
 docs/
+
+# security
+firestore.rules

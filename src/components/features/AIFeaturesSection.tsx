@@ -163,7 +163,13 @@ export default function AIFeaturesSection() {
             const isLearningPlanner = ai.id === 'learning-planner'
             
             return (
-              <div key={ai.id} className="bg-white rounded-xl md:rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
+              <motion.div
+                key={ai.id}
+                layout
+                whileHover={{ y: -2 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+                className="bg-white rounded-xl md:rounded-3xl shadow-lg border border-gray-200 overflow-hidden"
+              >
                 {/* ヘッダー（コンパクト） */}
                 <button onClick={() => setExpandedFeature(ai.id)} className={`w-full text-left bg-gradient-to-r ${ai.color} p-4 md:p-5 text-white`}>
                   <div className="flex items-center space-x-3">
@@ -528,13 +534,21 @@ export default function AIFeaturesSection() {
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )
           })}
         </div>
         {/* デスクトップ詳細パネル（選択されたAIのみ表示） */}
         <div className="hidden md:block mt-8">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selected.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25 }}
+              className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8"
+            >
             {isPlannerSelected ? (
                   <div className="space-y-8">
                     <div>
@@ -644,7 +658,8 @@ export default function AIFeaturesSection() {
                     </div>
                   </div>
                 )}
-          </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </section>
