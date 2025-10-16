@@ -1,25 +1,23 @@
 // src/lib/ocr/recognize.ts
 
 // 画像(DataURL)からOCRテキストを抽出（Tesseract.jsを動的import）
-// 日本語+英語を対象にし、失敗時は英語のみでフォールバック
+// 日本語+英語を対象
 
 export async function recognizeImageDataURL(dataUrl: string): Promise<string> {
+  let worker: Tesseract.Worker | undefined;
   try {
     const { createWorker } = await import('tesseract.js')
-    const worker = await createWorker()
-    try {
-      await worker.loadLanguage('jpn+eng')
-      await worker.initialize('jpn+eng')
-    } catch {
-      await worker.loadLanguage('eng')
-      await worker.initialize('eng')
-    }
+    // Pass languages directly to the factory function.
+    // The worker comes pre-initialized and with the language loaded.
+    worker = await createWorker('jpn+eng');
     const { data } = await worker.recognize(dataUrl)
-    await worker.terminate()
     return (data?.text || '').trim()
   } catch (e) {
     console.warn('OCR failed, returning empty text', e)
     return ''
+  } finally {
+    // Ensure worker is terminated even on error
+    await worker?.terminate()
   }
 }
 

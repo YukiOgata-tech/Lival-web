@@ -1,12 +1,19 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
-import { getCachedImage, cacheImage } from '@/lib/tutorImageCache'
-import { db } from '@/lib/firebase'
-import { doc, setDoc } from 'firebase/firestore'
+import { useState, useEffect } from 'react'
+import { useImageCache } from '@/hooks/useImageCache'
+import { updateMessageTags } from '@/lib/firebase/tutor'
 import MarkdownMessage from '@/components/agent/common/MarkdownMessage'
+import { Clock, AlertTriangle } from 'lucide-react'
 
 export type TutorTag = 'important' | 'memorize' | 'check'
+
+// The payload required to retry sending a message
+export type RetryPayload = {
+  text: string;
+  images: string[];
+  files: File[];
+}
 
 export type TutorChatMessage = {
   id: string
@@ -16,10 +23,13 @@ export type TutorChatMessage = {
   createdAt: number
   hasImage?: boolean
   imageStorageUrls?: string[]
-  aiCode?: 'Sc' | 'Ja' | 'En' | 'Kn' | 'Ca' | 'general'
   tags?: TutorTag[]
   animate?: boolean
-  // レポートログ専用フィールド
+  // UI status for optimistic updates
+  status?: 'sending' | 'sent' | 'error'
+  retryPayload?: RetryPayload
+
+  // Report log specific fields
   type?: 'report_log'
   reportEngine?: 'gpt' | 'gemini'
   reportTextContent?: string
@@ -33,6 +43,7 @@ export default function TutorChatMessageView({
   threadId,
   onChangeTags,
   onOpenReport,
+  onRetry,
 }: {
   msg: TutorChatMessage
   enableTagging?: boolean
@@ -40,23 +51,29 @@ export default function TutorChatMessageView({
   threadId: string | null
   onChangeTags?: (id: string, tags: TutorTag[]) => void
   onOpenReport?: (payload: { text: string; title: string; engine?: 'gpt' | 'gemini' }) => void
+  onRetry?: (payload: RetryPayload) => void
 }) {
   const [localTags, setLocalTags] = useState<TutorTag[]>(msg.tags || [])
 
   const toggleTag = async (t: TutorTag) => {
+    if (!uid || !threadId || !msg.fsId) return;
+
     const next = localTags.includes(t) ? localTags.filter((x) => x !== t) : [...localTags, t]
     setLocalTags(next)
     onChangeTags?.(msg.id, next)
-    // Firestore へ反映（fsId がある場合のみ）
+    
     try {
-      if (uid && threadId && msg.fsId) {
-        const ref = doc(db, 'users', uid, 'eduAI_threads', threadId, 'messages', msg.fsId)
-        await setDoc(ref, { tags: next }, { merge: true })
-      }
-    } catch {}
+      await updateMessageTags(uid, threadId, msg.fsId, next)
+    } catch (error) {
+      // Revert local state on failure
+      setLocalTags(localTags)
+      onChangeTags?.(msg.id, localTags)
+      // Optionally show a toast notification to the user
+      console.error("Failed to update tags.");
+    }
   }
 
-  // レポートログ表示
+  // Report Log View
   if (msg.type === 'report_log') {
     return (
       <div className="flex justify-start">
@@ -77,21 +94,34 @@ export default function TutorChatMessageView({
     )
   }
 
+  const isUser = msg.role === 'user';
+
   return (
-    <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex items-end gap-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
+       {isUser && msg.status !== 'sent' && (
+        <div className="flex-shrink-0 mb-1">
+          {msg.status === 'sending' && <Clock className="w-4 h-4 text-gray-400 animate-spin" />}
+          {msg.status === 'error' && (
+            <div className='text-red-500'>
+              <AlertTriangle
+                className="w-5 h-5 cursor-pointer hover:opacity-70"
+                onClick={() => onRetry && msg.retryPayload && onRetry(msg.retryPayload)}
+              />
+            </div>
+          )}
+        </div>
+      )}
       <div className={`max-w-[85%] rounded-2xl border px-3 py-2 text-sm shadow-sm ${
-        msg.role === 'user'
+        isUser
           ? 'bg-emerald-600 text-white border-emerald-600'
           : 'bg-white text-gray-900 border-gray-200 ring-1 ring-gray-100'
       }`}>
-        {/* 画像添付フラグ */}
         {msg.hasImage && (
-          <div className={`mb-1 inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] ${msg.role === 'user' ? 'bg-white/20' : 'bg-emerald-50 text-emerald-700'}`}>
+          <div className={`mb-1 inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] ${isUser ? 'bg-white/20' : 'bg-emerald-50 text-emerald-700'}`}>
             <span>画像付き</span>
           </div>
         )}
         <MessageContent msg={msg} />
-        {/* タグ操作（アシスタント返答中心に付与） */}
         {enableTagging && msg.role === 'assistant' && (
           <div className="mt-2 flex flex-wrap gap-1">
             {(['important', 'memorize', 'check'] as TutorTag[]).map((t) => (
@@ -112,54 +142,35 @@ export default function TutorChatMessageView({
         )}
       </div>
     </div>
-  )}
+  )
+}
 
 function MessageContent({ msg }: { msg: TutorChatMessage }) {
-  // 画像表示（Storage URL → IndexedDB キャッシュ）
-  if (msg.imageStorageUrls && msg.imageStorageUrls.length > 0) {
-    const [urls, setUrls] = useState<string[]>([])
-    useEffect(() => {
-      let revoked: string[] = []
-      let cancelled = false
-      ;(async () => {
-        const out: string[] = []
-        for (const u of msg.imageStorageUrls || []) {
-          const cached = await getCachedImage(u)
-          if (cached) {
-            out.push(cached)
-            continue
-          }
-          const res = await fetch(u)
-          const blob = await res.blob()
-          await cacheImage(u, blob)
-          const obj = URL.createObjectURL(blob)
-          out.push(obj)
-          revoked.push(obj)
-        }
-        if (!cancelled) setUrls(out)
-      })()
-      return () => {
-        cancelled = true
-        revoked.forEach((o) => URL.revokeObjectURL(o))
-      }
-    }, [msg.imageStorageUrls?.join('|')])
+  const { imageUrls, isLoading } = useImageCache(msg.imageStorageUrls);
 
+  if (msg.imageStorageUrls && msg.imageStorageUrls.length > 0) {
     return (
       <div className="space-y-2">
-        <div className="flex flex-wrap gap-2">
-          {urls.map((u, i) => (
-            <img key={i} src={u} alt={`img-${i}`} className="h-24 w-24 rounded object-cover border" />
-          ))}
-        </div>
+        {isLoading ? (
+            <div className="flex justify-center items-center h-24">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
+            </div>
+        ) : (
+            <div className="flex flex-wrap gap-2">
+            {imageUrls.map((u, i) => (
+                <img key={i} src={u} alt={`img-${i}`} className="h-24 w-24 rounded object-cover border" />
+            ))}
+            </div>
+        )}
         {msg.content && <div className="whitespace-pre-wrap leading-relaxed break-words">{msg.content}</div>}
       </div>
     )
   }
-  // ユーザー発話はそのまま（改行保持）
+
   if (msg.role === 'user') {
     return <div className="whitespace-pre-wrap leading-relaxed break-words">{msg.content}</div>
   }
-  // アシスタント発話はタイプアニメーション→完了後にMarkdown描画
+
   return <AssistantContentWithTyping text={msg.content} animate={!!msg.animate} />
 }
 
@@ -167,7 +178,6 @@ function AssistantContentWithTyping({ text, animate }: { text: string; animate: 
   const [done, setDone] = useState(!animate)
   const [shown, setShown] = useState(animate ? '' : text)
 
-  // タイピングアニメーション（完了後にKaTeX描画へ切替）
   useEffect(() => {
     if (!animate) return
     let i = 0
@@ -177,7 +187,7 @@ function AssistantContentWithTyping({ text, animate }: { text: string; animate: 
       setShown(text.slice(0, i))
       if (i >= text.length) {
         clearInterval(timer)
-        setTimeout(() => setDone(true), 120) // 少し余韻を持たせてKaTeXに切替
+        setTimeout(() => setDone(true), 120)
       }
     }, 24)
     return () => clearInterval(timer)

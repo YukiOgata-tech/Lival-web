@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { resizeImageToDataURL } from '@/lib/utils/image'
 
 type ImageItem = { id: string; url: string; file?: File }
 
@@ -106,27 +107,4 @@ export default function TutorInputBar({
       </div>
     </div>
   )
-}
-
-async function resizeImageToDataURL(file: File, maxSide = 1024, quality = 0.8): Promise<string> {
-  const img = document.createElement('img')
-  const reader = new FileReader()
-  const dataUrl: string = await new Promise((resolve, reject) => {
-    reader.onload = () => resolve(String(reader.result))
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  })
-  img.src = dataUrl
-  await new Promise((res) => (img.onload = () => res(null)))
-  const { width, height } = img
-  const scale = Math.min(1, maxSide / Math.max(width, height))
-  const w = Math.round(width * scale)
-  const h = Math.round(height * scale)
-  const canvas = document.createElement('canvas')
-  canvas.width = w
-  canvas.height = h
-  const ctx = canvas.getContext('2d')!
-  ctx.drawImage(img, 0, 0, w, h)
-  // toDataURL でEXIFは剥がれる（ブラウザ実装依存）
-  return canvas.toDataURL('image/jpeg', quality)
 }

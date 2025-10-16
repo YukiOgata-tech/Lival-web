@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Brain, Sparkles, User, LogOut, Settings, Shield } from 'lucide-react'
+import { Menu, X, Sparkles, User, LogOut, Settings, Shield } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
 const navigationItems = [
@@ -46,8 +46,8 @@ export default function MainHeader() {
           {/* ロゴセクション */}
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                <Brain className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 rounded-lg">
+                <Image src="/images/lival-circle.png" alt="Lival AI Logo" width={40} height={40} />
               </div>
               <motion.div
                 className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"
