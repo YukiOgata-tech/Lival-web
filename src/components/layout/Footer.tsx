@@ -106,13 +106,17 @@ export default function Footer() {
                   お問い合わせ
                 </Link>
               </li>
-              <li>
-                <Link href="/privacy" className="text-gray-300 hover:text-white transition-colors">
-                  プライバシーポリシー
-                </Link>
-              </li>
-            </ul>
-          </div>
+                                <li>
+                                  <Link href="/privacy" className="text-gray-300 hover:text-white transition-colors">
+                                    プライバシーポリシー
+                                  </Link>
+                                </li>
+                                <li className="text-gray-400 pt-2 text-xs">
+                                  <p>〒150-0043</p>
+                                  <p>東京都渋谷区道玄坂1-10-8</p>
+                                  <p>渋谷道玄坂東急ビル2F-C</p>
+                                </li>
+                              </ul>          </div>
 
           {/* 開発者情報 */}
           <div>

@@ -20,7 +20,7 @@ export default function TokushohoPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 space-y-6">
             <Item label="販売事業者">LIVAL AI（屋号）</Item>
             <Item label="運営責任者">（追記予定）</Item>
-            <Item label="所在地">〒XXX-XXXX 東京都渋谷区XXX X-X-X（追記予定）</Item>
+            <Item label="所在地">〒150-0043 東京都渋谷区道玄坂1丁目10番8号渋谷道玄坂東急ビル2F-C</Item>
             <Item label="お問い合わせ先">
               お問い合わせは <a className="text-blue-600 underline" href="/contact">お問い合わせフォーム</a> または <a className="text-blue-600 underline" href="mailto:info@lival-ai.com">info@lival-ai.com</a> までお願いします。
             </Item>
