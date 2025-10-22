@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type Stripe from 'stripe'
-import { assertStripeEnv, stripe } from '@/lib/stripe/server'
+import { assertStripeEnv, getStripe } from '@/lib/stripe/server'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -34,6 +34,7 @@ export async function POST(req: Request) {
     }
 
     // 2) Create subscription in incomplete state to get a PaymentIntent client_secret
+    const stripe = getStripe()
     const subscription = await stripe.subscriptions.create({
       customer: customerIdResolved,
       items: [{ price: priceId }],
@@ -64,4 +65,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
-

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { assertStripeEnv, stripe } from '@/lib/stripe/server'
+import { assertStripeEnv, getStripe } from '@/lib/stripe/server'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -18,6 +18,7 @@ export async function POST(req: Request) {
 
     let event
     try {
+      const stripe = getStripe()
       event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret)
     } catch (err: any) {
       return NextResponse.json({ error: `Invalid signature: ${err.message}` }, { status: 400 })
@@ -57,4 +58,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err?.message || 'Unexpected error' }, { status: 500 })
   }
 }
-
