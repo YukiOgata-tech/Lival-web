@@ -4,7 +4,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { 
-  Brain, 
   Mail, 
   Phone, 
   MapPin, 
@@ -76,7 +75,16 @@ export default function MainFooter() {
   }
 
   return (
-    <footer className="bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 text-white">
+    <footer className="relative bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 text-white">
+      {/* <video
+        src="/webm/lai-V.webm"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute bottom-0 right-4 w-40 h-auto pointer-events-none transform -translate-y-4 hidden md:block"
+        aria-hidden="true"
+      /> */}
       {/* メインフッター */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12">
@@ -85,9 +93,9 @@ export default function MainFooter() {
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-3 mb-6">
               <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                  <Brain className="w-6 h-6 text-white" />
-                </div>
+                <div className="w-10 h-10 rounded-lg">
+                <Image src="/images/lival-circle.png" alt="Lival AI Logo" width={40} height={40} />
+              </div>
                 <motion.div
                   className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"
                   animate={{
