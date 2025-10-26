@@ -277,7 +277,7 @@ export default function StudyLogModal({
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder={bookSearchType === 'isbn' ? 'ISBNを入力' : '書籍名を入力'}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
                     />
                     <button
                       type="button"
@@ -375,7 +375,7 @@ export default function StudyLogModal({
                     setFormData(prev => ({ ...prev, manual_book_title: e.target.value }))
                   }
                   placeholder="書籍名を入力してください"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
                   required={bookSearchType === 'manual'}
                 />
               </div>
@@ -420,7 +420,7 @@ export default function StudyLogModal({
                 onChange={(e) => setFormData(prev => ({ ...prev, memo: e.target.value }))}
                 placeholder="学習内容や感想を記録してください"
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
               />
             </div>
 

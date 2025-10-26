@@ -336,7 +336,7 @@ export default function FAQPage() {
                   placeholder="キーワードで検索..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 text-gray-900 bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg"
+                  className="w-full pl-12 pr-4 py-4 text-gray-900 bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg placeholder:text-gray-400"
                 />
               </div>
             </div>

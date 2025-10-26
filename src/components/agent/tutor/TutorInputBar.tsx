@@ -93,7 +93,7 @@ export default function TutorInputBar({
             onChange={(e) => setText(e.target.value)}
             placeholder="質問を入力（画像添付に対応）"
             rows={1}
-            className="min-h-[40px] flex-1 resize-none text-black rounded-md border border-gray-300 p-2 text-base shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="min-h-[40px] flex-1 resize-none text-gray-900 bg-white placeholder:text-gray-400 rounded-md border border-gray-300 p-2 text-base shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             style={{ fontSize: '16px' }}
           />
           <button
