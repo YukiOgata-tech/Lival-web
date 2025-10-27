@@ -143,8 +143,24 @@ export default function SubscriptionPage() {
 ✅ 次回請求額: ${formatPrice(newPlanInfo.price)}/月
 
 よろしいですか？`
+    } else if (isBasicToPremium) {
+      // アップグレード（ベーシック→プレミアム）
+      const priceDiff = newPlanInfo.price - currentPlanInfo.price
+      message = `プレミアムプランにアップグレードしますか？
+
+【変更内容】
+• 現在のプラン: ${currentPlanInfo.name} (${formatPrice(currentPlanInfo.price)}/月)
+• 新しいプラン: ${newPlanInfo.name} (${formatPrice(newPlanInfo.price)}/月)
+
+【請求について】
+✅ 変更は即座に適用されます
+✅ 残り期間分の差額（約${formatPrice(priceDiff)}の日割り計算）が即座に請求されます
+✅ 次回以降は${formatPrice(newPlanInfo.price)}/月で請求されます
+
+よろしいですか？`
     } else {
-      message = `プランを変更しますか？\n変更は即座に適用され、差額が日割り計算されます。`
+      // その他のプラン変更（念のため）
+      message = `プランを変更しますか？\n\n変更は即座に適用されます。`
     }
 
     if (!confirm(message)) {
@@ -643,7 +659,7 @@ export default function SubscriptionPage() {
               >
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">プラン変更</h2>
                 <p className="text-sm sm:text-base text-gray-600 mb-5 leading-relaxed">
-                  他のプランに変更できます。変更は即座に適用され、差額が日割り計算されます。
+                  他のプランに変更できます。アップグレードは即座に適用され差額が日割り請求されます。ダウングレードは次回請求日から適用されます。
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
