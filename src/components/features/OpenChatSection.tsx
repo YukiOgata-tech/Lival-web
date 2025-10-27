@@ -10,17 +10,17 @@ export default function OpenChatSection() {
       <div className="max-w-6xl mx-auto">
         <div className="relative overflow-hidden rounded-2xl md:rounded-3xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50 via-white to-indigo-50">
           <div className="p-6 md:p-10">
-            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-800 px-3 py-1 text-xs md:text-sm font-semibold mb-3 md:mb-4">
+            <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 px-3 py-1 text-xs md:text-sm font-semibold mb-3 md:mb-4">
               <Zap className="w-4 h-4" />
-              <span>次の一歩（予告）</span>
+              <span>プレミアムプラン限定特典</span>
             </div>
             <h2 className="text-2xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-3 md:mb-4">
-              会員限定のLINEオープンチャットで、<br className="hidden md:block" />
-              AIで解決しきれない問題にもプロが伴走
+              LINEオープンチャットで、<br className="hidden md:block" />
+              AIで解決しきれない問題にもプロ講師が直接回答
             </h2>
             <p className="text-gray-700 text-sm md:text-base leading-relaxed max-w-3xl mb-5 md:mb-6">
               Tutor AIでほとんどの疑問はその場で解決できます。それでも難しい問題や、答案の添削・表現の工夫など「人の目」が必要な場面のために、
-              会員だけが参加できる招待制のLINEオープンチャットを準備中です。現役のプロ講師に加え、
+              <strong className="text-purple-700">プレミアムプラン会員限定</strong>で招待制のLINEオープンチャットを提供します。現役のプロ講師に加え、
               東北大学大学院生・新潟大学生・外国語大学などの現役大学生チューターも在籍し、複数人体制であなたの学びをしっかり支えます。
             </p>
 
@@ -52,14 +52,14 @@ export default function OpenChatSection() {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
-                href="/signup"
-                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-3 text-white font-semibold hover:bg-emerald-700 transition-colors"
+                href="/pricing"
+                className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-3 text-white font-semibold hover:shadow-lg hover:scale-105 transition-all"
               >
-                会員登録して最新情報を受け取る
+                プレミアムプランを見る
               </Link>
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center rounded-lg border border-emerald-300 px-5 py-3 text-emerald-700 font-semibold hover:bg-emerald-50 transition-colors"
+                className="inline-flex items-center justify-center rounded-lg border border-purple-300 px-5 py-3 text-purple-700 font-semibold hover:bg-purple-50 transition-colors"
               >
                 詳細を問い合わせる
               </Link>

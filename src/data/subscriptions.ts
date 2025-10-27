@@ -27,12 +27,14 @@ export const SUBSCRIPTION_PLANS: Record<string, PricingPlanDetail> = {
     price: 2480,
     currency: 'JPY',
     interval: 'month',
-    description: '個人学習に最適なプラン',
+    description: 'モバイルアプリで全機能利用可能',
     features: [
-      'AI学習サポート',
-      '学習記録管理',
-      'Web版全機能利用',
-      '基本的なAIコーチング'
+      '📱 iOS・Androidアプリ完全対応',
+      '🤖 AI学習サポート（無制限）',
+      '📊 学習記録・進捗管理',
+      '🎯 AIコーチング機能',
+      '📚 全ての基本システム利用可能',
+      '💻 Web版も利用可能'
     ]
   },
   premium: {
@@ -41,14 +43,14 @@ export const SUBSCRIPTION_PLANS: Record<string, PricingPlanDetail> = {
     price: 3980,
     currency: 'JPY',
     interval: 'month',
-    description: 'AIサービス全般利用可能（近日公開予定）',
+    description: 'ベーシック全機能 + 講師への直接質問サービス',
     features: [
-      'AIサービス全機能利用可能',
-      'モバイルアプリ対応',
-      '無制限学習サポート',
-      '専用AIコーチング',
-      '進路相談サービス',
-      '優先サポート'
+      '✅ ベーシックプランの全機能',
+      '📱 iOS・Androidアプリ完全対応',
+      '💬 LINEオープンチャットで講師に質問',
+      '👨‍🏫 現役講師が直接回答',
+      '⏰ 質問回数無制限',
+      '🎓 LINEで講師に学習相談・進路相談'
     ],
     isPopular: true,
     comingSoon: true  // 近日公開予定
@@ -76,37 +78,43 @@ export const formatPrice = (price: number, currency: string = 'JPY'): string => 
 /** プラン比較用データ */
 export const PLAN_COMPARISON_FEATURES = [
   {
-    feature: 'Web版基本機能',
-    free_web: true,
+    feature: 'iOS・Androidアプリ',
+    free_web: false,
     basic: true,
     premium: true
   },
   {
-    feature: 'モバイルアプリ対応',
-    free_web: false,
-    basic: false,
+    feature: 'Web版利用',
+    free_web: '基本機能のみ',
+    basic: true,
     premium: true
   },
   {
-    feature: 'AI利用制限',
+    feature: 'AI学習サポート',
     free_web: '制限あり',
-    basic: '月50回まで',
+    basic: '無制限',
     premium: '無制限'
   },
   {
-    feature: '学習サポート',
-    free_web: '基本のみ',
-    basic: 'AI学習サポート',
-    premium: '専用AIコーチング'
+    feature: '学習記録・進捗管理',
+    free_web: false,
+    basic: true,
+    premium: true
   },
   {
-    feature: '進路相談',
+    feature: 'AIコーチング',
+    free_web: false,
+    basic: true,
+    premium: true
+  },
+  {
+    feature: 'LINEで講師に質問',
     free_web: false,
     basic: false,
     premium: true
   },
   {
-    feature: '優先サポート',
+    feature: '学習相談・進路相談（LINE）',
     free_web: false,
     basic: false,
     premium: true
