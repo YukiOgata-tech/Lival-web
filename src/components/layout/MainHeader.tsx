@@ -11,7 +11,7 @@ const navigationItems = [
   { name: 'ホーム', href: '/' },
   { name: '機能', href: '/features' },
   { name: 'AIチャット', href: '/lival-agent-mode/threads' },
-  { name: '料金', href: '/subscription' },
+  { name: '料金', href: '/pricing' },
   { name: 'ブログ', href: '/blog' },
   { name: 'お知らせ', href: '/news' },
   { name: '会社概要', href: '/about' },

@@ -63,7 +63,7 @@ export default function TeaserOverlay({ userRole }: TeaserOverlayProps) {
               /* User is logged in but needs subscription */
               <>
                 <Link
-                  href="/subscription"
+                  href="/pricing"
                   className="inline-flex items-center justify-center w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-semibold"
                 >
                   サブスクリプションを始める

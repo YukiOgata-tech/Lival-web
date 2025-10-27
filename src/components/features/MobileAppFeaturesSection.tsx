@@ -61,7 +61,7 @@ export default function MobileAppFeaturesSection() {
 
         <div className="text-center mt-8 md:mt-12">
           <Link
-            href="/subscription"
+            href="/pricing"
             className="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 font-semibold text-base md:text-lg"
           >
             <Smartphone className="w-5 h-5 md:w-6 md:h-6 mr-2" />

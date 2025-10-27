@@ -335,7 +335,7 @@ export default function BlogContent({ slug }: BlogContentProps) {
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Link
-                href="/subscription"
+                href="/pricing"
                 className="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-semibold"
               >
                 <Lock className="w-5 h-5 mr-2" />

@@ -95,7 +95,7 @@ export default function PlannerChatHeader() {
             <span className="hidden sm:inline">ページ共有</span>
           </motion.button>
           <Link
-            href="/subscription"
+            href="/pricing"
             className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
           >
             <CreditCard className="h-4 w-4" />

@@ -82,7 +82,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/subscription" className="text-gray-300 hover:text-white transition-colors flex items-center">
+                <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors flex items-center">
                   <Crown className="w-4 h-4 mr-2" />
                   プレミアム記事
                 </Link>

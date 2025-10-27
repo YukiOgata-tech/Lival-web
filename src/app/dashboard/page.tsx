@@ -1,27 +1,65 @@
 'use client'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
 import { formatPrice, getPlanInfo } from '@/data/subscriptions'
-import { 
-  Brain, 
-  Trophy, 
-  Zap, 
-  Coins, 
-  BookOpen, 
-  Users, 
+import {
+  Brain,
+  Trophy,
+  Zap,
+  Coins,
+  BookOpen,
+  Users,
   ArrowRight,
   Crown,
   Star,
   PenTool,
   Shield,
-  Megaphone
+  Megaphone,
+  AlertCircle
 } from 'lucide-react'
 import Link from 'next/link'
 import StudySummaryCard from '@/components/study/StudySummaryCard'
 import FeatureSurveyResults from '@/components/enterprise/FeatureSurveyResults'
+import LoadingOverlay from '@/components/ui/LoadingOverlay'
 
 export default function DashboardPage() {
   const { user, userData, loading, isAdmin } = useAuth()
+  const [resuming, setResuming] = useState(false)
+
+  const handleResumeSubscription = async () => {
+    if (!user) return
+
+    const message = `サブスクリプションを再開しますか？
+
+キャンセル予定が解除され、サブスクリプションが継続されます。`
+
+    if (!confirm(message)) {
+      return
+    }
+
+    setResuming(true)
+    try {
+      const idToken = await user.getIdToken()
+      const res = await fetch('/api/stripe/resume-subscription', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${idToken}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!res.ok) throw new Error('再開に失敗しました')
+
+      alert(`✅ サブスクリプションを再開しました\n\n引き続きご利用いただけます。`)
+      window.location.reload()
+    } catch (error: any) {
+      console.error('Resume error:', error)
+      alert(`❌ 再開処理中にエラーが発生しました\n\n${error.message || '不明なエラー'}`)
+    } finally {
+      setResuming(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -95,6 +133,48 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
+        {/* キャンセル予定の警告 */}
+        {userData.subscription.cancelAt && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-6 md:mb-8 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 sm:p-6"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0 gap-3">
+              <div className="flex items-start space-x-3 sm:space-x-4 flex-1">
+                <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-600 mt-0.5 sm:mt-0 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base sm:text-lg font-semibold text-yellow-900 leading-tight">⚠️ サブスクリプションキャンセル予定</h3>
+                  <p className="text-yellow-800 mt-1 text-sm sm:text-base leading-relaxed">
+                    {userData.subscription.cancelAt.toDate().toLocaleDateString('ja-JP', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })} にサブスクリプションが自動終了します。それまでは引き続き全機能をご利用いただけます。
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                <button
+                  onClick={handleResumeSubscription}
+                  disabled={resuming}
+                  className="bg-green-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 text-sm sm:text-base flex-shrink-0"
+                >
+                  <span>{resuming ? '再開中...' : '再開する'}</span>
+                </button>
+                <Link
+                  href="/account/subscription"
+                  className="bg-yellow-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base flex-shrink-0"
+                >
+                  <span>詳細を見る</span>
+                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Upgrade Banner for Free Plan */}
         {isFreePlan && (
           <motion.div
@@ -112,7 +192,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <Link
-                href="/subscription"
+                href="/pricing"
                 className="bg-white text-blue-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base flex-shrink-0"
               >
                 <span>アップグレード</span>
@@ -334,13 +414,21 @@ export default function DashboardPage() {
                   </span>
                 </div>
               </div>
-              
-              <Link
-                href="/account"
-                className="mt-3 sm:mt-4 w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center block text-sm sm:text-base"
-              >
-                アカウント管理
-              </Link>
+
+              <div className="mt-3 sm:mt-4 space-y-2">
+                <Link
+                  href="/account/subscription"
+                  className="w-full bg-blue-100 text-blue-700 py-2 px-4 rounded-lg font-medium hover:bg-blue-200 transition-colors text-center block text-sm sm:text-base"
+                >
+                  サブスクリプション管理
+                </Link>
+                <Link
+                  href="/account"
+                  className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center block text-sm sm:text-base"
+                >
+                  アカウント設定
+                </Link>
+              </div>
             </motion.div>
 
             {/* Recent Activity */}
@@ -448,6 +536,20 @@ export default function DashboardPage() {
                     </div>
                     <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-orange-600 transition-colors flex-shrink-0" />
                   </Link>
+
+                  <Link
+                    href="/admin/subscribers"
+                    className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 bg-white rounded-lg border border-orange-200 hover:border-orange-300 hover:bg-orange-50 transition-all duration-200 group"
+                  >
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors flex-shrink-0">
+                      <CreditCard className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-xs sm:text-sm">契約者管理</p>
+                      <p className="text-xs text-gray-600 truncate">サブスク契約者一覧</p>
+                    </div>
+                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-orange-600 transition-colors flex-shrink-0" />
+                  </Link>
                 </div>
 
                 <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-amber-50 rounded-lg border border-amber-200">
@@ -466,6 +568,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* ローディングオーバーレイ */}
+      {resuming && <LoadingOverlay message="サブスクリプションを再開しています" />}
     </div>
   )
 }

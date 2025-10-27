@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { DiagnosisResult as DiagnosisResultType } from '@/types/diagnosis'
-import { useSimpleDownload } from '@/hooks/useSimpleDownload'
+import { useDiagnosisImage } from '@/hooks/useDiagnosisImage'
+import { useDiagnosisPdf } from '@/hooks/useDiagnosisPdf'
 import { useShare } from '@/hooks/useShare'
 import { detailedDescriptions } from '@/data/diagnosis/detailed-descriptions'
 import { 
@@ -51,7 +52,8 @@ export default function DiagnosisResult({
   // 詳細説明を取得
   const detailedInfo = detailedDescriptions.find(desc => desc.typeId === primaryType.id)
   
-  const { downloadAsImage, isDownloading } = useSimpleDownload()
+  const { downloadDiagnosisPng, isGenerating: isPngGenerating } = useDiagnosisImage()
+  const { downloadDiagnosisPdf, isGenerating: isPdfGenerating } = useDiagnosisPdf()
   const { shareViaWebAPI, shareToLine, shareToX, shareToFacebook, copyToClipboard, shareAsImage, isSharing } = useShare()
   
   const resultCardId = `diagnosis-result-${result.sessionId}`
@@ -66,6 +68,15 @@ export default function DiagnosisResult({
       pragmatist: BookOpen
     }
     return icons[typeId as keyof typeof icons] || Star
+  }
+
+  const handleDownloadPdf = async () => {
+    try {
+      await downloadDiagnosisPdf(result, `lival-ai-diagnosis-${primaryType.id}-result`)
+    } catch (e) {
+      console.error('PDF生成に失敗しました:', e)
+      alert('PDFの生成に失敗しました。時間をおいて再試行してください。')
+    }
   }
 
   const getTypeColor = (typeId: string) => {
@@ -89,21 +100,10 @@ export default function DiagnosisResult({
     return `${mins}分${secs}秒`
   }
 
-  // ダウンロードハンドラー（シンプル版）
+  // ダウンロード（PNG, サーバー生成）
   const handleDownload = async () => {
     try {
-      // ダウンロード前に要素が存在するか確認
-      const element = document.getElementById(resultCardId)
-      if (!element) {
-        throw new Error('結果カードが見つかりません')
-      }
-
-      // シンプルなCanvas実装でダウンロード
-      await downloadAsImage(resultCardId, {
-        filename: `lival-ai-diagnosis-${primaryType.id}-result`,
-        width: 800,
-        height: 1200
-      })
+      await downloadDiagnosisPng(result, `lival-ai-diagnosis-${primaryType.id}-result`)
       
       setDownloadSuccess(true)
       setTimeout(() => setDownloadSuccess(false), 3000)
@@ -654,10 +654,10 @@ export default function DiagnosisResult({
           className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 md:p-6"
         >
           <h3 className="text-lg font-bold text-gray-900 mb-4">次のステップ</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+          <div className="flex flex-col md:flex-row md:flex-wrap gap-3 md:gap-4">
             <Link
               href="/dashboard"
-              className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 text-sm md:text-base"
+              className="md:flex-1 flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 text-sm md:text-base"
             >
               <Brain className="w-4 h-4 md:w-5 md:h-5" />
               <span>AIコーチングを始める</span>
@@ -666,17 +666,17 @@ export default function DiagnosisResult({
             
             <motion.button 
               onClick={handleDownload}
-              disabled={isDownloading || downloadSuccess}
+              disabled={isPngGenerating || downloadSuccess}
               whileHover={{ scale: downloadSuccess ? 1 : 1.02 }}
               whileTap={{ scale: downloadSuccess ? 1 : 0.98 }}
-              className={`flex items-center justify-center space-x-2 py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed text-sm md:text-base ${
+              className={`md:flex-1 flex items-center justify-center space-x-2 py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed text-sm md:text-base ${
                 downloadSuccess 
                   ? 'bg-green-50 border border-green-200 text-green-700'
                   : 'border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50'
               }`}
             >
               <AnimatePresence mode="wait">
-                {isDownloading ? (
+                {isPngGenerating ? (
                   <motion.div
                     key="loading"
                     initial={{ opacity: 0 }}
@@ -705,26 +705,42 @@ export default function DiagnosisResult({
                 )}
               </AnimatePresence>
               <span className="hidden sm:inline">{
-                isDownloading 
+                isPngGenerating 
                   ? 'ダウンロード中...' 
                   : downloadSuccess 
                     ? '完了！' 
                     : '結果をダウンロード'
               }</span>
               <span className="sm:hidden">{
-                isDownloading 
+                isPngGenerating 
                   ? 'DL中...' 
                   : downloadSuccess 
                     ? '完了' 
                     : 'ダウンロード'
               }</span>
             </motion.button>
+
+            <motion.button 
+              onClick={handleDownloadPdf}
+              disabled={isPdfGenerating}
+              whileHover={{ scale: isPdfGenerating ? 1 : 1.02 }}
+              whileTap={{ scale: isPdfGenerating ? 1 : 0.98 }}
+              className={`md:flex-1 flex items-center justify-center space-x-2 py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed text-sm md:text-base border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50`}
+            >
+              {isPdfGenerating ? (
+                <div className="w-4 h-4 md:w-5 md:h-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-700" />
+              ) : (
+                <Download className="w-4 h-4 md:w-5 md:h-5" />
+              )}
+              <span className="hidden sm:inline">{isPdfGenerating ? 'PDF生成中...' : 'PDFで保存'}</span>
+              <span className="sm:hidden">{isPdfGenerating ? '生成中' : 'PDF'}</span>
+            </motion.button>
             
-            <div className="relative">
+            <div className="relative md:flex-1">
               <button 
                 onClick={() => setShowShareMenu(!showShareMenu)}
                 disabled={isSharing}
-                className="flex items-center justify-center space-x-2 border border-gray-300 text-gray-700 py-2.5 md:py-3 px-4 md:px-6 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 w-full text-sm md:text-base"
+                className="w-full flex items-center justify-center space-x-2 border border-gray-300 text-gray-700 py-2.5 md:py-3 px-4 md:px-6 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 text-sm md:text-base"
               >
                 {isSharing ? (
                   <div className="w-4 h-4 md:w-5 md:h-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-700" />

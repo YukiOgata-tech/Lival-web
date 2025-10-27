@@ -149,7 +149,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
             <a
-              href="/subscription"
+              href="/pricing"
               className="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-semibold"
             >
               <BookOpen className="w-5 h-5 mr-2" />

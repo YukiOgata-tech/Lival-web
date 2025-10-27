@@ -21,21 +21,37 @@ export const SUBSCRIPTION_PLANS: Record<string, PricingPlanDetail> = {
       '機能制限あり'
     ]
   },
+  basic: {
+    id: 'basic',
+    name: 'ベーシックプラン',
+    price: 2480,
+    currency: 'JPY',
+    interval: 'month',
+    description: '個人学習に最適なプラン',
+    features: [
+      'AI学習サポート',
+      '学習記録管理',
+      'Web版全機能利用',
+      '基本的なAIコーチング'
+    ]
+  },
   premium: {
     id: 'premium',
     name: 'プレミアムプラン',
-    price: 4980,
+    price: 3980,
     currency: 'JPY',
     interval: 'month',
-    description: 'AIサービス全般利用可能',
+    description: 'AIサービス全般利用可能（近日公開予定）',
     features: [
       'AIサービス全機能利用可能',
       'モバイルアプリ対応',
       '無制限学習サポート',
       '専用AIコーチング',
-      '進路相談サービス'
+      '進路相談サービス',
+      '優先サポート'
     ],
-    isPopular: true
+    isPopular: true,
+    comingSoon: true  // 近日公開予定
   }
 }
 
@@ -62,26 +78,37 @@ export const PLAN_COMPARISON_FEATURES = [
   {
     feature: 'Web版基本機能',
     free_web: true,
+    basic: true,
     premium: true
   },
   {
     feature: 'モバイルアプリ対応',
     free_web: false,
+    basic: false,
     premium: true
   },
   {
     feature: 'AI利用制限',
     free_web: '制限あり',
+    basic: '月50回まで',
     premium: '無制限'
   },
   {
     feature: '学習サポート',
     free_web: '基本のみ',
-    premium: '専用コーチング'
+    basic: 'AI学習サポート',
+    premium: '専用AIコーチング'
   },
   {
     feature: '進路相談',
     free_web: false,
+    basic: false,
+    premium: true
+  },
+  {
+    feature: '優先サポート',
+    free_web: false,
+    basic: false,
     premium: true
   }
 ]

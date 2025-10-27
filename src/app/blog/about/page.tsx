@@ -143,7 +143,7 @@ export default function BlogAboutPage() {
               <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
             <Link
-              href="/subscription"
+              href="/pricing"
               className="inline-flex items-center border-2 border-white text-white px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-colors"
             >
               サブスクリプション詳細
@@ -354,7 +354,7 @@ export default function BlogAboutPage() {
                 <BookOpen className="w-5 h-5 ml-2" />
               </Link>
               <Link
-                href="/subscription"
+                href="/pricing"
                 className="inline-flex items-center border-2 border-white text-white px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-colors"
               >
                 <Crown className="w-5 h-5 mr-2" />

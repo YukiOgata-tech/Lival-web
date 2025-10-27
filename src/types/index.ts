@@ -29,7 +29,7 @@ export type Gender = 'male' | 'female'
 /**
  * サブスクリプションプラン
  */
-export type SubscriptionPlan = 'free_web' | 'premium'
+export type SubscriptionPlan = 'free_web' | 'basic' | 'premium'
 
 /**
  * サブスクリプション状態
@@ -56,6 +56,15 @@ export interface UserSubscription {
   currentPeriodEnd: Timestamp | null
   stripeCustomerId?: string
   stripeSubscriptionId?: string
+  cancelAt?: Timestamp | null  // キャンセル予定日（cancel_at_period_end がtrueの場合）
+
+  // トライアル管理
+  hasUsedTrial?: boolean  // トライアル使用済みフラグ（一度でもトライアルを開始したらtrue）
+  trialEnd?: Timestamp | null  // 現在トライアル中の場合の終了日
+
+  // 決済なしでの機能アクセス制御（管理者・トライアル等）
+  overrideAccess?: boolean  // true = Stripe決済なしで機能利用可能
+  overrideReason?: 'admin' | 'trial' | 'partner' | 'promotional'
 }
 
 /**
@@ -151,6 +160,7 @@ export interface PricingPlanDetail {
   features: string[]
   restrictions?: string[]
   isPopular?: boolean
+  comingSoon?: boolean  // 近日公開予定フラグ
 }
 
 /** 学生プロファイル */
