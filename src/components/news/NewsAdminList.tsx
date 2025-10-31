@@ -54,7 +54,16 @@ export default function NewsAdminList() {
       if (!response.ok) throw new Error('Failed to fetch news')
 
       const data: NewsListResponse = await response.json()
-      setNews(data.news)
+
+      // DateオブジェクトをJSON文字列から復元
+      const newsWithDates = data.news.map(item => ({
+        ...item,
+        createdAt: new Date(item.createdAt),
+        updatedAt: new Date(item.updatedAt),
+        publishedAt: item.publishedAt ? new Date(item.publishedAt) : null
+      }))
+
+      setNews(newsWithDates)
     } catch (error) {
       console.error('Error fetching news:', error)
       alert('お知らせの取得に失敗しました')
@@ -72,11 +81,9 @@ export default function NewsAdminList() {
     if (!confirm('このお知らせを削除しますか？')) return
 
     try {
-      const response = await fetch(`/api/news/${id}`, {
-        method: 'DELETE'
-      })
-
-      if (!response.ok) throw new Error('Failed to delete news')
+      // クライアント側から直接Firestoreで削除
+      const { deleteNews } = await import('@/lib/firebase/news')
+      await deleteNews(id)
 
       alert('お知らせを削除しました')
       fetchNews()

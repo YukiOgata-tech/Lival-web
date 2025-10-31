@@ -14,7 +14,8 @@ import {
   limit,
   startAfter,
   increment,
-  serverTimestamp
+  serverTimestamp,
+  Timestamp
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { News, NewsFilter, NewsListResponse, newsConverter } from '@/lib/types/news'
@@ -35,15 +36,18 @@ export async function getNewsList(
     
     // 基本的なクエリから始める
     let q = query(newsCollection, orderBy('createdAt', 'desc'))
-    
+
     // ステータスフィルター
-    if (filters.status && filters.status !== 'all') {
+    if (filters.status === 'all') {
+      // 'all' の場合はステータスフィルターを適用しない（全て取得）
+      // q にはステータス条件を追加しない
+    } else if (filters.status) {
+      // 特定のステータスが指定されている場合
       q = query(q, where('status', '==', filters.status))
-    } else if (!filters.status) {
+    } else {
       // デフォルトでは公開済みのみ
       q = query(q, where('status', '==', 'published'))
     }
-    // filters.status === 'all' の場合はフィルターを適用しない（全て取得）
 
     // その他のフィルター
     if (filters.type) {
@@ -59,7 +63,16 @@ export async function getNewsList(
     console.log('Executing Firestore query...')
     const snapshot = await getDocs(q)
     console.log('Query result:', snapshot.size, 'documents')
-    
+
+    if (snapshot.empty) {
+      console.warn('⚠️ No documents found in news collection')
+      return {
+        news: [],
+        total: 0,
+        hasMore: false
+      }
+    }
+
     const news = snapshot.docs.map(doc => {
       const data = doc.data()
       console.log('Document data:', { id: doc.id, title: data.title, status: data.status })
@@ -85,8 +98,14 @@ export async function getNewsList(
     console.log('getNewsList result:', result)
     return result
   } catch (error) {
-    console.error('Error fetching news list:', error)
-    throw new Error('お知らせの取得に失敗しました')
+    console.error('❌ Error fetching news list:', error)
+    console.error('Error details:', {
+      name: (error as Error)?.name,
+      message: (error as Error)?.message,
+      code: (error as any)?.code,
+      stack: (error as Error)?.stack
+    })
+    throw error
   }
 }
 
@@ -139,10 +158,13 @@ export async function createNews(
   authorName: string
 ): Promise<string> {
   try {
-    const docRef = doc(newsCollection)
-    const now = new Date()
-    
-    const news: Omit<News, 'id'> = {
+    // converterを使わない通常のコレクション参照を作成
+    const newsCollectionRef = collection(db, 'news')
+    const docRef = doc(newsCollectionRef)
+    const now = Timestamp.now()
+
+    // Firestore用のデータオブジェクトを作成（Timestampを使用）
+    const news = {
       ...newsData,
       authorId,
       authorName,

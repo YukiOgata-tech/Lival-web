@@ -8,14 +8,14 @@ import { NewsFormData, NewsFilter, NewsType, NewsPriority, NewsStatus } from '@/
 export async function GET(request: NextRequest) {
   try {
     console.log('GET /api/news called')
-    
+
     const { searchParams } = new URL(request.url)
     console.log('Search params:', Object.fromEntries(searchParams.entries()))
-    
+
     // 管理者用か一般用かを判定
     const isAdmin = searchParams.get('admin') === 'true'
     console.log('Is admin request:', isAdmin)
-    
+
     // クエリパラメータを解析
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
@@ -23,10 +23,17 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type')
     const priority = searchParams.get('priority')
     const search = searchParams.get('search')
-    
+
     // フィルターオブジェクトを作成
     const filter: NewsFilter = {}
-    if (status) filter.status = status as NewsStatus
+
+    // 管理者の場合、statusが指定されていなければ'all'を設定
+    if (isAdmin && !status) {
+      filter.status = 'all' as NewsStatus
+    } else if (status) {
+      filter.status = status as NewsStatus
+    }
+
     if (type) filter.type = type as NewsType
     if (priority) filter.priority = priority as NewsPriority
     if (search) filter.search = search

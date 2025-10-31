@@ -152,6 +152,15 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
     status: initialData?.status || 'draft'
   })
 
+  // デバッグ: 認証状態を確認
+  useEffect(() => {
+    console.log('🔐 認証状態:', {
+      isAuthenticated: !!user,
+      userId: user?.uid,
+      email: user?.email,
+    })
+  }, [user])
+
   // フォームバリデーション
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
@@ -173,38 +182,36 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
   // フォーム送信
   const handleSubmit = async (status: NewsStatus) => {
     if (!validateForm()) return
-    if (!user) return
+    if (!user) {
+      alert('ログインしてください')
+      return
+    }
 
     setIsSubmitting(true)
     try {
-      const submitData = {
+      // クライアント側から直接Firestoreに書き込む
+      const { createNews, updateNews } = await import('@/lib/firebase/news')
+
+      const newsData = {
         ...formData,
-        status
+        status,
+        publishedAt: status === 'published' ? new Date() : null
       }
 
-      const response = await fetch(
-        mode === 'create' ? '/api/news' : `/api/news/${initialData?.id}`,
-        {
-          method: mode === 'create' ? 'POST' : 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(submitData)
-        }
-      )
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('API Error:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText
-        })
-        throw new Error(`保存に失敗しました (${response.status}: ${response.statusText})`)
+      if (mode === 'create') {
+        // 新規作成
+        const newsId = await createNews(
+          newsData,
+          user.uid,
+          user.displayName || user.email || '管理者'
+        )
+        console.log('✅ お知らせを作成しました:', newsId)
+      } else if (initialData) {
+        // 更新
+        await updateNews(initialData.id, newsData)
+        console.log('✅ お知らせを更新しました:', initialData.id)
       }
 
-      const result = await response.json()
-      
       // 成功メッセージ表示
       const message = status === 'published' ? 'お知らせを公開しました' : 'お知らせを保存しました'
       alert(message)
@@ -212,7 +219,7 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
       // 一覧ページに戻る
       router.push('/admin/news')
     } catch (error) {
-      console.error('Submit error:', error)
+      console.error('❌ Submit error:', error)
       alert(error instanceof Error ? error.message : '保存に失敗しました')
     } finally {
       setIsSubmitting(false)
@@ -294,7 +301,7 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                className={`w-full px-4 py-3 border rounded-lg text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                   errors.title ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="お知らせのタイトルを入力してください"
@@ -383,7 +390,7 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value as NewsPriority }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 {Object.entries(NEWS_PRIORITY_CONFIG).map(([value, config]) => (
                   <option key={value} value={value}>
@@ -401,7 +408,7 @@ export default function NewsForm({ initialData, mode }: NewsFormProps) {
               <select
                 value={formData.type}
                 onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value as NewsType }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 {Object.entries(NEWS_TYPE_CONFIG).map(([value, config]) => (
                   <option key={value} value={value}>

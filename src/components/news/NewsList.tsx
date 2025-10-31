@@ -51,11 +51,19 @@ export default function NewsList() {
 
       const data: NewsListResponse = await response.json()
       console.log('Received data:', data)
-      
+
+      // DateオブジェクトをJSON文字列から復元
+      const newsWithDates = data.news.map(item => ({
+        ...item,
+        createdAt: new Date(item.createdAt),
+        updatedAt: new Date(item.updatedAt),
+        publishedAt: item.publishedAt ? new Date(item.publishedAt) : null
+      }))
+
       if (append) {
-        setNews(prev => [...prev, ...data.news])
+        setNews(prev => [...prev, ...newsWithDates])
       } else {
-        setNews(data.news)
+        setNews(newsWithDates)
       }
       
       setHasMore(data.hasMore)

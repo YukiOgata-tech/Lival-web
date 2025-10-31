@@ -2,7 +2,7 @@
 
 export type NewsPriority = 'low' | 'normal' | 'high' | 'urgent'
 export type NewsType = 'general' | 'maintenance' | 'feature' | 'system'
-export type NewsStatus = 'draft' | 'published' | 'archived'
+export type NewsStatus = 'draft' | 'published' | 'archived' | 'all'
 
 export interface News {
   id: string
@@ -95,11 +95,23 @@ export const NEWS_TYPE_CONFIG = {
 
 // Firestore converter
 export const newsConverter = {
-  toFirestore: (news: Omit<News, 'id'>) => ({
-    ...news,
-    createdAt: news.createdAt || new Date(),
-    updatedAt: new Date(),
-  }),
+  toFirestore: (news: Omit<News, 'id'>) => {
+    // DateオブジェクトをFirestore Timestampに変換
+    const toTimestamp = (date: Date | null) => {
+      if (!date) return null
+      if (date instanceof Date) {
+        return date // Firestoreが自動的にTimestampに変換してくれる
+      }
+      return date
+    }
+
+    return {
+      ...news,
+      createdAt: toTimestamp(news.createdAt || new Date()),
+      updatedAt: toTimestamp(new Date()),
+      publishedAt: toTimestamp(news.publishedAt),
+    }
+  },
   fromFirestore: (snapshot: { id: string; data: () => any }) => {
     const data = snapshot.data()
     return {

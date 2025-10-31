@@ -120,17 +120,81 @@ h4, h5, h6 {
   input, textarea, select {
     font-size: 16px !important;
   }
-  
+
   /* Prevent zoom on focus for iOS Safari */
-  input[type="text"], 
-  input[type="email"], 
-  input[type="password"], 
-  input[type="search"], 
-  input[type="tel"], 
-  input[type="url"], 
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
   textarea {
     font-size: 16px !important;
     transform: translateZ(0);
     -webkit-appearance: none;
   }
+}
+
+/* Tiptap Editor Styles */
+.tiptap {
+  color: #111827; /* gray-900 */
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  color: #9ca3af; /* gray-400 */
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.tiptap:focus {
+  outline: none;
+}
+
+/* Tiptap Prose Styles - ensure text is visible */
+.tiptap.prose {
+  color: #111827; /* gray-900 */
+}
+
+.tiptap.prose h1,
+.tiptap.prose h2,
+.tiptap.prose h3,
+.tiptap.prose h4,
+.tiptap.prose h5,
+.tiptap.prose h6 {
+  color: #111827; /* gray-900 */
+}
+
+.tiptap.prose p,
+.tiptap.prose li {
+  color: #111827; /* gray-900 */
+}
+
+.tiptap.prose strong {
+  color: #111827; /* gray-900 */
+}
+
+.tiptap.prose em {
+  color: #374151; /* gray-700 */
+}
+
+.tiptap.prose a {
+  color: #2563eb; /* blue-600 */
+}
+
+.tiptap.prose a:hover {
+  color: #1e40af; /* blue-800 */
+}
+
+.tiptap.prose code {
+  color: #dc2626; /* red-600 */
+  background-color: #f3f4f6; /* gray-100 */
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+.tiptap.prose blockquote {
+  color: #4b5563; /* gray-700 */
+  border-left-color: #d1d5db; /* gray-300 */
 }
