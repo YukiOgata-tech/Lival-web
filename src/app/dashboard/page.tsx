@@ -16,7 +16,8 @@ import {
   PenTool,
   Shield,
   Megaphone,
-  AlertCircle
+  AlertCircle,
+  CreditCard
 } from 'lucide-react'
 import Link from 'next/link'
 import StudySummaryCard from '@/components/study/StudySummaryCard'

@@ -143,21 +143,6 @@ export default function SubscriptionPage() {
 ✅ 次回請求額: ${formatPrice(newPlanInfo.price)}/月
 
 よろしいですか？`
-    } else if (isBasicToPremium) {
-      // アップグレード（ベーシック→プレミアム）
-      const priceDiff = newPlanInfo.price - currentPlanInfo.price
-      message = `プレミアムプランにアップグレードしますか？
-
-【変更内容】
-• 現在のプラン: ${currentPlanInfo.name} (${formatPrice(currentPlanInfo.price)}/月)
-• 新しいプラン: ${newPlanInfo.name} (${formatPrice(newPlanInfo.price)}/月)
-
-【請求について】
-✅ 変更は即座に適用されます
-✅ 残り期間分の差額（約${formatPrice(priceDiff)}の日割り計算）が即座に請求されます
-✅ 次回以降は${formatPrice(newPlanInfo.price)}/月で請求されます
-
-よろしいですか？`
     } else {
       // その他のプラン変更（念のため）
       message = `プランを変更しますか？\n\n変更は即座に適用されます。`

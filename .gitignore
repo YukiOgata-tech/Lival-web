@@ -49,3 +49,5 @@ docs/
 
 # security-related
 firestore.rules
+serviceAccountKey.json
+**/serviceAccountKey.json
