@@ -104,46 +104,84 @@ export default function NewsList() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* ヘッダー */}
-      <div className="text-center">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-            <Megaphone className="w-6 h-6 text-blue-600" />
-          </div>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center relative"
+      >
+        {/* 背景装飾 */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+          <div className="absolute top-0 right-1/4 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">お知らせ</h1>
-        <p className="text-gray-600">
+
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          className="flex items-center justify-center mb-6"
+        >
+          <div className="relative">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <Megaphone className="w-8 h-8 text-white" />
+            </div>
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+          </div>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-3"
+        >
+          お知らせ
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-gray-600 text-lg max-w-2xl mx-auto"
+        >
           最新のお知らせやシステム情報をご確認いただけます
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
       {/* 検索・フィルター */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="bg-white rounded-xl shadow-md border border-gray-100 p-6 backdrop-blur-sm"
+      >
         <div className="flex flex-col sm:flex-row gap-4">
           {/* 検索 */}
           <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
               <input
                 type="text"
                 placeholder="お知らせを検索..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all hover:border-blue-300"
               />
             </div>
           </div>
 
           {/* フィルタートグル */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setShowFilters(!showFilters)}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="inline-flex items-center px-6 py-3 border border-gray-200 rounded-xl text-gray-700 bg-gradient-to-r from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all shadow-sm"
           >
             <Filter className="w-4 h-4 mr-2" />
             フィルター
-            <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
-          </button>
+            <ChevronDown className={`w-4 h-4 ml-2 transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
+          </motion.button>
         </div>
 
         {/* フィルター詳細 */}
@@ -152,77 +190,94 @@ export default function NewsList() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-4 pt-4 border-t border-gray-200"
+            transition={{ duration: 0.3 }}
+            className="mt-6 pt-6 border-t border-gray-200"
           >
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setFilters({})}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  !filters.type 
-                    ? 'bg-blue-100 text-blue-700 border-blue-200' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all shadow-sm ${
+                  !filters.type
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-200'
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
               >
                 すべて
-              </button>
+              </motion.button>
               {Object.entries(NEWS_TYPE_CONFIG).map(([type, config]) => (
-                <button
+                <motion.button
                   key={type}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => setFilters({ type: type as NewsType })}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    filters.type === type 
-                      ? 'bg-blue-100 text-blue-700 border-blue-200' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all shadow-sm ${
+                    filters.type === type
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-200'
+                      : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
                   }`}
                 >
-                  {config.icon} {config.label}
-                </button>
+                  <span className="mr-2">{config.icon}</span>
+                  {config.label}
+                </motion.button>
               ))}
             </div>
           </motion.div>
         )}
-      </div>
+      </motion.div>
 
       {/* お知らせ一覧 */}
       {sortedNews.length === 0 ? (
-        <div className="text-center py-12">
-          <Megaphone className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-lg font-medium text-gray-900">お知らせがありません</h3>
-          <p className="mt-1 text-sm text-gray-500">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-16 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-300"
+        >
+          <motion.div
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <Megaphone className="mx-auto h-16 w-16 text-gray-400" />
+          </motion.div>
+          <h3 className="mt-4 text-xl font-bold text-gray-900">お知らせがありません</h3>
+          <p className="mt-2 text-sm text-gray-500">
             現在公開中のお知らせはありません
           </p>
-        </div>
+        </motion.div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {sortedNews.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <NewsCard news={item} />
-            </motion.div>
+            <NewsCard key={item.id} news={item} index={index} />
           ))}
 
           {/* もっと読む */}
           {hasMore && (
-            <div className="text-center pt-6">
-              <button
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center pt-8"
+            >
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => fetchNews(true)}
                 disabled={loadingMore}
-                className="inline-flex items-center px-6 py-3 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl font-semibold"
               >
                 {loadingMore ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     読み込み中...
                   </>
                 ) : (
-                  <>もっと読む</>
+                  <>
+                    もっと読む
+                    <ChevronDown className="w-5 h-5 ml-2" />
+                  </>
                 )}
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           )}
         </div>
       )}

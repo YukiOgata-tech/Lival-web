@@ -14,7 +14,7 @@ import {
   NEWS_PRIORITY_CONFIG,
   NEWS_TYPE_CONFIG 
 } from '@/lib/types/news'
-import { 
+import {
   Plus,
   Search,
   Filter,
@@ -25,7 +25,8 @@ import {
   FileText,
   Archive,
   AlertTriangle,
-  MoreVertical
+  MoreVertical,
+  Calendar
 } from 'lucide-react'
 
 export default function NewsAdminList() {
@@ -243,88 +244,114 @@ export default function NewsAdminList() {
       </div>
 
       {/* お知らせ一覧 */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="space-y-4">
         {news.length === 0 ? (
-          <div className="text-center py-12">
-            <FileText className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">お知らせがありません</h3>
-            <p className="mt-1 text-sm text-gray-500">最初のお知らせを作成してみましょう</p>
-            <button
-              onClick={() => router.push('/admin/news/create')}
-              className="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-16 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-300"
+          >
+            <motion.div
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <FileText className="mx-auto h-16 w-16 text-gray-400" />
+            </motion.div>
+            <h3 className="mt-4 text-xl font-bold text-gray-900">お知らせがありません</h3>
+            <p className="mt-2 text-sm text-gray-500">最初のお知らせを作成してみましょう</p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => router.push('/admin/news/create')}
+              className="mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl font-semibold"
+            >
+              <Plus className="w-5 h-5 mr-2" />
               新規作成
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         ) : (
-          <div className="overflow-hidden">
-            {news.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors"
-              >
-                <div className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900 truncate">
-                          {item.title}
-                        </h3>
-                        <StatusBadge status={item.status} />
-                        <PriorityBadge priority={item.priority} />
-                      </div>
-                      
-                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                        {item.excerpt}
-                      </p>
-                      
-                      <div className="flex items-center space-x-6 text-xs text-gray-500">
-                        <span className="flex items-center">
-                          {NEWS_TYPE_CONFIG[item.type].icon} {NEWS_TYPE_CONFIG[item.type].label}
-                        </span>
-                        <span>作成: {item.createdAt.toLocaleDateString('ja-JP')}</span>
-                        {item.publishedAt && (
-                          <span>公開: {item.publishedAt.toLocaleDateString('ja-JP')}</span>
-                        )}
-                        <span className="flex items-center">
-                          <Eye className="w-3 h-3 mr-1" />
-                          {item.viewCount}
-                        </span>
-                      </div>
+          news.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              whileHover={{ y: -2 }}
+              className="group bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center flex-wrap gap-2 mb-3">
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {item.title}
+                      </h3>
+                      <StatusBadge status={item.status} />
+                      <PriorityBadge priority={item.priority} />
                     </div>
-                    
-                    <div className="flex items-center space-x-2 ml-4">
-                      <button
-                        onClick={() => router.push(`/news/${item.id}`)}
-                        className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                        title="プレビュー"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => router.push(`/admin/news/${item.id}/edit`)}
-                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="編集"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="削除"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                      {item.excerpt}
+                    </p>
+
+                    <div className="flex items-center flex-wrap gap-4 text-xs text-gray-500">
+                      <span className="flex items-center px-2 py-1 bg-gray-50 rounded-lg">
+                        <span className="mr-1">{NEWS_TYPE_CONFIG[item.type].icon}</span>
+                        {NEWS_TYPE_CONFIG[item.type].label}
+                      </span>
+                      <span className="flex items-center">
+                        <Calendar className="w-3 h-3 mr-1" />
+                        作成: {item.createdAt.toLocaleDateString('ja-JP')}
+                      </span>
+                      {item.publishedAt && (
+                        <span className="flex items-center">
+                          <Globe className="w-3 h-3 mr-1" />
+                          公開: {item.publishedAt.toLocaleDateString('ja-JP')}
+                        </span>
+                      )}
+                      <span className="flex items-center">
+                        <Eye className="w-3 h-3 mr-1" />
+                        {item.viewCount.toLocaleString()}
+                      </span>
                     </div>
                   </div>
+
+                  <div className="flex items-center gap-2 ml-4">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => router.push(`/news/${item.id}`)}
+                      className="p-2.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all"
+                      title="プレビュー"
+                    >
+                      <Eye className="w-5 h-5" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => router.push(`/admin/news/${item.id}/edit`)}
+                      className="p-2.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all"
+                      title="編集"
+                    >
+                      <Edit3 className="w-5 h-5" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleDelete(item.id)}
+                      className="p-2.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
+                      title="削除"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </motion.button>
+                  </div>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+              </div>
+
+              {/* ホバー時のボーダー効果 */}
+              <div className="h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+            </motion.div>
+          ))
         )}
       </div>
     </div>
