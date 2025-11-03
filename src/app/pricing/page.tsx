@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
+import VerifyEmailBanner from '@/components/account/VerifyEmailBanner'
 import { SUBSCRIPTION_PLANS, formatPrice } from '@/data/subscriptions'
 import { Check, Sparkles, Zap } from 'lucide-react'
 
@@ -48,6 +49,10 @@ export default function PricingPage() {
           <p className="text-xl text-gray-600">
             AI学習サポートで、効率的な学習体験を
           </p>
+        </div>
+        {/* 未認証ユーザー向けバナー */}
+        <div className="mb-6">
+          <VerifyEmailBanner />
         </div>
 
         {/* 現在のプラン表示 */}

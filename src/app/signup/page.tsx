@@ -15,12 +15,18 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [verificationSent, setVerificationSent] = useState(false)
   const { signUp, user, loading: authLoading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace('/dashboard')
+      if (user.emailVerified) {
+        router.replace('/dashboard')
+      } else {
+        // 未認証ユーザーはサインアップ画面に留めて案内を表示
+        setVerificationSent(true)
+      }
     }
   }, [authLoading, user, router])
 
@@ -31,7 +37,8 @@ export default function SignupPage() {
 
     try {
       await signUp(email, password, displayName)
-      router.push('/dashboard')
+      // 認証メールを自動送信済み（useAuth内）。この画面で案内を表示。
+      setVerificationSent(true)
     } catch (error: unknown) {
       setError(getFirebaseErrorMessage(error))
     } finally {
@@ -102,6 +109,16 @@ export default function SignupPage() {
               className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"
             >
               {error}
+            </motion.div>
+          )}
+
+          {verificationSent && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm"
+            >
+              認証メールを送信しました。メールに記載のリンクから認証を完了してください。リンクには有効期限があります。期限切れの場合は、このページ右上のボタンから再送できます。
             </motion.div>
           )}
 

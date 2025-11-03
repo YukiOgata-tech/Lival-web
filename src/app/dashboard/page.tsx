@@ -134,6 +134,7 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
+
         {/* キャンセル予定の警告 */}
         {userData.subscription.cancelAt && (
           <motion.div

@@ -68,7 +68,7 @@ export default function FloatingEmailVerifyButton({ className = '' }: FloatingEm
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0, opacity: 0 }}
-        className={`fixed bottom-6 right-6 z-50 ${className}`}
+        className={`fixed top-20 right-6 z-50 ${className}`}
       >
         {/* 背景エフェクト */}
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-pink-500 rounded-full animate-ping opacity-20"></div>

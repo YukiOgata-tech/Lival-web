@@ -6,7 +6,8 @@ import {
   signOut as firebaseSignOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  updateProfile
+  updateProfile,
+  sendEmailVerification
 } from 'firebase/auth'
 import { httpsCallable } from 'firebase/functions'
 import { auth, functions } from '@/lib/firebase'
@@ -177,12 +178,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, displayName?: string) => {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    
+    const result = await createUserWithEmailAndPassword(auth, email, password)
+
     if (displayName && result.user) {
-      await updateProfile(result.user, { displayName });
+      await updateProfile(result.user, { displayName })
     }
-    
+
+    // サインアップ直後に認証メールを自動送信
+    if (result.user) {
+      try {
+        // 言語を日本語に固定（冪等）
+        auth.languageCode = 'ja'
+        const origin = typeof window !== 'undefined' ? window.location.origin : ''
+        await sendEmailVerification(result.user, {
+          url: `${origin}/auth/action`,
+          handleCodeInApp: true,
+        })
+      } catch (e) {
+        console.warn('Failed to auto-send verification email:', e)
+      }
+    }
+
     // Firestore user creation is handled by onAuthStateChanged
   };
 
