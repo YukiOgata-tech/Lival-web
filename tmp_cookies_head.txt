@@ -438,51 +438,6 @@ export default function CookiesPolicyPage() {
             </div>
           </motion.div>
 
-          {/* Mobile Ad Identifiers (AdMob) */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="mt-12 bg-white border border-gray-200 rounded-2xl p-8"
-          >
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              モバイルアプリでの広告識別子（AdMob）
-            </h3>
-            <div className="space-y-3 text-gray-700">
-              <p>
-                本サービスのモバイルアプリでは、Google AdMob による広告配信・効果測定・不正防止の目的で、
-                Cookie ではなく端末の広告識別子（AAID/Android・IDFA/iOS）などが使用される場合があります。
-                学習内容の具体的中身やメッセージ本文などの機微情報は広告目的に利用しません。
-              </p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>EEA/UK など一部地域では、同意管理（IAB TCF/CMP）に基づきパーソナライズ可否を制御します</li>
-                <li>端末の広告IDは OS 設定からリセット/無効化できます（Android/iOS 各設定を参照）</li>
-                <li>児童向けには TFUA を適用するなど、年齢に応じてパーソナライズを制限/無効化します</li>
-              </ul>
-              <div className="text-sm text-gray-600">
-                参考リンク:
-                <ul className="list-disc pl-5 space-y-1 mt-2">
-                  <li>
-                    <a className="text-blue-600 hover:underline" href="https://policies.google.com/privacy?hl=ja" target="_blank" rel="noopener noreferrer">
-                      Google プライバシーポリシー
-                    </a>
-                  </li>
-                  <li>
-                    <a className="text-blue-600 hover:underline" href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer">
-                      Google の広告に関するポリシー/技術
-                    </a>
-                  </li>
-                  <li>
-                    <a className="text-blue-600 hover:underline" href="https://support.google.com/admob/answer/6128543?hl=ja" target="_blank" rel="noopener noreferrer">
-                      AdMob ポリシー
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </motion.div>
-
           {/* Contact */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}

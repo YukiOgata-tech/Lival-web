@@ -41,6 +41,12 @@ export const db = getFirestore(app)
 export const storage = getStorage(app)
 export const functions = getFunctions(app, 'asia-northeast1');
 
+// メールテンプレート/ホストページの言語を日本語に固定
+try {
+  auth.languageCode = 'ja'
+  // または端末言語を使う場合: auth.useDeviceLanguage()
+} catch {}
+
 // 開発環境でのエミュレーター接続（本番では実行されない）
 // if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
 //   const useEmulator = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true'

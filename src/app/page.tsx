@@ -11,6 +11,7 @@ import HomeTestimonialsSection from '@/components/sections/HomeTestimonialsSecti
 import HomeCTASection from '@/components/sections/HomeCTASection'
 import ScrollToTop from '@/components/ui/ScrollToTop'
 import FloatingProfileButton from '@/components/ui/FloatingProfileButton'
+import FloatingEmailVerifyButton from '@/components/ui/FloatingEmailVerifyButton'
 
 export default function HomePage() {
   return (
@@ -48,6 +49,9 @@ export default function HomePage() {
 
       {/* Floating Profile Setup Button */}
       <FloatingProfileButton />
+
+      {/* Floating Email Verification Button (unverified users) */}
+      <FloatingEmailVerifyButton />
     </div>
   )
 }
