@@ -24,24 +24,21 @@ export const metadata: Metadata = {
   robots: 'noindex'
 }
 
-function AdminDashboardContent() {
-  // Mock statistics data
-  const stats = {
-    totalBlogs: 127,
-    pendingReviews: 8,
-    totalUsers: 1234,
-    monthlyViews: 45600,
-    approvedToday: 5,
-    rejectedToday: 1,
-    averageReviewTime: '2.3 hours'
-  }
-
-  const recentActivity = [
-    { id: 1, type: 'blog_approved', user: '田中太郎', title: 'Next.js 15の新機能', time: '2時間前' },
-    { id: 2, type: 'blog_submitted', user: '佐藤花子', title: 'TypeScript活用術', time: '4時間前' },
-    { id: 3, type: 'user_registered', user: '山田次郎', title: 'プレミアムプランに登録', time: '6時間前' },
-    { id: 4, type: 'blog_rejected', user: '鈴木三郎', title: 'AI学習法の基礎', time: '8時間前' }
-  ]
+async function AdminDashboardContent() {
+  // 実データ集計（/api/admin/stats）
+  let totalUsers = 0
+  let totalBlogs = 0
+  let pendingReviews = 0
+  try {
+    const res = await fetch('/api/admin/stats', { cache: 'no-store' })
+    if (res.ok) {
+      const data = await res.json()
+      totalUsers = data.totalUsers || 0
+      totalBlogs = data.blogs?.total || 0
+      pendingReviews = data.blogs?.pending || 0
+    }
+  } catch {}
+  const monthlyViews = 0
 
   const adminMenuItems = [
     {
@@ -49,7 +46,7 @@ function AdminDashboardContent() {
       description: '投稿された記事の審査・管理',
       icon: FileText,
       href: '/admin/review',
-      count: stats.pendingReviews,
+      count: pendingReviews,
       color: 'bg-yellow-50 text-yellow-600 border-yellow-200'
     },
     {
@@ -57,7 +54,7 @@ function AdminDashboardContent() {
       description: 'お知らせの作成・編集・管理',
       icon: Megaphone,
       href: '/admin/news',
-      count: '12件',
+      count: undefined,
       color: 'bg-red-50 text-red-600 border-red-200'
     },
     {
@@ -65,7 +62,7 @@ function AdminDashboardContent() {
       description: 'ユーザーアカウントの管理',
       icon: Users,
       href: '/admin/users',
-      count: stats.totalUsers,
+      count: totalUsers || undefined,
       color: 'bg-blue-50 text-blue-600 border-blue-200'
     },
     {
@@ -73,7 +70,7 @@ function AdminDashboardContent() {
       description: 'サイト統計とレポート',
       icon: BarChart3,
       href: '/admin/analytics',
-      count: stats.monthlyViews,
+      count: monthlyViews || undefined,
       color: 'bg-green-50 text-green-600 border-green-200'
     },
     {
@@ -139,55 +136,55 @@ function AdminDashboardContent() {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Statistics Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">総記事数</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalBlogs}</p>
-                <p className="text-sm text-green-600">+12 今月</p>
+                <p className="text-2xl font-bold text-gray-900">{totalBlogs}</p>
+                {/* 月次増減などのプレースホルダーは非表示に変更 */}
               </div>
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-blue-600" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">審査待ち</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.pendingReviews}</p>
+                <p className="text-2xl font-bold text-yellow-600">{pendingReviews}</p>
                 <p className="text-sm text-yellow-600">要対応</p>
               </div>
-              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-600" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">総ユーザー数</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
-                <p className="text-sm text-green-600">+45 今週</p>
+                <p className="text-2xl font-bold text-gray-900">{totalUsers.toString()}</p>
+                {/* 週次増減などのプレースホルダーは非表示に変更 */}
               </div>
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-green-600" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">月間PV</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.monthlyViews.toLocaleString()}</p>
-                <p className="text-sm text-green-600">+23% 先月比</p>
+                <p className="text-2xl font-bold text-gray-900">{monthlyViews.toLocaleString()}</p>
+                {/* 先月比表示は削除 */}
               </div>
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Eye className="w-6 h-6 text-purple-600" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
               </div>
             </div>
           </div>
@@ -227,32 +224,7 @@ function AdminDashboardContent() {
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-6">最近のアクティビティ</h2>
-              <div className="space-y-4">
-                {recentActivity.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                      {activity.type === 'blog_approved' && <CheckCircle className="w-4 h-4 text-green-600" />}
-                      {activity.type === 'blog_submitted' && <FileText className="w-4 h-4 text-blue-600" />}
-                      {activity.type === 'user_registered' && <Users className="w-4 h-4 text-purple-600" />}
-                      {activity.type === 'blog_rejected' && <AlertCircle className="w-4 h-4 text-red-600" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-900 font-medium">{activity.user}</p>
-                      <p className="text-sm text-gray-600">{activity.title}</p>
-                      <p className="text-xs text-gray-500">{activity.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <Link
-                  href="/admin/activity"
-                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  すべてのアクティビティを表示 →
-                </Link>
-              </div>
+              <p className="text-sm text-gray-600">現在表示できるアクティビティはありません。</p>
             </div>
           </div>
         </div>
@@ -296,6 +268,6 @@ function AdminDashboardContent() {
   )
 }
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
   return <AdminDashboardContent />
 }

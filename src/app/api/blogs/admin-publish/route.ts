@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
         updatedAt: now,
         approvedAt: now,
       })
-      await adminDb.collection('audit_logs').doc().set({
+      await adminDb.collection('auditLogs').doc().set({
         actorId: userId,
         actorName: '',
         action: 'blog_published',

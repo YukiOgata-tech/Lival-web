@@ -1,9 +1,12 @@
 // src/app/api/blogs/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerUserRole, getServerUserId } from '@/lib/auth/server'
-import { adminDb } from '@/lib/firebase-admin'
 import { BlogService } from '@/lib/firebase/blog'
 import { UserRole } from '@/lib/types/blog'
+import { adminDb, adminAuth } from '@/lib/firebase/admin'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 // GET /api/blogs - Get blogs list with filters
 export async function GET(request: NextRequest) {
@@ -15,8 +18,31 @@ export async function GET(request: NextRequest) {
     const tag = searchParams.get('tag') || undefined
     const q = searchParams.get('q') || undefined
     const statusParam = searchParams.get('status') || undefined
-
     const userRole = await getServerUserRole(request)
+
+    // 管理者専用データ（approved 以外のステータス）を要求する場合は、IDトークンで厳密に検証
+    const requiresAdmin = !!statusParam && statusParam !== 'approved'
+    let adminUid: string | null = null
+    let isAdminVerified = false
+    if (requiresAdmin) {
+      try {
+        const authz = request.headers.get('authorization') || ''
+        const token = authz.startsWith('Bearer ') ? authz.slice(7) : ''
+        if (token && adminAuth) {
+          const decoded = await adminAuth.verifyIdToken(token)
+          adminUid = decoded.uid
+          if (adminDb && adminUid) {
+            const snap = await adminDb.collection('users').doc(adminUid).get()
+            isAdminVerified = snap.exists && (snap.data() as any)?.role === 'admin'
+          }
+        }
+      } catch {
+        isAdminVerified = false
+      }
+      if (!isAdminVerified) {
+        return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+      }
+    }
     
     // Admin SDK がある場合はそちらを優先（サーバー権限で安定動作）
     if (adminDb) {

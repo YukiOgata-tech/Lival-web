@@ -1,21 +1,26 @@
 // src/app/api/blogs/review/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { BlogService } from '@/lib/firebase/blog'
-import { getServerUserRole } from '@/lib/auth/server'
 import { ReviewAction } from '@/lib/types/blog'
+import { adminAuth, adminDb } from '@/lib/firebase/admin'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 // POST /api/blogs/review - Review blog (admin only)
 export async function POST(request: NextRequest) {
   try {
-    const userRole = await getServerUserRole(request)
-    const userId = request.headers.get('x-user-id')
-    
-    if (!userId || userRole !== 'admin') {
-      return NextResponse.json(
-        { error: 'Admin access required' },
-        { status: 403 }
-      )
-    }
+    // Verify Firebase ID token and admin role from users collection
+    const authz = request.headers.get('authorization') || ''
+    const token = authz.startsWith('Bearer ') ? authz.slice(7) : ''
+    if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const decoded = await adminAuth.verifyIdToken(token).catch(() => null)
+    if (!decoded?.uid) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const uid = decoded.uid
+    if (!adminDb) return NextResponse.json({ error: 'Server not ready' }, { status: 503 })
+    const userSnap = await adminDb.collection('users').doc(uid).get()
+    const isAdmin = userSnap.exists && (userSnap.data() as any)?.role === 'admin'
+    if (!isAdmin) return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
 
     const body = await request.json()
     const { blogId, action, comments, templateIds } = body
@@ -53,7 +58,7 @@ export async function POST(request: NextRequest) {
       finalComments += `\n\nTemplate IDs used: ${templateIds.join(', ')}`
     }
 
-    await BlogService.reviewBlog(blogId, typedAction, userId, finalComments)
+    await BlogService.reviewBlog(blogId, typedAction, uid, finalComments)
 
     const actionMessages: Record<ReviewAction, string> = {
       approved: 'Blog approved and published successfully',

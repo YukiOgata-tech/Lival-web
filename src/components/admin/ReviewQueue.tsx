@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { auth } from '@/lib/firebase'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReviewItem from './ReviewItem'
 import ReviewTemplateModal from './ReviewTemplateModal'
@@ -50,8 +51,10 @@ export default function ReviewQueue({ initialBlogs = [] }: ReviewQueueProps) {
       const params = new URLSearchParams({ status: 'pending', pageSize: '50' })
       if (filters.search) params.set('q', filters.search)
       if (filters.category) params.set('category', filters.category)
-
-      const response = await fetch(`/api/blogs?${params}`)
+      const idToken = await auth.currentUser?.getIdToken().catch(() => undefined)
+      const response = await fetch(`/api/blogs?${params}`, {
+        headers: idToken ? { Authorization: `Bearer ${idToken}` } : undefined,
+      })
       
       if (!response.ok) {
         throw new Error('審査待ち記事の取得に失敗しました')
@@ -83,10 +86,12 @@ export default function ReviewQueue({ initialBlogs = [] }: ReviewQueueProps) {
 
   const handleReview = async (blogId: string, action: 'approved' | 'rejected' | 'revise', comments?: string) => {
     try {
+      const idToken = await auth.currentUser?.getIdToken().catch(() => undefined)
       const response = await fetch('/api/blogs/review', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
         },
         body: JSON.stringify({
           blogId,

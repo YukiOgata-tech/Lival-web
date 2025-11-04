@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
     if (adminDb) {
       const now = new Date()
       await adminDb.collection('blogs').doc(blogId).update({ status: 'pending', submittedAt: now, updatedAt: now })
-      await adminDb.collection('blog_submissions').doc().set({ id: `${blogId}_${now.getTime()}`, blogId, userId, status: 'pending', submittedAt: now })
-      await adminDb.collection('audit_logs').doc().set({ actorId: userId, action: 'blog_submitted', blogId, timestamp: now })
+      await adminDb.collection('blogSubmissions').doc().set({ id: `${blogId}_${now.getTime()}`, blogId, userId, status: 'pending', submittedAt: now })
+      await adminDb.collection('auditLogs').doc().set({ actorId: userId, action: 'blog_submitted', blogId, timestamp: now })
     } else {
       await BlogService.submitForReview(blogId, userId)
     }

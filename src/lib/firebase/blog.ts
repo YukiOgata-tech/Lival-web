@@ -30,8 +30,8 @@ import {
 
 // Collections
 export const blogsCollection = collection(db, 'blogs').withConverter(blogConverter)
-export const blogSubmissionsCollection = collection(db, 'blog_submissions')
-export const auditLogsCollection = collection(db, 'audit_logs').withConverter(auditLogConverter)
+export const blogSubmissionsCollection = collection(db, 'blogSubmissions')
+export const auditLogsCollection = collection(db, 'auditLogs').withConverter(auditLogConverter)
 export const categoriesCollection = collection(db, 'blog_categories')
 export const reviewTemplatesCollection = collection(db, 'review_templates')
 
