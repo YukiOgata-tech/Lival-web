@@ -76,20 +76,40 @@ export const NEWS_PRIORITY_CONFIG = {
 // お知らせタイプの表示設定
 export const NEWS_TYPE_CONFIG = {
   general: {
-    label: '一般',
-    icon: '📢'
+    label: 'お知らせ',
+    icon: '📰',
+    cardBgFrom: 'from-gray-50',
+    cardBgTo: 'to-white',
+    cardBorder: 'border-gray-200',
+    watermarkFrom: 'from-gray-300',
+    watermarkTo: 'to-gray-500'
   },
   maintenance: {
     label: 'メンテナンス',
-    icon: '🔧'
+    icon: '🛠️',
+    cardBgFrom: 'from-amber-50',
+    cardBgTo: 'to-amber-100',
+    cardBorder: 'border-amber-200',
+    watermarkFrom: 'from-amber-300',
+    watermarkTo: 'to-amber-500'
   },
   feature: {
     label: '新機能',
-    icon: '✨'
+    icon: '✨',
+    cardBgFrom: 'from-emerald-50',
+    cardBgTo: 'to-emerald-100',
+    cardBorder: 'border-emerald-200',
+    watermarkFrom: 'from-emerald-300',
+    watermarkTo: 'to-emerald-600'
   },
   system: {
     label: 'システム',
-    icon: '⚙️'
+    icon: '⚙️',
+    cardBgFrom: 'from-indigo-50',
+    cardBgTo: 'to-indigo-100',
+    cardBorder: 'border-indigo-200',
+    watermarkFrom: 'from-indigo-300',
+    watermarkTo: 'to-indigo-600'
   }
 } as const
 

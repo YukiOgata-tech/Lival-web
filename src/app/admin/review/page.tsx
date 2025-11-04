@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 import ReviewQueue from '@/components/admin/ReviewQueue'
 import { Shield, FileText, Clock } from 'lucide-react'
+import { adminDb } from '@/lib/firebase-admin'
 
 export const metadata: Metadata = {
   title: '記事審査 | Admin - Lival AI',
@@ -15,28 +16,28 @@ export default function AdminReviewPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-              <Shield className="w-6 h-6 text-red-600" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-red-100 rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">記事審査管理</h1>
-              <p className="text-gray-600">投稿された記事の品質確認と審査を行います</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">記事審査管理</h1>
+              <p className="text-sm sm:text-base text-gray-600">投稿された記事の品質確認と審査を行います</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Stats Overview */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6">
         <Suspense fallback={<StatsSkeletons />}>
           <ReviewStats />
         </Suspense>
       </div>
 
       {/* Review Queue */}
-      <div className="max-w-7xl mx-auto px-4 pb-8">
+      <div className="max-w-7xl mx-auto px-4 pb-6 sm:pb-8">
         <Suspense fallback={<QueueSkeleton />}>
           <ReviewQueue />
         </Suspense>
@@ -45,14 +46,32 @@ export default function AdminReviewPage() {
   )
 }
 
-// Stats component
+// Stats component（サーバーサイドで実数を取得）
 async function ReviewStats() {
-  // This would fetch actual stats in a real implementation
-  const stats = {
-    pending: 12,
-    approved: 156,
-    rejected: 8,
-    averageTime: '2.3'
+  let pending = 0
+  let approved = 0
+  let rejected = 0
+  let averageTime = '-'
+
+  if (adminDb) {
+    try {
+      const [p, a, r] = await Promise.all([
+        adminDb.collection('blogs').where('status', '==', 'pending').count().get(),
+        adminDb.collection('blogs').where('status', '==', 'approved').count().get(),
+        adminDb.collection('blogs').where('status', '==', 'rejected').count().get(),
+      ])
+      pending = (p.data() as any).count || 0
+      approved = (a.data() as any).count || 0
+      rejected = (r.data() as any).count || 0
+    } catch (e) {
+      // count() が未サポートの場合のフォールバック
+      const snap = await adminDb.collection('blogs').limit(200).get()
+      const list = snap.docs.map(d => d.data() as any)
+      pending = list.filter(b => b.status === 'pending').length
+      approved = list.filter(b => b.status === 'approved').length
+      rejected = list.filter(b => b.status === 'rejected').length
+    }
+    // TODO: 平均審査時間は blog_submissions の submittedAt と approvedAt から算出
   }
 
   return (
@@ -61,7 +80,7 @@ async function ReviewStats() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-600">審査待ち</p>
-            <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+            <p className="text-2xl font-bold text-yellow-600">{pending}</p>
           </div>
           <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
             <Clock className="w-6 h-6 text-yellow-600" />
@@ -73,7 +92,7 @@ async function ReviewStats() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-600">承認済み</p>
-            <p className="text-2xl font-bold text-green-600">{stats.approved}</p>
+            <p className="text-2xl font-bold text-green-600">{approved}</p>
           </div>
           <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
             <FileText className="w-6 h-6 text-green-600" />
@@ -85,7 +104,7 @@ async function ReviewStats() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-600">却下</p>
-            <p className="text-2xl font-bold text-red-600">{stats.rejected}</p>
+            <p className="text-2xl font-bold text-red-600">{rejected}</p>
           </div>
           <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
             <Shield className="w-6 h-6 text-red-600" />
@@ -97,7 +116,7 @@ async function ReviewStats() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-600">平均審査時間</p>
-            <p className="text-2xl font-bold text-blue-600">{stats.averageTime}日</p>
+            <p className="text-2xl font-bold text-blue-600">{averageTime}日</p>
           </div>
           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
             <Clock className="w-6 h-6 text-blue-600" />

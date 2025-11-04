@@ -183,7 +183,7 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
       </div>
 
       {/* Blog Cards */}
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {blogs.map((blog, index) => (
           <motion.article
             key={blog.id}
@@ -193,17 +193,17 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow group"
           >
             <Link href={`/blog/${blog.slug}`} className="block">
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {/* Header */}
-                <div className="flex items-start justify-between mb-4">
+                <div className="flex items-start justify-between mb-3 sm:mb-4">
                   <div className="flex-1">
                     {/* Title */}
-                    <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
                       {blog.title}
                     </h2>
                     
                     {/* Meta info */}
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-gray-500">
                       <div className="flex items-center space-x-1">
                         <User className="w-4 h-4" />
                         <span>{blog.authorName || 'Anonymous'}</span>
@@ -220,35 +220,35 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2 ml-4">
+                  <div className="flex items-center space-x-2 ml-3 sm:ml-4">
                     {getVisibilityBadge(blog)}
                     <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="mb-4">
-                  <p className="text-gray-700 line-clamp-3 leading-relaxed">
+                <div className="mb-3 sm:mb-4">
+                  <p className="text-gray-700 line-clamp-2 sm:line-clamp-3 leading-relaxed text-sm sm:text-base">
                     {blog.excerpt}
                   </p>
                 </div>
 
                 {/* Categories and Tags */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center gap-2 sm:space-x-3">
                     {/* Categories */}
                     {blog.categories.length > 0 && (
                       <div className="flex items-center space-x-1">
                         {blog.categories.slice(0, 2).map((category) => (
                           <span
                             key={category}
-                            className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full"
+                            className="px-2 py-0.5 sm:py-1 bg-purple-100 text-purple-800 text-[11px] sm:text-xs rounded-full"
                           >
                             {category}
                           </span>
                         ))}
                         {blog.categories.length > 2 && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-[11px] sm:text-xs text-gray-500">
                             +{blog.categories.length - 2}
                           </span>
                         )}
@@ -262,13 +262,13 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
                         {blog.tags.slice(0, 3).map((tag) => (
                           <span
                             key={tag}
-                            className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
+                            className="px-2 py-0.5 sm:py-1 bg-gray-100 text-gray-600 text-[11px] sm:text-xs rounded-full"
                           >
                             #{tag}
                           </span>
                         ))}
                         {blog.tags.length > 3 && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-[11px] sm:text-xs text-gray-500">
                             +{blog.tags.length - 3}
                           </span>
                         )}
@@ -282,10 +282,10 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
             </Link>
             
             {/* Share buttons outside of link */}
-            <div className="px-6 pb-4 border-t border-gray-100">
-              <div className="flex items-center justify-between pt-3">
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  <ViewCount count={blog.id.length * 23 + 89} />
+            <div className="px-4 sm:px-6 pb-3 sm:pb-4 border-t border-gray-100">
+              <div className="flex items-center justify-between pt-2 sm:pt-3">
+                <div className="flex items-center space-x-3 sm:space-x-4 text-xs sm:text-sm text-gray-500">
+                  <ViewCount count={typeof blog.viewCount === 'number' ? blog.viewCount : 0} />
                 </div>
                 <SocialShareCompact
                   url={`${typeof window !== 'undefined' ? window.location.origin : ''}/blog/${blog.slug}`}

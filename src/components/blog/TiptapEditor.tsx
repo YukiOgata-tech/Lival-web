@@ -138,7 +138,7 @@ export default function TiptapEditor({
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-lg max-w-none focus:outline-none p-6 min-h-[400px] text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-strong:text-gray-900 prose-em:text-gray-900',
+        class: 'prose prose-lg max-w-none focus:outline-none p-6 min-h-[400px] bg-white text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-strong:text-gray-900 prose-em:text-gray-900',
       },
     },
   })
@@ -197,9 +197,10 @@ export default function TiptapEditor({
   }
 
   return (
-    <div>
+    <div className="relative">
+
       {/* Toolbar */}
-      <div className="border-b border-gray-200 p-3 flex flex-wrap gap-1 bg-gray-50">
+      <div className="border-b border-gray-200 p-3 flex flex-wrap gap-1 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/75 sticky top-0 z-30">
         {/* Text Formatting */}
         <div className="flex items-center space-x-1 pr-3 border-r border-gray-300">
           <MenuButton

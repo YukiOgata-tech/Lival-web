@@ -34,7 +34,8 @@ export async function getNewsList(
   try {
     console.log('getNewsList called with:', { filters, page, limitCount })
     
-    // 基本的なクエリから始める
+    // 基本的なクエリ（新着順）
+    // インデックス作成済み（type + createdAt 等）を前提にサーバー側で並び替え
     let q = query(newsCollection, orderBy('createdAt', 'desc'))
 
     // ステータスフィルター
@@ -73,7 +74,7 @@ export async function getNewsList(
       }
     }
 
-    const news = snapshot.docs.map(doc => {
+    let news = snapshot.docs.map(doc => {
       const data = doc.data()
       console.log('Document data:', { id: doc.id, title: data.title, status: data.status })
       return data
@@ -122,7 +123,7 @@ export async function getPublishedNews(limitCount = 20): Promise<News[]> {
       limit(limitCount)
     )
 
-    const snapshot = await getDocs(q)
+    let snapshot; try { snapshot = await getDocs(q) } catch (err) { console.warn("Primary query failed, retrying without orderBy/index", (err as any)?.code || err); snapshot = await getDocs(query(newsCollection)); }
     return snapshot.docs.map(doc => doc.data())
   } catch (error) {
     console.error('Error fetching published news:', error)
@@ -266,7 +267,7 @@ export async function getImportantNews(limitCount = 3): Promise<News[]> {
       limit(limitCount)
     )
 
-    const snapshot = await getDocs(q)
+    let snapshot; try { snapshot = await getDocs(q) } catch (err) { console.warn("Primary query failed, retrying without orderBy/index", (err as any)?.code || err); snapshot = await getDocs(query(newsCollection)); }
     return snapshot.docs.map(doc => doc.data())
   } catch (error) {
     console.error('Error fetching important news:', error)
@@ -321,3 +322,7 @@ export async function getNewsStats(): Promise<{
     }
   }
 }
+
+
+
+

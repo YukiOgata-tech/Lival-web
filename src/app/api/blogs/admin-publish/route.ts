@@ -1,12 +1,14 @@
 // src/app/api/blogs/admin-publish/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerUserRole } from '@/lib/auth/server'
+import { getServerUserRole, getServerUserId } from '@/lib/auth/server'
+import { BlogService } from '@/lib/firebase/blog'
+import { adminDb } from '@/lib/firebase-admin'
 
 // POST /api/blogs/admin-publish - Admin direct publish
 export async function POST(request: NextRequest) {
   try {
     const userRole = await getServerUserRole(request)
-    const userId = request.headers.get('x-user-id')
+    const userId = await getServerUserId(request)
     
     if (!userId) {
       return NextResponse.json(
@@ -23,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { title, content, categories } = body
+    const { title, content, categories = [], tags = [], visibility = 'public', coverPath = '', createdAt } = body
 
     // Validate required fields
     if (!title || !content) {
@@ -33,33 +35,67 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Mock implementation - simulate direct publish
-    // In production, this would:
-    // 1. Create blog with status: 'approved'
-    // 2. Set publishedAt: new Date()
-    // 3. Skip review process
-    const mockBlogId = `admin_blog_${Date.now()}`
+    // Create blog then approve
+    const text = (content || '').replace(/<[^>]*>/g, '').trim()
+    const excerpt = text.length > 300 ? text.substring(0, 300).trim() + '…' : text
+    let blogId: string
+    if (adminDb) {
+      const ref = adminDb.collection('blogs').doc()
+      blogId = ref.id
+      const now = new Date()
+      await ref.set({
+        id: blogId,
+        slug: await BlogService.generateUniqueSlug(title),
+        title,
+        content,
+        categories,
+        tags,
+        visibility,
+        coverPath,
+        excerpt,
+        authorId: userId,
+        authorName: 'Admin',
+        status: 'approved',
+        viewCount: 0,
+        version: 1,
+        createdAt: createdAt ? new Date(createdAt) : now,
+        updatedAt: now,
+        approvedAt: now,
+      })
+      await adminDb.collection('audit_logs').doc().set({
+        actorId: userId,
+        actorName: '',
+        action: 'blog_published',
+        blogId,
+        timestamp: now,
+        newValue: { title, categories, tags, visibility },
+      })
+    } else {
+      blogId = await BlogService.createBlog({
+        title,
+        content,
+        categories,
+        tags,
+        visibility,
+        coverPath,
+        excerpt,
+        ...(createdAt ? { createdAt: new Date(createdAt) } : {}),
+        authorId: userId,
+        authorName: 'Admin',
+      }, userId!)
+      await BlogService.updateBlog(blogId, { status: 'approved', approvedAt: new Date() }, userId!)
+    }
 
-    console.log(`Admin direct publish: Blog ${mockBlogId} published by ${userId}`, {
-      title,
-      categories,
-      visibility,
-      status: 'approved'
-    })
-
-    return NextResponse.json({
-      success: true,
-      blogId: mockBlogId,
-      message: 'Blog published successfully',
-      status: 'approved',
-      publishedAt: new Date().toISOString()
-    })
+    return NextResponse.json({ success: true, blogId, message: 'Blog published successfully', status: 'approved' })
 
   } catch (error) {
-    console.error('Error publishing blog:', error)
+    const code = (error as any)?.code || (error as any)?.message || 'unknown'
+    console.error('Error publishing blog:', { code, error })
+    const status = code === 'permission-denied' || code === 'unauthenticated' ? 403 : 500
+    const details = typeof (error as any)?.message === 'string' ? (error as any).message : undefined
     return NextResponse.json(
-      { error: 'Failed to publish blog' },
-      { status: 500 }
+      { error: 'Failed to publish blog', code, details },
+      { status }
     )
   }
 }

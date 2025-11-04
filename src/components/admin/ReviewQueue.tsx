@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReviewItem from './ReviewItem'
 import ReviewTemplateModal from './ReviewTemplateModal'
+import CompactReviewCard from './CompactReviewCard'
 import { Blog, ReviewTemplate } from '@/lib/types/blog'
 import { 
   Filter, 
@@ -46,11 +47,9 @@ export default function ReviewQueue({ initialBlogs = [] }: ReviewQueueProps) {
     setError(null)
 
     try {
-      const params = new URLSearchParams({
-        status: 'pending',
-        pageSize: '50',
-        ...filters
-      })
+      const params = new URLSearchParams({ status: 'pending', pageSize: '50' })
+      if (filters.search) params.set('q', filters.search)
+      if (filters.category) params.set('category', filters.category)
 
       const response = await fetch(`/api/blogs?${params}`)
       
@@ -70,33 +69,15 @@ export default function ReviewQueue({ initialBlogs = [] }: ReviewQueueProps) {
 
   const fetchTemplates = async () => {
     try {
-      // This would be an API call in a real implementation
-      // For now, we'll use mock data
-      setTemplates([
-        {
-          id: 'usefulness',
-          category: 'usefulness',
-          title: '有益性不足',
-          content: '具体的な手順や例示を追加してください。特に{section}の部分により詳細な説明が必要です。',
-          isActive: true
-        },
-        {
-          id: 'citation',
-          category: 'citation',
-          title: '引用・出典不備',
-          content: '一次情報のURLを明記してください。参考にした資料の出典を適切に記載する必要があります。',
-          isActive: true
-        },
-        {
-          id: 'structure',
-          category: 'structure',
-          title: '構成・見出し',
-          content: '見出しレベルを再構成してください。読みやすい記事構造になるよう見出しの階層を整理してください。',
-          isActive: true
-        }
-      ])
-    } catch (err) {
-      console.error('テンプレート取得エラー:', err)
+      const res = await fetch('/api/review-templates')
+      if (res.ok) {
+        const data = await res.json()
+        setTemplates(data.templates || [])
+      } else {
+        setTemplates([])
+      }
+    } catch {
+      setTemplates([])
     }
   }
 
@@ -175,20 +156,20 @@ export default function ReviewQueue({ initialBlogs = [] }: ReviewQueueProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200">
       {/* Header */}
-      <div className="border-b border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">審査待ちキュー</h2>
+      <div className="border-b border-gray-200 p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900">審査待ちキュー</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={fetchPendingBlogs}
               disabled={loading}
               className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
             >
-              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={() => setShowTemplateModal(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              className="hidden sm:inline px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
             >
               テンプレート管理
             </button>
@@ -196,8 +177,8 @@ export default function ReviewQueue({ initialBlogs = [] }: ReviewQueueProps) {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-4">
-          <div className="relative flex-1 min-w-64">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="relative flex-1 min-w-0">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
@@ -232,11 +213,11 @@ export default function ReviewQueue({ initialBlogs = [] }: ReviewQueueProps) {
       </div>
 
       {/* Queue List */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {loading ? (
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="border border-gray-200 rounded-lg p-4 animate-pulse">
+              <div key={i} className="border border-gray-200 rounded-lg p-3 sm:p-4 animate-pulse">
                 <div className="h-4 bg-gray-200 rounded mb-2"></div>
                 <div className="h-4 bg-gray-200 rounded w-1/2"></div>
               </div>
@@ -244,45 +225,60 @@ export default function ReviewQueue({ initialBlogs = [] }: ReviewQueueProps) {
           </div>
         ) : filteredBlogs.length === 0 ? (
           <div className="text-center py-12">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <CheckCircle className="w-12 h-12 sm:w-16 sm:h-16 text-green-500 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
               審査待ちの記事はありません
             </h3>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               すべての記事の審査が完了しています。
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-              <span>{filteredBlogs.length}件の記事が審査待ちです</span>
-              <div className="flex items-center space-x-4">
-                <span className="flex items-center space-x-1">
-                  <Clock className="w-4 h-4" />
-                  <span>投稿日順</span>
-                </span>
+          <>
+            {/* Compact grid on mobile */}
+            <div className="md:hidden">
+              <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
+                <span>{filteredBlogs.length}件の審査待ち</span>
+                <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" />投稿日順</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {filteredBlogs.map(blog => (
+                  <CompactReviewCard key={blog.id} blog={blog} onApprove={(id) => handleReview(id, 'approved')} />
+                ))}
               </div>
             </div>
 
-            <AnimatePresence>
-              {filteredBlogs.map((blog, index) => (
-                <motion.div
-                  key={blog.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                >
-                  <ReviewItem
-                    blog={blog}
-                    onReview={handleReview}
-                    onSelect={() => setSelectedBlog(blog)}
-                    templates={templates}
-                  />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
+            {/* Detailed list on desktop */}
+            <div className="hidden md:block space-y-3">
+              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                <span>{filteredBlogs.length}件の記事が審査待ちです</span>
+                <div className="flex items-center space-x-4">
+                  <span className="flex items-center space-x-1">
+                    <Clock className="w-4 h-4" />
+                    <span>投稿日順</span>
+                  </span>
+                </div>
+              </div>
+              <AnimatePresence>
+                {filteredBlogs.map((blog, index) => (
+                  <motion.div
+                    key={blog.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.15) }}
+                  >
+                    <ReviewItem
+                      blog={blog}
+                      onReview={handleReview}
+                      onSelect={() => setSelectedBlog(blog)}
+                      templates={templates}
+                    />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </>
         )}
       </div>
 

@@ -61,19 +61,19 @@ export default function NewsCard({ news, index = 0 }: NewsCardProps) {
       transition={{ duration: 0.4, delay: index * 0.1 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
       onClick={handleClick}
-      className={`group relative bg-white rounded-xl shadow-sm border-l-4 ${priorityConfig.borderColor} border-r border-t border-b border-gray-100 p-6 cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden`}
+      className={`group relative bg-transparent rounded-xl shadow-sm border-l-4 ${priorityConfig.borderColor} border ${NEWS_TYPE_CONFIG[news.type].cardBorder} p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden`}
     >
       {/* 背景グラデーション（優先度に応じて） */}
       <div className={`absolute top-0 right-0 w-32 h-32 opacity-5 group-hover:opacity-10 transition-opacity duration-300 ${
-        news.priority === 'urgent' ? 'bg-gradient-to-br from-red-400 to-red-600' :
-        news.priority === 'high' ? 'bg-gradient-to-br from-orange-400 to-orange-600' :
-        'bg-gradient-to-br from-blue-400 to-blue-600'
+        news.priority === 'urgent' ? 'bg-gradient-to-br from-rose-300 to-rose-500' :
+        news.priority === 'high' ? 'bg-gradient-to-br from-amber-300 to-amber-500' :
+        'bg-gradient-to-br from-indigo-300 to-indigo-600'
       } rounded-full blur-3xl`} />
 
       <div className="relative flex items-start justify-between">
         <div className="flex-1 min-w-0">
           {/* ヘッダー情報 */}
-          <div className="flex items-center flex-wrap gap-2 mb-3">
+          <div className="flex items-center flex-wrap gap-2 mb-2 sm:mb-3">
             {/* 優先度バッジ */}
             <motion.span
               whileHover={{ scale: 1.05 }}
@@ -103,17 +103,17 @@ export default function NewsCard({ news, index = 0 }: NewsCardProps) {
           </div>
 
           {/* タイトル */}
-          <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
+          <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 group-hover:text-blue-600 transition-colors leading-tight">
             {news.title}
           </h3>
 
           {/* 抜粋 */}
-          <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+          <p className="text-gray-600 text-sm mb-4 line-clamp-3 sm:line-clamp-2 leading-relaxed">
             {news.excerpt}
           </p>
 
           {/* メタ情報 */}
-          <div className="flex items-center flex-wrap gap-4 text-xs text-gray-500">
+          <div className="flex items-center flex-wrap gap-3 sm:gap-4 text-xs text-gray-500">
             <span className="flex items-center">
               <Calendar className="w-3.5 h-3.5 mr-1.5" />
               {news.publishedAt ? timeAgo(news.publishedAt instanceof Date ? news.publishedAt : new Date(news.publishedAt)) : formatDate(news.createdAt)}
@@ -129,7 +129,7 @@ export default function NewsCard({ news, index = 0 }: NewsCardProps) {
         <div className="ml-4 flex-shrink-0">
           <motion.div
             whileHover={{ scale: 1.1, rotate: -5 }}
-            className="w-10 h-10 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center group-hover:from-blue-100 group-hover:to-blue-200 transition-all duration-300 shadow-sm"
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center group-hover:from-blue-100 group-hover:to-blue-200 transition-all duration-300 shadow-sm"
           >
             <ArrowRight className="w-5 h-5 text-blue-600 group-hover:translate-x-0.5 transition-transform" />
           </motion.div>
@@ -157,3 +157,7 @@ export default function NewsCard({ news, index = 0 }: NewsCardProps) {
     </motion.div>
   )
 }
+
+
+
+

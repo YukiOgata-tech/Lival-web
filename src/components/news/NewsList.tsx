@@ -23,6 +23,7 @@ export default function NewsList() {
   const [filters, setFilters] = useState<NewsFilter>({})
   const [searchTerm, setSearchTerm] = useState('')
   const [showFilters, setShowFilters] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
 
   // お知らせ一覧を取得
   const fetchNews = async (append = false) => {
@@ -104,7 +105,7 @@ export default function NewsList() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 sm:space-y-4 sm:space-y-6">
       {/* ヘッダー */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -113,18 +114,18 @@ export default function NewsList() {
       >
         {/* 背景装飾 */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-          <div className="absolute top-0 right-1/4 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+          <div className="hidden sm:block absolute top-0 left-1/4 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+          <div className="hidden sm:block absolute top-0 right-1/4 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
         </div>
 
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="flex items-center justify-center mb-6"
+          className="flex items-center justify-center mb-4 sm:mb-6"
         >
           <div className="relative">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
               <Megaphone className="w-8 h-8 text-white" />
             </div>
             <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white animate-pulse" />
@@ -135,7 +136,7 @@ export default function NewsList() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-3"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2 sm:mb-3"
         >
           お知らせ
         </motion.h1>
@@ -143,18 +144,56 @@ export default function NewsList() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-gray-600 text-lg max-w-2xl mx-auto"
+          className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto px-4 sm:px-0"
         >
           最新のお知らせやシステム情報をご確認いただけます
         </motion.p>
       </motion.div>
+
+      {/* モバイル: スティッキーフィルターバー */}
+      <div className="sm:hidden sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-100">
+        <div className="px-4 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar">
+          <button
+            aria-label="検索"
+            onClick={() => setShowSearch(v => !v)}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-sm border ${showSearch ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-gray-200 text-gray-700'}`}
+          >
+            <Search className="inline w-4 h-4 mr-1" />検索
+          </button>
+          {Object.entries(NEWS_TYPE_CONFIG).map(([type, config]) => (
+            <button
+              key={type}
+              onClick={() => setFilters(prev => ({ ...prev, type: prev.type === type ? undefined : (type as any) }))}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-sm border whitespace-nowrap ${filters.type === type ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200'}`}
+            >
+              <span className="mr-1">{config.icon}</span>{config.label}
+            </button>
+          ))}
+        </div>
+        {showSearch && (
+          <div className="px-4 pb-3">
+            <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-white">
+              <Search className="w-4 h-4 text-gray-400" />
+              <input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="キーワードで検索"
+                className="w-full outline-none text-sm"
+              />
+              {searchTerm && (
+                <button aria-label="検索クリア" onClick={() => setSearchTerm('')} className="text-gray-400 hover:text-gray-600">×</button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* 検索・フィルター */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white rounded-xl shadow-md border border-gray-100 p-6 backdrop-blur-sm"
+        className="hidden sm:block bg-white rounded-xl shadow-md border border-gray-100 p-4 sm:p-6 backdrop-blur-sm"
       >
         <div className="flex flex-col sm:flex-row gap-4">
           {/* 検索 */}
@@ -246,7 +285,7 @@ export default function NewsList() {
           </p>
         </motion.div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-4 sm:space-y-6">
           {sortedNews.map((item, index) => (
             <NewsCard key={item.id} news={item} index={index} />
           ))}
@@ -284,3 +323,7 @@ export default function NewsList() {
     </div>
   )
 }
+
+
+
+

@@ -130,6 +130,12 @@ const cookieCategories = [
     color: 'from-orange-500 to-red-600',
     cookies: [
       {
+        name: 'admob_advertising_id',
+        purpose: 'モバイル広告の配信・効果測定（Cookieではなく端末の広告ID）',
+        duration: '端末の設定で制御/リセット可能',
+        provider: 'Google AdMob'
+      },
+      {
         name: '_fbp',
         purpose: 'Facebook広告の効果測定',
         duration: '3ヶ月間',

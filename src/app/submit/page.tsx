@@ -2,6 +2,7 @@
 import { Metadata } from 'next'
 import BlogSubmitForm from '@/components/blog/BlogSubmitForm'
 import { PenTool, BookOpen, FileText } from 'lucide-react'
+import { BLOG_CATEGORIES } from '@/data/blogCategories'
 
 export const metadata: Metadata = {
   title: 'ブログ投稿 | Lival AI',
@@ -10,15 +11,8 @@ export const metadata: Metadata = {
 }
 
 export default async function SubmitPage() {
-  // Mock categories data to avoid Firebase permissions error
-  const categories = [
-    { id: '1', name: '技術', slug: 'tech', description: '技術関連の記事', isActive: true, sortOrder: 1 },
-    { id: '2', name: '学習法', slug: 'learning', description: '学習法に関する記事', isActive: true, sortOrder: 2 },
-    { id: '3', name: 'AI', slug: 'ai', description: 'AI技術の記事', isActive: true, sortOrder: 3 },
-    { id: '4', name: 'フロントエンド', slug: 'frontend', description: 'フロントエンド開発', isActive: true, sortOrder: 4 },
-    { id: '5', name: 'TypeScript', slug: 'typescript', description: 'TypeScript関連', isActive: true, sortOrder: 5 },
-    { id: '6', name: 'バックエンド', slug: 'backend', description: 'バックエンド開発', isActive: true, sortOrder: 6 }
-  ]
+  // 教育分野のカテゴリを共通定義から読み込み
+  const categories = BLOG_CATEGORIES
   
   return (
     <div className="min-h-screen bg-gray-50">

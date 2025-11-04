@@ -1,12 +1,14 @@
 // src/app/api/blogs/submit/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerUserRole } from '@/lib/auth/server'
+import { getServerUserRole, getServerUserId } from '@/lib/auth/server'
+import { BlogService } from '@/lib/firebase/blog'
+import { adminDb } from '@/lib/firebase-admin'
 
 // POST /api/blogs/submit - Submit blog for review
 export async function POST(request: NextRequest) {
   try {
     const userRole = await getServerUserRole(request)
-    const userId = request.headers.get('x-user-id')
+    const userId = await getServerUserId(request)
     
     if (!userId) {
       return NextResponse.json(
@@ -32,22 +34,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Mock implementation - simulate successful submission
-    // In production, this would interact with Firestore
-    console.log(`Mock: Blog ${blogId} submitted for review by user ${userId}`)
+    if (adminDb) {
+      const now = new Date()
+      await adminDb.collection('blogs').doc(blogId).update({ status: 'pending', submittedAt: now, updatedAt: now })
+      await adminDb.collection('blog_submissions').doc().set({ id: `${blogId}_${now.getTime()}`, blogId, userId, status: 'pending', submittedAt: now })
+      await adminDb.collection('audit_logs').doc().set({ actorId: userId, action: 'blog_submitted', blogId, timestamp: now })
+    } else {
+      await BlogService.submitForReview(blogId, userId)
+    }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Blog submitted for review successfully',
-      blogId: blogId,
-      status: 'pending'
-    })
+    return NextResponse.json({ success: true, message: 'Blog submitted for review successfully', blogId, status: 'pending' })
 
   } catch (error) {
-    console.error('Error submitting blog:', error)
+    const code = (error as any)?.code || (error as any)?.message || 'unknown'
+    console.error('Error submitting blog:', { code, error })
+    const status = code === 'permission-denied' || code === 'unauthenticated' ? 403 : 500
+    const details = typeof (error as any)?.message === 'string' ? (error as any).message : undefined
     return NextResponse.json(
-      { error: 'Failed to submit blog for review' },
-      { status: 500 }
+      { error: 'Failed to submit blog for review', code, details },
+      { status }
     )
   }
 }

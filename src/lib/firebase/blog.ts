@@ -50,7 +50,7 @@ export class BlogService {
       status: 'draft',
       viewCount: 0,
       version: 1,
-      createdAt: new Date(),
+      createdAt: (blogData as any)?.createdAt || new Date(),
       updatedAt: new Date(),
       approvedAt: null,
     }
@@ -86,7 +86,7 @@ export class BlogService {
 
   // Submit blog for review
   static async submitForReview(blogId: string, authorId: string): Promise<void> {
-    await this.updateBlog(blogId, { status: 'pending' }, authorId)
+    await this.updateBlog(blogId, { status: 'pending', submittedAt: new Date() } as any, authorId)
     
     // Create submission record
     const submissionRef = doc(blogSubmissionsCollection)

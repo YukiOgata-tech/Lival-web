@@ -1,61 +1,9 @@
 // src/app/api/blogs/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerUserRole } from '@/lib/auth/server'
-
-// Mock blog data for testing
-const mockBlogs = [
-  {
-    id: '1',
-    title: 'Next.js 15の新機能を徹底解説',
-    slug: 'nextjs-15-new-features',
-    excerpt: 'Next.js 15がリリースされました。React 19との連携、新しいキャッシュシステム、パフォーマンス改善など、注目の新機能を詳しく見ていきましょう。',
-    content: '<p>Next.js 15がついにリリースされました。この記事では、React 19との連携、新しいキャッシュシステム、パフォーマンス改善など、注目の新機能を詳しく解説します。</p>',
-    authorId: 'user123',
-    authorName: '田中太郎',
-    categories: ['技術', 'フロントエンド'],
-    tags: ['Next.js', 'React', 'JavaScript'],
-    status: 'approved',
-    visibility: 'public',
-    readTimeMins: 5,
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-15'),
-    publishedAt: new Date('2024-01-15')
-  },
-  {
-    id: '2',
-    title: 'TypeScript 5.0で変わる開発体験',
-    slug: 'typescript-5-development-experience',
-    excerpt: 'TypeScript 5.0の新機能により、より型安全で効率的な開発が可能になります。Decorators、const assertions、Template Literal Typesの活用法を紹介します。',
-    content: '<p>TypeScript 5.0の新機能により、より型安全で効率的な開発が可能になります。</p>',
-    authorId: 'user456',
-    authorName: '佐藤花子',
-    categories: ['技術', 'TypeScript'],
-    tags: ['TypeScript', 'JavaScript', '型安全'],
-    status: 'approved',
-    visibility: 'teaser',
-    readTimeMins: 8,
-    createdAt: new Date('2024-01-10'),
-    updatedAt: new Date('2024-01-10'),
-    publishedAt: new Date('2024-01-10')
-  },
-  {
-    id: '3',
-    title: 'AI活用学習法：効率的な勉強のコツ',
-    slug: 'ai-powered-learning-methods',
-    excerpt: 'AI技術を活用した新しい学習法について解説します。個人に最適化された学習プラン、自動採点システム、進捗管理など、AI学習の可能性を探ります。',
-    content: '<p>AI技術を活用した新しい学習法について解説します。</p>',
-    authorId: 'admin',
-    authorName: 'Lival AI編集部',
-    categories: ['学習法', 'AI'],
-    tags: ['AI', '学習', '効率化'],
-    status: 'approved',
-    visibility: 'premium',
-    readTimeMins: 12,
-    createdAt: new Date('2024-01-05'),
-    updatedAt: new Date('2024-01-05'),
-    publishedAt: new Date('2024-01-05')
-  }
-]
+import { getServerUserRole, getServerUserId } from '@/lib/auth/server'
+import { adminDb } from '@/lib/firebase-admin'
+import { BlogService } from '@/lib/firebase/blog'
+import { UserRole } from '@/lib/types/blog'
 
 // GET /api/blogs - Get blogs list with filters
 export async function GET(request: NextRequest) {
@@ -66,55 +14,123 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category') || undefined
     const tag = searchParams.get('tag') || undefined
     const q = searchParams.get('q') || undefined
+    const statusParam = searchParams.get('status') || undefined
 
     const userRole = await getServerUserRole(request)
     
-    // Filter blogs based on search, category, tag
-    let filteredBlogs = mockBlogs
+    // Admin SDK がある場合はそちらを優先（サーバー権限で安定動作）
+    if (adminDb) {
+      if (q) {
+        // まず approved のみ広めに取得し、サーバー側でフィルタリング
+        const snap = await adminDb
+          .collection('blogs')
+          .where('status', '==', 'approved')
+          .orderBy('createdAt', 'desc')
+          .limit(200)
+          .get()
+        let list = snap.docs.map(d => d.data() as any)
+        const term = q.toLowerCase()
+        list = list.filter(b => (
+          (b.title || '').toLowerCase().includes(term) ||
+          (b.excerpt || '').toLowerCase().includes(term) ||
+          Array.isArray(b.tags) && b.tags.some((t: string) => (t || '').toLowerCase().includes(term))
+        ))
+        // status filter（未指定なら approved のみ）
+        if (statusParam) {
+          list = list.filter(b => b.status === statusParam)
+        } else {
+          list = list.filter(b => b.status === 'approved')
+        }
+        if (category) list = list.filter(b => Array.isArray(b.categories) && b.categories.includes(category))
+        if (tag) list = list.filter(b => Array.isArray(b.tags) && b.tags.includes(tag))
+        const startIndex = (page - 1) * pageSize
+        const endIndex = startIndex + pageSize
+        const paginated = list.slice(startIndex, endIndex)
+        const blogsWithFlags = paginated.map(blog => ({
+          ...blog,
+          content: undefined,
+          isTeaser: blog.visibility === 'teaser' || (blog.visibility === 'premium' && !BlogService.canAccessFullContent(blog, userRole as UserRole))
+        }))
+        return NextResponse.json({
+          blogs: blogsWithFlags,
+          pagination: {
+            currentPage: page,
+            hasMore: endIndex < list.length,
+            totalCount: list.length,
+          },
+        })
+      }
 
-    if (q) {
-      filteredBlogs = mockBlogs.filter(blog => 
-        blog.title.toLowerCase().includes(q.toLowerCase()) ||
-        blog.excerpt.toLowerCase().includes(q.toLowerCase()) ||
-        blog.tags.some(tag => tag.toLowerCase().includes(q.toLowerCase()))
-      )
-    }
-
-    if (category) {
-      filteredBlogs = filteredBlogs.filter(blog => 
-        blog.categories.includes(category)
-      )
-    }
-
-    if (tag) {
-      filteredBlogs = filteredBlogs.filter(blog => 
-        blog.tags.includes(tag)
-      )
-    }
-
-    // Apply pagination
-    const startIndex = (page - 1) * pageSize
-    const endIndex = startIndex + pageSize
-    const paginatedBlogs = filteredBlogs.slice(startIndex, endIndex)
-
-    // Filter content based on user role and visibility
-    const blogsWithAccessInfo = paginatedBlogs.map(blog => {
-      const canAccessFull = canAccessFullContent(blog, userRole)
-      
-      return {
+      // 通常取得（インデックス不要の安全策: createdAt順で広めに取得し、サーバー側フィルタ）
+      const snap = await adminDb
+        .collection('blogs')
+        .orderBy('createdAt', 'desc')
+        .limit(200)
+        .get()
+      let list = snap.docs.map(d => d.data() as any)
+      if (statusParam) {
+        list = list.filter(b => b.status === statusParam)
+      } else {
+        list = list.filter(b => b.status === 'approved')
+      }
+      if (category) list = list.filter(b => Array.isArray(b.categories) && b.categories.includes(category))
+      if (tag) list = list.filter(b => Array.isArray(b.tags) && b.tags.includes(tag))
+      const startIndex = (page - 1) * pageSize
+      const endIndex = startIndex + pageSize
+      const paginated = list.slice(startIndex, endIndex)
+      const blogsWithFlags = paginated.map(blog => ({
         ...blog,
-        content: undefined, // Never send full content in list view
-        isTeaser: blog.visibility === 'teaser' || (blog.visibility === 'premium' && !canAccessFull)
-      }
-    })
+        content: undefined,
+        isTeaser: blog.visibility === 'teaser' || (blog.visibility === 'premium' && !BlogService.canAccessFullContent(blog, userRole as UserRole))
+      }))
+      return NextResponse.json({
+        blogs: blogsWithFlags,
+        pagination: {
+          currentPage: page,
+          hasMore: endIndex < list.length,
+          totalCount: list.length,
+        },
+      })
+    }
 
+    // Admin SDK がない場合: 既存のクライアントSDKロジック
+    if (q) {
+      const searched = await BlogService.searchBlogs(q, userRole as UserRole)
+      const byCategory = category ? searched.filter(b => b.categories.includes(category)) : searched
+      const byTag = tag ? byCategory.filter(b => b.tags.includes(tag)) : byCategory
+      const startIndex = (page - 1) * pageSize
+      const endIndex = startIndex + pageSize
+      const paginated = byTag.slice(startIndex, endIndex)
+      const blogsWithFlags = paginated.map(blog => ({
+        ...blog,
+        content: undefined,
+        isTeaser: blog.visibility === 'teaser' || (blog.visibility === 'premium' && !BlogService.canAccessFullContent(blog, userRole as UserRole))
+      }))
+      return NextResponse.json({
+        blogs: blogsWithFlags,
+        pagination: {
+          currentPage: page,
+          hasMore: endIndex < byTag.length,
+          totalCount: byTag.length
+        }
+      })
+    }
+
+    const statuses = statusParam ? [statusParam as any] : ['approved']
+    const { blogs, hasMore } = await BlogService.getBlogs({
+      pageSize,
+      category,
+      tag,
+      status: statuses
+    })
+    const blogsWithFlags = blogs.map(blog => ({
+      ...blog,
+      content: undefined,
+      isTeaser: blog.visibility === 'teaser' || (blog.visibility === 'premium' && !BlogService.canAccessFullContent(blog, userRole as UserRole))
+    }))
     return NextResponse.json({
-      blogs: blogsWithAccessInfo,
-      pagination: {
-        currentPage: page,
-        hasMore: endIndex < filteredBlogs.length,
-        totalCount: filteredBlogs.length
-      }
+      blogs: blogsWithFlags,
+      pagination: { currentPage: page, hasMore, totalCount: blogsWithFlags.length }
     })
 
   } catch (error) {
@@ -126,51 +142,95 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Helper function to check content access
-function canAccessFullContent(blog: { visibility: string }, userRole: string): boolean {
-  switch (blog.visibility) {
-    case 'public':
-      return true
-    case 'teaser':
-      return userRole === 'subscriber' || userRole === 'admin'
-    case 'premium':
-      return userRole === 'subscriber' || userRole === 'admin'
-    default:
-      return userRole === 'admin'
-  }
-}
+// Removed mock helper (real access check is in BlogService)
 
 // POST /api/blogs - Create new blog (draft)
 export async function POST(request: NextRequest) {
   try {
-    await getServerUserRole(request)
-    request.headers.get('x-user-id') || 'mock-user-id'
-    
-    const body = await request.json()
-    const { title, content } = body
+    const userId = await getServerUserId(request)
+    if (!userId) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
 
-    // Validate required fields
+    const body = await request.json()
+    const { title, content, categories = [], tags = [], visibility = 'teaser', coverPath = '', createdAt } = body as {
+      title?: string
+      content?: string
+      categories?: string[]
+      tags?: string[]
+      visibility?: 'public'|'teaser'|'premium'
+      coverPath?: string
+      createdAt?: string
+    }
+
     if (!title || !content) {
-      return NextResponse.json(
-        { error: 'Title and content are required' },
-        { status: 400 }
+      return NextResponse.json({ error: 'Title and content are required' }, { status: 400 })
+    }
+
+    // Excerpt 生成（先頭300文字、HTML除去）
+    const text = content.replace(/<[^>]*>/g, '').trim()
+    const excerpt = text.length > 300 ? text.substring(0, 300).trim() + '…' : text
+
+    let blogId: string
+    if (adminDb) {
+      const ref = adminDb.collection('blogs').doc()
+      blogId = ref.id
+      const now = new Date()
+      await ref.set({
+        id: blogId,
+        slug: await BlogService.generateUniqueSlug(title),
+        title,
+        content,
+        categories,
+        tags,
+        visibility,
+        coverPath,
+        excerpt,
+        authorId: userId,
+        authorName: 'Anonymous',
+        status: 'draft',
+        viewCount: 0,
+        version: 1,
+        createdAt: createdAt ? new Date(createdAt) : now,
+        updatedAt: now,
+        approvedAt: null,
+      })
+      await adminDb.collection('audit_logs').doc().set({
+        actorId: userId,
+        actorName: '',
+        action: 'blog_created',
+        blogId,
+        timestamp: now,
+        newValue: { title, categories, tags, visibility },
+      })
+    } else {
+      blogId = await BlogService.createBlog(
+        {
+          title,
+          content,
+          categories,
+          tags,
+          visibility,
+          coverPath,
+          excerpt,
+          ...(createdAt ? { createdAt: new Date(createdAt) } : {}),
+          authorId: userId,
+          authorName: 'Anonymous',
+        },
+        userId
       )
     }
 
-    // Mock blog creation
-    const mockBlogId = `blog_${Date.now()}`
-
-    return NextResponse.json({ 
-      success: true, 
-      blogId: mockBlogId,
-      message: 'Blog created successfully' 
-    }, { status: 201 })
+    return NextResponse.json({ success: true, blogId }, { status: 201 })
 
   } catch (error) {
-    console.error('Error creating blog:', error)
+    const code = (error as any)?.code || (error as any)?.message || 'unknown'
+    console.error('Error creating blog:', { code, error })
+    const status = code === 'permission-denied' || code === 'unauthenticated' ? 403 : 500
+    const details = typeof (error as any)?.message === 'string' ? (error as any).message : undefined
     return NextResponse.json(
-      { error: 'Failed to create blog' },
-      { status: 500 }
+      { error: 'Failed to create blog', code, details },
+      { status }
     )
   }
 }

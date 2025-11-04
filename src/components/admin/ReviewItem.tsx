@@ -106,38 +106,38 @@ export default function ReviewItem({ blog, onReview, onSelect, templates }: Revi
       className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
     >
       {/* Header */}
-      <div className="p-4 bg-white">
+      <div className="p-2 sm:p-4 bg-white">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2 line-clamp-2">
               {blog.title}
             </h3>
             
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-3">
-              <div className="flex items-center space-x-1">
-                <User className="w-4 h-4" />
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">
+              <div className="hidden sm:flex items-center space-x-1">
+                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>{blog.authorName || 'Anonymous'}</span>
               </div>
               <div className="flex items-center space-x-1">
-                <Calendar className="w-4 h-4" />
+                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>{formatDate(blog.createdAt)}</span>
               </div>
               <div className="flex items-center space-x-1">
-                <Clock className="w-4 h-4" />
+                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>{getTimeSinceSubmission()}</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <FileText className="w-4 h-4" />
+              <div className="hidden sm:flex items-center space-x-1">
+                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span>{wordCount.toLocaleString()}文字 • {readTime}分</span>
               </div>
             </div>
 
             {/* Categories and Tags */}
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
               {blog.categories.map(category => (
                 <span
                   key={category}
-                  className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full"
+                  className="inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 bg-purple-100 text-purple-800 text-[10px] sm:text-xs rounded-full"
                 >
                   <Folder className="w-3 h-3 mr-1" />
                   {category}
@@ -146,7 +146,7 @@ export default function ReviewItem({ blog, onReview, onSelect, templates }: Revi
               {blog.tags.slice(0, 3).map(tag => (
                 <span
                   key={tag}
-                  className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                  className="inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 bg-gray-100 text-gray-700 text-[10px] sm:text-xs rounded-full"
                 >
                   <Tag className="w-3 h-3 mr-1" />
                   #{tag}
@@ -160,22 +160,22 @@ export default function ReviewItem({ blog, onReview, onSelect, templates }: Revi
             </div>
 
             {/* Excerpt */}
-            <p className="text-gray-700 line-clamp-3 text-sm leading-relaxed">
+            <p className="text-gray-700 line-clamp-2 sm:line-clamp-3 text-xs sm:text-sm leading-relaxed">
               {blog.excerpt}
             </p>
           </div>
 
-          <div className="ml-4 flex flex-col items-end space-y-2">
+          <div className="ml-2.5 sm:ml-4 flex flex-col items-end space-y-1.5 sm:space-y-2">
             <button
               onClick={() => setExpanded(!expanded)}
-              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-1 sm:p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
             >
               {expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </button>
             
             <button
               onClick={onSelect}
-              className="flex items-center px-3 py-1 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+              className="flex items-center px-2 py-1 text-xs sm:text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
             >
               <Eye className="w-4 h-4 mr-1" />
               詳細
@@ -191,14 +191,14 @@ export default function ReviewItem({ blog, onReview, onSelect, templates }: Revi
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
             className="border-t border-gray-200 bg-gray-50"
           >
-            <div className="p-4 space-y-6">
+            <div className="p-3 sm:p-4 space-y-4 sm:space-y-6">
               {/* Review Actions */}
               <div>
                 <h4 className="font-semibold text-gray-900 mb-3">審査アクション</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-3 sm:gap-3">
                   <button
                     onClick={() => setReviewAction(reviewAction === 'approved' ? null : 'approved')}
                     className={`p-3 rounded-lg border transition-colors text-left ${
@@ -208,7 +208,7 @@ export default function ReviewItem({ blog, onReview, onSelect, templates }: Revi
                     }`}
                   >
                     <div className="flex items-center space-x-2 mb-1">
-                      <CheckCircle className="w-5 h-5 text-green-600" />
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                       <span className="font-medium">承認</span>
                     </div>
                     <p className="text-sm text-gray-600">記事を公開して読者に配信</p>
@@ -223,7 +223,7 @@ export default function ReviewItem({ blog, onReview, onSelect, templates }: Revi
                     }`}
                   >
                     <div className="flex items-center space-x-2 mb-1">
-                      <AlertCircle className="w-5 h-5 text-yellow-600" />
+                      <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
                       <span className="font-medium">差し戻し</span>
                     </div>
                     <p className="text-sm text-gray-600">修正が必要な点をフィードバック</p>
@@ -238,7 +238,7 @@ export default function ReviewItem({ blog, onReview, onSelect, templates }: Revi
                     }`}
                   >
                     <div className="flex items-center space-x-2 mb-1">
-                      <XCircle className="w-5 h-5 text-red-600" />
+                      <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
                       <span className="font-medium">却下</span>
                     </div>
                     <p className="text-sm text-gray-600">公開基準に満たないため却下</p>

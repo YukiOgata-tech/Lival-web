@@ -61,7 +61,7 @@ export default function NewsDetail({ news }: NewsDetailProps) {
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="mb-6"
+        className="mb-4 sm:mb-6"
       >
         <motion.button
           whileHover={{ scale: 1.05, x: -5 }}
@@ -82,7 +82,7 @@ export default function NewsDetail({ news }: NewsDetailProps) {
         className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
       >
         {/* ヘッダー部分 */}
-        <div className={`relative border-l-4 ${priorityConfig.borderColor} ${priorityConfig.bgColor} px-8 py-6 overflow-hidden`}>
+        <div className={`relative border-l-4 ${priorityConfig.borderColor} ${priorityConfig.bgColor} px-6 sm:px-8 py-5 sm:py-6 overflow-hidden`}>
           {/* 背景装飾 */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32" />
 
@@ -190,7 +190,7 @@ export default function NewsDetail({ news }: NewsDetailProps) {
           className="px-8 py-10"
         >
           <div
-            className="prose prose-lg max-w-none text-gray-900 prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-800 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-a:font-semibold prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-800 prose-ol:text-gray-800 prose-li:text-gray-800 prose-li:leading-relaxed prose-blockquote:text-gray-700 prose-blockquote:border-l-4 prose-blockquote:border-blue-400 prose-blockquote:bg-blue-50 prose-blockquote:py-2"
+            className="prose prose-slate max-w-none text-sm sm:text-base text-gray-900 prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-800 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-a:font-semibold prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-800 prose-ol:text-gray-800 prose-li:text-gray-800 prose-li:leading-relaxed prose-blockquote:text-gray-700 prose-blockquote:border-l-4 prose-blockquote:border-blue-400 prose-blockquote:bg-blue-50 prose-blockquote:py-2"
             dangerouslySetInnerHTML={{ __html: news.content }}
           />
         </motion.div>
@@ -200,7 +200,7 @@ export default function NewsDetail({ news }: NewsDetailProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="px-8 py-6 bg-gradient-to-r from-gray-50 to-blue-50 border-t border-gray-200"
+          className="px-6 sm:px-8 py-5 sm:py-6 bg-gradient-to-r from-gray-50 to-blue-50 border-t border-gray-200"
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="text-xs text-gray-600 space-y-1">
@@ -230,3 +230,4 @@ export default function NewsDetail({ news }: NewsDetailProps) {
     </article>
   )
 }
+

@@ -1,11 +1,13 @@
 // src/components/blog/BlogSubmitForm.tsx
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import TiptapEditor from './TiptapEditor'
 import { BlogCategory } from '@/lib/types/blog'
+import Link from 'next/link'
+import { useAuth } from '@/hooks/useAuth'
 import { 
   Save, 
   Send, 
@@ -31,6 +33,7 @@ interface FormData {
   tags: string[]
   visibility: 'public' | 'teaser' | 'premium'
   coverPath: string
+  createdAt?: string // yyyy-mm-dd
 }
 
 interface BlogPreviewProps {
@@ -180,13 +183,16 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
   // Mock user ID - in real implementation, get from auth
   const mockUserId = 'user123'
   const router = useRouter()
+  const { user } = useAuth()
+  const startedAtRef = useRef<number>(Date.now())
   const [formData, setFormData] = useState<FormData>({
     title: '',
     content: '',
     categories: [],
     tags: [],
     visibility: 'teaser',
-    coverPath: ''
+    coverPath: '',
+    createdAt: new Date().toISOString().slice(0, 10)
   })
   const [tagInput, setTagInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -195,8 +201,40 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
   const [success, setSuccess] = useState<string | null>(null)
   const [previewMode, setPreviewMode] = useState(false)
   const [showDirectPublishWarning, setShowDirectPublishWarning] = useState(false)
+  const [completed, setCompleted] = useState<null | { mode: 'draft' | 'submitted' | 'published'; blogId?: string }>(null)
   
   const isAdmin = userRole === 'admin'
+
+  // 管理者通知（Resend 経由の既存 contact API を利用）
+  const notifyAdmin = async (blogId?: string) => {
+    try {
+      const payload = {
+        name: user?.displayName || 'Blog Submission',
+        email: user?.email || 'no-reply@lival-ai.com',
+        subject: `ブログ投稿の審査申請: ${formData.title || '(無題)'}`,
+        message: [
+          '新しいブログ記事の審査申請がありました。',
+          `タイトル: ${formData.title || '(無題)'}`,
+          `公開設定: ${formData.visibility}`,
+          `カテゴリ: ${formData.categories.join(', ') || '(未選択)'}`,
+          `タグ: ${formData.tags.join(', ') || '(なし)'}`,
+          `投稿者: ${user?.displayName || '未設定'} / ${user?.email || '不明'}`,
+          blogId ? `ブログID: ${blogId}` : '',
+          '',
+          'このメールはWebサイトから自動送信されています。'
+        ].filter(Boolean).join('\n'),
+        hv: '1',
+        startedAt: startedAtRef.current || Date.now() - 4000,
+      }
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+    } catch (e) {
+      console.warn('管理者通知の送信に失敗しました（継続します）', e)
+    }
+  }
 
   const handleInputChange = (field: keyof FormData) => (value: string | string[]) => {
     setFormData(prev => ({
@@ -263,11 +301,7 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
 
       const result = await response.json()
       setSuccess('下書きを保存しました')
-      
-      // Redirect to edit page or blog list after a short delay
-      setTimeout(() => {
-        router.push('/blog?author=me')
-      }, 1500)
+      setCompleted({ mode: 'draft', blogId: result.blogId })
 
     } catch (err) {
       setError(err instanceof Error ? err.message : '保存に失敗しました')
@@ -318,11 +352,9 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
       }
 
       setSuccess('審査申請が完了しました。結果をお待ちください。')
-      
-      // Redirect after success
-      setTimeout(() => {
-        router.push('/blog?author=me')
-      }, 2000)
+      setCompleted({ mode: 'submitted', blogId: saveResult.blogId })
+      // 管理者にメール通知（非同期・エラーは握りつぶし）
+      notifyAdmin(saveResult.blogId)
 
     } catch (err) {
       setError(err instanceof Error ? err.message : '投稿に失敗しました')
@@ -357,11 +389,7 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
       }
 
       setSuccess('記事を公開しました！')
-      
-      // Redirect after success
-      setTimeout(() => {
-        router.push('/blog')
-      }, 1500)
+      setCompleted({ mode: 'published' })
 
     } catch (err) {
       setError(err instanceof Error ? err.message : '公開に失敗しました')
@@ -377,6 +405,79 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
 
   const wordCount = formData.content.replace(/<[^>]*>/g, '').length
   const estimatedReadTime = Math.ceil(wordCount / 200)
+
+  // 完了後のUI（選択肢を提示）
+  if (completed) {
+    return (
+      <div className="p-8">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 text-center">
+          {completed.mode === 'submitted' ? (
+            <>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">審査申請を受け付けました</h2>
+              <p className="text-gray-700 mb-6">編集部で内容を確認のうえ、ご連絡いたします。しばらくお待ちください。</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={() => {
+                    setFormData({ title: '', content: '', categories: [], tags: [], visibility: 'teaser', coverPath: '' })
+                    setTagInput('')
+                    setPreviewMode(false)
+                    setError(null)
+                    setSuccess(null)
+                    setCompleted(null)
+                  }}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  新しい投稿を書く
+                </button>
+                <Link href="/" className="px-6 py-3 border border-gray-300 text-gray-800 rounded-lg hover:bg-gray-50">
+                  ホームへ戻る
+                </Link>
+              </div>
+            </>
+          ) : completed.mode === 'published' ? (
+            <>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">公開が完了しました</h2>
+              <p className="text-gray-700 mb-6">記事はサイト上に公開されています。続けて執筆することもできます。</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link href="/blog" className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">
+                  記事を見る（一覧へ）
+                </Link>
+                <button
+                  onClick={() => {
+                    setFormData({ title: '', content: '', categories: [], tags: [], visibility: 'teaser', coverPath: '' })
+                    setTagInput('')
+                    setPreviewMode(false)
+                    setError(null)
+                    setSuccess(null)
+                    setCompleted(null)
+                  }}
+                  className="px-6 py-3 border border-gray-300 text-gray-800 rounded-lg hover:bg-gray-50"
+                >
+                  新しい投稿を書く
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">下書きを保存しました</h2>
+              <p className="text-gray-700 mb-6">編集を続けるか、マイ記事一覧で確認できます。</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={() => setCompleted(null)}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  続けて編集
+                </button>
+                <Link href="/blog?author=me" className="px-6 py-3 border border-gray-300 text-gray-800 rounded-lg hover:bg-gray-50">
+                  マイ記事を見る
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-8">
@@ -423,12 +524,24 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
             value={formData.title}
             onChange={(e) => handleInputChange('title')(e.target.value)}
             placeholder="読者の興味を引く魅力的なタイトルを入力してください"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg bg-white text-gray-900 placeholder:text-gray-500"
             maxLength={100}
           />
           <div className="mt-1 text-right text-xs text-gray-500">
             {formData.title.length}/100文字
           </div>
+        </div>
+
+        {/* Created Date */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">記事作成日</label>
+          <input
+            type="date"
+            value={formData.createdAt || ''}
+            onChange={(e) => handleInputChange('createdAt')(e.target.value)}
+            className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+          />
+          <p className="text-xs text-gray-500 mt-1">公開日ではなく、記事の作成日を指定できます（省略可）。</p>
         </div>
 
         {/* Categories */}
@@ -472,7 +585,7 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={handleTagAdd}
             placeholder="タグを入力してEnterまたはカンマで追加"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 placeholder:text-gray-500"
             disabled={formData.tags.length >= 5}
           />
           <div className="mt-2 flex flex-wrap gap-2">

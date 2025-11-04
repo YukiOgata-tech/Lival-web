@@ -42,16 +42,17 @@ export default function PricingPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* ヘッダー */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        {/* ヘッダー */}
+        <div className="text-center mb-6 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
             あなたに最適なプランを選択
           </h1>
-          <p className="text-xl text-gray-600">
-            AI学習サポートで、効率的な学習体験を
+          <p className="text-base sm:text-xl text-gray-600">
+            AI学習サポートで、最短の学習の近道
           </p>
         </div>
         {/* 未認証ユーザー向けバナー */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <VerifyEmailBanner />
         </div>
 
@@ -68,7 +69,7 @@ export default function PricingPage() {
         )}
 
         {/* プランカード */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 max-w-5xl mx-auto">
           {/* ベーシックプラン */}
           <PlanCard
             plan={SUBSCRIPTION_PLANS.basic}
@@ -89,17 +90,17 @@ export default function PricingPage() {
         </div>
 
         {/* フリープランの説明 */}
-        <div className="mt-12 p-6 bg-gray-100 rounded-lg max-w-3xl mx-auto">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">
+        <div className="mt-8 sm:mt-12 p-5 sm:p-6 bg-gray-100 rounded-lg max-w-3xl mx-auto">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">
             フリープランをご利用中の方へ
           </h3>
-          <p className="text-gray-700 mb-4">
+          <p className="text-gray-700 text-sm sm:text-base mb-3 sm:mb-4">
             {SUBSCRIPTION_PLANS.free_web.description}
           </p>
-          <ul className="space-y-2">
+          <ul className="space-y-1.5 sm:space-y-2">
             {SUBSCRIPTION_PLANS.free_web.features?.map((feature, index) => (
               <li key={index} className="flex items-start text-gray-700">
-                <Check className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                 <span>{feature}</span>
               </li>
             ))}
@@ -183,29 +184,29 @@ function PlanCard({ plan, isCurrentPlan, isPopular, hasTrial, onSelect, icon }: 
         </div>
       )}
 
-      <div className="p-8">
+      <div className="p-5 sm:p-8">
         {/* アイコンとプラン名 */}
-        <div className="flex items-center mb-4">
+        <div className="flex items-center mb-3 sm:mb-4">
           {icon}
-          <h3 className="text-2xl font-bold text-gray-900 ml-3">{plan.name}</h3>
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 ml-3">{plan.name}</h3>
         </div>
 
         {/* 価格 */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <div className="flex items-baseline">
-            <span className="text-5xl font-extrabold text-gray-900">
-              ¥{plan.price.toLocaleString()}
+            <span className="text-3xl sm:text-5xl font-extrabold text-gray-900">
+              {plan.price.toLocaleString()}
             </span>
-            <span className="text-gray-600 ml-2">/月</span>
+            <span className="text-gray-600 ml-2 text-sm sm:text-base">/月</span>
           </div>
-          <p className="text-gray-600 mt-2">{plan.description}</p>
+          <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">{plan.description}</p>
         </div>
 
         {/* 機能リスト */}
-        <ul className="space-y-3 mb-8">
+        <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
           {plan.features?.map((feature, index) => (
             <li key={index} className="flex items-start">
-              <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
+              <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
               <span className="text-gray-700">{feature}</span>
             </li>
           ))}
@@ -255,3 +256,24 @@ function FAQItem({ question, answer }: FAQItemProps) {
     </details>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

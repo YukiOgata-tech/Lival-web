@@ -181,10 +181,10 @@ export default function BlogContent({ slug }: BlogContentProps) {
         </div>
       </div>
 
-      <article className="max-w-4xl mx-auto px-4 py-12">
+      <article className="max-w-4xl mx-auto px-4 py-8 sm:py-12">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {/* Header */}
-          <header className="p-8 pb-6 border-b border-gray-200">
+          <header className="p-5 sm:p-8 sm:pb-6 pb-4 border-b border-gray-200">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -209,12 +209,12 @@ export default function BlogContent({ slug }: BlogContentProps) {
               </div>
 
               {/* Title */}
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
                 {blog.title}
               </h1>
 
               {/* Meta Information */}
-              <div className="flex flex-wrap items-center gap-6 text-gray-600">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-gray-600 text-sm">
                 <div className="flex items-center space-x-2">
                   <User className="w-4 h-4" />
                   <span>{blog.authorName || 'Anonymous'}</span>
@@ -275,7 +275,7 @@ export default function BlogContent({ slug }: BlogContentProps) {
 
           {/* Cover Image */}
           {blog.coverPath && (
-            <div className="relative h-64 md:h-96">
+            <div className="relative h-48 sm:h-64 md:h-96">
               <img
                 src={blog.coverPath}
                 alt={blog.title}
@@ -290,10 +290,10 @@ export default function BlogContent({ slug }: BlogContentProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="p-8"
+              className="p-5 sm:p-8"
             >
               <div 
-                className="prose prose-lg max-w-none text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-900 prose-ol:text-gray-900 prose-li:text-gray-900 prose-blockquote:text-gray-700"
+                className="prose max-w-none text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-900 prose-ol:text-gray-900 prose-li:text-gray-900 prose-blockquote:text-gray-700 sm:prose-lg"
                 dangerouslySetInnerHTML={formatContent(blog.content || blog.excerpt)}
               />
             </motion.div>
@@ -305,9 +305,9 @@ export default function BlogContent({ slug }: BlogContentProps) {
           </div>
 
           {/* Footer */}
-          <footer className="border-t border-gray-200 p-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
+          <footer className="border-t border-gray-200 p-5 sm:p-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center space-x-3 sm:space-x-4">
                 <span className="text-sm text-gray-600">この記事は役に立ちましたか？</span>
                 <div className="flex items-center space-x-2">
                   <button className="flex items-center space-x-1 px-3 py-1 text-sm text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
