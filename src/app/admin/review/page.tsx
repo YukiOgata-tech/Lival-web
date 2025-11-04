@@ -3,7 +3,9 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 import ReviewQueue from '@/components/admin/ReviewQueue'
 import { Shield, FileText, Clock } from 'lucide-react'
-import { adminDb } from '@/lib/firebase-admin'
+
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export const metadata: Metadata = {
   title: '記事審査 | Admin - Lival AI',
@@ -46,33 +48,28 @@ export default function AdminReviewPage() {
   )
 }
 
-// Stats component（サーバーサイドで実数を取得）
+// Stats component（API経由で取得してビルド時のadmin依存を回避）
 async function ReviewStats() {
-  let pending = 0
-  let approved = 0
-  let rejected = 0
-  let averageTime = '-'
-
-  if (adminDb) {
+  const getCount = async (status: string) => {
     try {
-      const [p, a, r] = await Promise.all([
-        adminDb.collection('blogs').where('status', '==', 'pending').count().get(),
-        adminDb.collection('blogs').where('status', '==', 'approved').count().get(),
-        adminDb.collection('blogs').where('status', '==', 'rejected').count().get(),
-      ])
-      pending = (p.data() as any).count || 0
-      approved = (a.data() as any).count || 0
-      rejected = (r.data() as any).count || 0
-    } catch (e) {
-      // count() が未サポートの場合のフォールバック
-      const snap = await adminDb.collection('blogs').limit(200).get()
-      const list = snap.docs.map(d => d.data() as any)
-      pending = list.filter(b => b.status === 'pending').length
-      approved = list.filter(b => b.status === 'approved').length
-      rejected = list.filter(b => b.status === 'rejected').length
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/blogs?status=${status}&page=1&pageSize=1`, {
+        cache: 'no-store'
+      })
+      if (!res.ok) return 0
+      const data = await res.json()
+      return data?.pagination?.totalCount || 0
+    } catch {
+      return 0
     }
-    // TODO: 平均審査時間は blog_submissions の submittedAt と approvedAt から算出
   }
+
+  const [pending, approved, rejected] = await Promise.all([
+    getCount('pending'),
+    getCount('approved'),
+    getCount('rejected')
+  ])
+
+  const averageTime = '-' // TODO: blog_submissions から算出
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
