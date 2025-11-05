@@ -37,15 +37,10 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Admin routes - require admin access
+    // Admin routes - rely on client-side guard (no server redirect)
+    // Pages under /admin handle access using useAuth().isAdmin on the client.
     if (pathname.startsWith('/admin')) {
-      if (!userId) {
-        return NextResponse.redirect(new URL('/login', request.url))
-      }
-      
-      if (userRole !== 'admin') {
-        return NextResponse.redirect(new URL('/403', request.url))
-      }
+      return NextResponse.next()
     }
 
     // API routes authentication
