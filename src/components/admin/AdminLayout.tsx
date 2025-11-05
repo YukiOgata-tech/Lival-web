@@ -118,13 +118,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* モバイル用サイドバーオーバーレイ */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 transition-opacity md:hidden"
+          className="fixed inset-0 z-50 bg-black/60 transition-opacity md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* サイドバー（PCでも固定し、コンテンツは左に余白を確保） */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+      <div className={`fixed top-16 lg:top-20 bottom-0 left-0 z-60 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } md:translate-x-0`}>
         
