@@ -86,12 +86,12 @@ export default function MainFooter() {
         aria-hidden="true"
       /> */}
       {/* メインフッター */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 md:gap-8 lg:gap-12">
           
           {/* ブランドセクション */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center space-x-3 mb-6">
+            <Link href="/" className="flex items-center space-x-3 mb-4 sm:mb-6">
               <div className="relative">
                 <div className="w-10 h-10 rounded-lg">
                 <Image src="/images/lival-circle.png" alt="Lival AI Logo" width={40} height={40} />
@@ -126,20 +126,20 @@ export default function MainFooter() {
               </div>
             </Link>
             
-            <p className="text-gray-300 mb-6 leading-relaxed">
+            <p className="text-gray-300 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
               一人ひとりの特性に最適化されたAIコーチングで、
               すべての学習者が自分らしく成長できる教育環境を提供します。
             </p>
 
             {/* 信頼バッジ */}
-            <div className="flex flex-wrap gap-4 mb-6">
+            <div className="flex flex-wrap gap-3 sm:gap-4 mb-5 sm:mb-6">
               {trustBadges.map((badge, index) => (
                 <motion.div
                   key={badge.text}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex items-center space-x-2 bg-white/10 rounded-full px-3 py-1 text-sm"
+                  className="flex items-center space-x-2 bg-white/10 rounded-full px-2.5 py-1 text-xs sm:text-sm"
                 >
                   <badge.icon className="w-4 h-4 text-blue-400" />
                   <span className="text-gray-300">{badge.text}</span>
@@ -148,13 +148,13 @@ export default function MainFooter() {
             </div>
 
             {/* 連絡先情報 */}
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <div className="flex items-center space-x-3 text-gray-300">
-                <Mail className="w-5 h-5 text-blue-400" />
+                <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
                 <span>info@lival-ai.com</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-300">
-                <MapPin className="w-5 h-5 text-blue-400" />
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
                 <span>東京都</span>
               </div>
             </div>
@@ -169,15 +169,15 @@ export default function MainFooter() {
               transition={{ duration: 0.5, delay: sectionIndex * 0.1 }}
               className="lg:col-span-1"
             >
-              <h3 className="text-lg font-semibold text-white mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-4">
                 {section.title}
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2 sm:space-y-3">
                 {section.links.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="text-gray-300 hover:text-blue-400 transition-colors duration-200 block"
+                      className="text-gray-300 hover:text-blue-400 transition-colors duration-200 block text-sm sm:text-base"
                     >
                       {link.name}
                     </Link>
@@ -191,7 +191,7 @@ export default function MainFooter() {
 
       {/* ボトムセクション */}
       <div className="border-t border-gray-800">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             
             {/* コピーライト */}
@@ -234,7 +234,7 @@ export default function MainFooter() {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-9 h-9 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors duration-200 group"
+                  className="w-8 h-8 sm:w-9 sm:h-9 bg-gray-800 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors duration-200 group"
                   aria-label={social.name}
                 >
                   <social.icon className="w-4 h-4 text-gray-400 group-hover:text-blue-400 transition-colors duration-200" />
@@ -248,15 +248,16 @@ export default function MainFooter() {
       {/* トップに戻るボタン */}
       <motion.button
         onClick={scrollToTop}
-        className="fixed bottom-6 right-6 w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-50"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-50"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         aria-label="ページトップに戻る"
       >
-        <ArrowUp className="w-5 h-5" />
+        <ArrowUp className="w-4 h-4 sm:w-5 sm:h-5" />
       </motion.button>
     </footer>
   )
 }
+

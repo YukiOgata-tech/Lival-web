@@ -77,7 +77,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
           </div>
       </div>
 
-      <div className="lg:hidden sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-gray-100">
+      <div className="lg:hidden sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-gray-300">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <form
             onSubmit={(e) => {
@@ -88,8 +88,8 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
               router.push(sp.toString() ? `/blog?${sp.toString()}` : '/blog')
             }}
           >
-            <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-white">
-              <Search className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-2 border border-gray-500 rounded-lg px-3 py-2 bg-white">
+              <Search className="w-4 h-4 text-gray-500" />
               <input
                 value={mobileQuery}
                 onChange={(e) => setMobileQuery(e.target.value)}
@@ -101,7 +101,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                   aria-label="検索クリア"
                   type="button"
                   onClick={() => setMobileQuery('')}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-600 hover:text-gray-800"
                 >
                   ×
                 </button>
@@ -115,7 +115,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
               <button
                 key={tag}
                 onClick={() => router.push(`/blog?${new URLSearchParams({ q: tag }).toString()}`)}
-                className="shrink-0 px-3 py-1.5 rounded-full text-xs border border-gray-200 bg-gray-50 text-gray-700"
+                className="shrink-0 px-3 py-1.5 rounded-full text-s border border-gray-400 bg-gray-50 text-gray-800"
               >
                 #{tag}
               </button>
@@ -146,7 +146,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
           <main className="lg:col-span-3">
             {/* Search Summary */}
             {(params.q || params.category || params.tag) && (
-              <div className="mb-6 sm:mb-8 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="mb-6 sm:mb-8 p-3 sm:p-4 bg-blue-50 border border-blue-300 rounded-lg">
                 <div className="flex items-center space-x-2 text-blue-800 text-sm sm:text-base">
                   <Search className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span className="font-medium">

@@ -146,7 +146,7 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
     return (
       <div className="text-center py-12">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-red-800 mb-2">
+          <h3 className="text-lg font-bold text-red-800 mb-2">
             エラーが発生しました
           </h3>
           <p className="text-red-600 mb-4">{error}</p>
@@ -198,7 +198,7 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
     <div className="space-y-6">
       {/* Results Count */}
       <div className="flex items-center justify-between">
-        <p className="text-gray-600">
+        <p className="text-gray-800 font-bold">
           {pagination.totalCount > 0 && (
             <span>{pagination.totalCount}件の記事が見つかりました</span>
           )}
@@ -227,12 +227,12 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
                 <div className="flex items-start justify-between mb-3 sm:mb-4">
                   <div className="flex-1">
                     {/* Title */}
-                    <h2 className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
+                    <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 group-hover:text-blue-600 transition-colors mb-1 line-clamp-2 sm:mb-2">
                       {blog.title}
                     </h2>
                     
                     {/* Meta info */}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-gray-500">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs sm:text-sm text-gray-700">
                       <div className="flex items-center space-x-1">
                         <User className="w-4 h-4" />
                         <span>{blog.authorName || 'Anonymous'}</span>
@@ -256,8 +256,8 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
                 </div>
 
                 {/* Content */}
-                <div className="mb-3 sm:mb-4">
-                  <p className="text-gray-700 line-clamp-2 sm:line-clamp-3 leading-relaxed text-sm sm:text-base">
+                <div className="mb-1 sm:mb-2">
+                  <p className="text-gray-800 line-clamp-2 sm:line-clamp-3 leading-relaxed text-sm sm:text-base">
                     {blog.excerpt}
                   </p>
                 </div>
@@ -274,7 +274,7 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
                           return (
                           <span
                             key={category}
-                            className={`px-2 py-0.5 sm:py-1 ${catStyle.badgeBg} ${catStyle.badgeText} text-[11px] sm:text-xs rounded-full`}
+                            className={`px-2 py-0.5 sm:py-0.5 ${catStyle.badgeBg} ${catStyle.badgeText} text-[11px] sm:text-xs rounded-full`}
                           >
                             {category}
                           </span>
@@ -315,9 +315,9 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
             </Link>
             
             {/* Share buttons outside of link */}
-            <div className="px-4 sm:px-6 pb-3 sm:pb-4 border-t border-gray-100">
-              <div className="flex items-center justify-between pt-2 sm:pt-3">
-                <div className="flex items-center space-x-3 sm:space-x-4 text-xs sm:text-sm text-gray-500">
+            <div className="px-4 sm:px-6 pb-2 sm:pb-2 border-t border-gray-200">
+              <div className="flex items-center justify-between pt-0 sm:pt-0.5">
+                <div className="flex items-center space-x-3 sm:space-x-4 text-xs sm:text-m text-gray-700">
                   <ViewCount count={typeof blog.viewCount === 'number' ? blog.viewCount : 0} />
                 </div>
                 <SocialShareCompact
