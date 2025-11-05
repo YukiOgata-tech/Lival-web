@@ -38,7 +38,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12 sm:py-16">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 sm:py-12">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center relative">
             {/* Blog posting button for premium users */}
@@ -54,17 +54,17 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
               </div>
             )}
             
-            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-full mb-4 sm:mb-6">
-              <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+            <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-full mb-3 sm:mb-5">
+              <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-4">
               教育特化ブログ
             </h1>
-            <p className="text-base sm:text-xl text-blue-100 max-w-3xl mx-auto">
+            <p className="text-sm sm:text-lg text-blue-100 max-w-2xl sm:max-w-3xl mx-auto leading-relaxed">
               専門家やインフルエンサーによる質の高い教育コンテンツ。
               学習に役立つ実践的な情報をお届けします。
             </p>
-            <div className="mt-8">
+            <div className="mt-4 sm:mt-8">
               <Link
                 href="/blog/about"
                 className="inline-flex items-center text-blue-200 hover:text-white transition-colors"
@@ -73,11 +73,10 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </div>
+            </div>
           </div>
-        </div>
       </div>
 
-      {/* Mobile Toolbar: 検索 + クイックチップ */}
       <div className="lg:hidden sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <form
@@ -186,30 +185,32 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
       </div>
 
       {/* CTA Section for Non-Subscribers */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 py-16">
-        <div className="max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 py-8 sm:py-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="text-center rounded-2xl bg-white/70 backdrop-blur-sm border border-gray-200/70 shadow-sm p-5 sm:p-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
             全ての記事を読むには
           </h2>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-sm sm:text-base leading-relaxed text-gray-600 mb-6 sm:mb-8">
             プレミアム記事や限定コンテンツにアクセスするには、
             サブスクリプションプランにご加入ください。
           </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
             <a
               href="/pricing"
-              className="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-semibold"
+              className="inline-flex items-center justify-center w-full sm:w-auto max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-semibold"
             >
               <BookOpen className="w-5 h-5 mr-2" />
               サブスクリプション詳細
             </a>
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex items-center text-xs sm:text-sm text-gray-600">
               <Clock className="w-4 h-4 mr-1" />
               いつでもキャンセル可能
             </div>
           </div>
         </div>
       </div>
+    </div>
     </div>
   )
 }

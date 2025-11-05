@@ -85,6 +85,29 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
     })
   }
 
+  // Visual accent color styles (keep small fixed palette for purge safety)
+  const COLOR_STYLES: Record<string, { 
+    border: string
+    ring: string
+    hoverRing: string
+    accentGradient: string
+    badgeBg: string
+    badgeText: string
+  }> = {
+    blue:   { border: 'border-blue-100',   ring: 'ring-1 ring-blue-50',   hoverRing: 'hover:ring-blue-100',   accentGradient: 'bg-gradient-to-r from-blue-500/70 to-sky-400/70',     badgeBg: 'bg-blue-100',   badgeText: 'text-blue-800' },
+    purple: { border: 'border-purple-100', ring: 'ring-1 ring-purple-50', hoverRing: 'hover:ring-purple-100', accentGradient: 'bg-gradient-to-r from-purple-500/70 to-fuchsia-400/70', badgeBg: 'bg-purple-100', badgeText: 'text-purple-800' },
+    green:  { border: 'border-emerald-100', ring: 'ring-1 ring-emerald-50', hoverRing: 'hover:ring-emerald-100', accentGradient: 'bg-gradient-to-r from-emerald-500/70 to-teal-400/70', badgeBg: 'bg-emerald-100', badgeText: 'text-emerald-800' },
+    amber:  { border: 'border-amber-100',  ring: 'ring-1 ring-amber-50',  hoverRing: 'hover:ring-amber-100',  accentGradient: 'bg-gradient-to-r from-amber-500/70 to-orange-400/70',  badgeBg: 'bg-amber-100',  badgeText: 'text-amber-800' },
+    rose:   { border: 'border-rose-100',   ring: 'ring-1 ring-rose-50',   hoverRing: 'hover:ring-rose-100',   accentGradient: 'bg-gradient-to-r from-rose-500/70 to-pink-400/70',     badgeBg: 'bg-rose-100',   badgeText: 'text-rose-800' },
+    indigo: { border: 'border-indigo-100', ring: 'ring-1 ring-indigo-50', hoverRing: 'hover:ring-indigo-100', accentGradient: 'bg-gradient-to-r from-indigo-500/70 to-violet-400/70',  badgeBg: 'bg-indigo-100', badgeText: 'text-indigo-800' },
+  }
+
+  const COLOR_KEYS = Object.keys(COLOR_STYLES)
+  const pickColorKey = (seed: string, fallbackIndex: number) => {
+    const sum = seed.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+    return COLOR_KEYS[(sum + fallbackIndex) % COLOR_KEYS.length]
+  }
+
   const getVisibilityIcon = (blog: Blog & { isTeaser: boolean }) => {
     if (blog.visibility === 'premium') {
       return <Lock className="w-4 h-4 text-amber-500" />
@@ -184,14 +207,20 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
 
       {/* Blog Cards */}
       <div className="space-y-4 sm:space-y-6">
-        {blogs.map((blog, index) => (
+        {blogs.map((blog, index) => {
+          const primaryCategory = blog.categories?.[0] || blog.tags?.[0] || blog.authorName || blog.slug
+          const colorKey = pickColorKey(String(primaryCategory || 'default'), index)
+          const style = COLOR_STYLES[colorKey]
+          return (
           <motion.article
             key={blog.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow group"
+            className={`relative bg-white rounded-xl shadow-sm overflow-hidden transition-shadow group ${style.border} ${style.ring} ${style.hoverRing}`}
           >
+            {/* Accent bar */}
+            <div className={`h-1 ${style.accentGradient}`} />
             <Link href={`/blog/${blog.slug}`} className="block">
               <div className="p-4 sm:p-6">
                 {/* Header */}
@@ -239,14 +268,18 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
                     {/* Categories */}
                     {blog.categories.length > 0 && (
                       <div className="flex items-center space-x-1">
-                        {blog.categories.slice(0, 2).map((category) => (
+                        {blog.categories.slice(0, 2).map((category) => {
+                          const catKey = pickColorKey(category, index)
+                          const catStyle = COLOR_STYLES[catKey]
+                          return (
                           <span
                             key={category}
-                            className="px-2 py-0.5 sm:py-1 bg-purple-100 text-purple-800 text-[11px] sm:text-xs rounded-full"
+                            className={`px-2 py-0.5 sm:py-1 ${catStyle.badgeBg} ${catStyle.badgeText} text-[11px] sm:text-xs rounded-full`}
                           >
                             {category}
                           </span>
-                        ))}
+                          )
+                        })}
                         {blog.categories.length > 2 && (
                           <span className="text-[11px] sm:text-xs text-gray-500">
                             +{blog.categories.length - 2}
@@ -296,7 +329,7 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
               </div>
             </div>
           </motion.article>
-        ))}
+          )})}
       </div>
 
       {/* Pagination */}

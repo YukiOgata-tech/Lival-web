@@ -24,18 +24,23 @@ export const metadata: Metadata = {
   robots: 'noindex'
 }
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 async function AdminDashboardContent() {
   // 実データ集計（/api/admin/stats）
   let totalUsers = 0
   let totalBlogs = 0
   let pendingReviews = 0
   try {
-    const res = await fetch('/api/admin/stats', { cache: 'no-store' })
+    const base = process.env.NEXT_PUBLIC_SITE_URL || ''
+    const res = await fetch(`${base}/api/admin/stats`, { cache: 'no-store' })
     if (res.ok) {
       const data = await res.json()
       totalUsers = data.totalUsers || 0
       totalBlogs = data.blogs?.total || 0
-      pendingReviews = data.blogs?.pending || 0
+      // 審査待ち: pending + revise（要修正も含める）
+      pendingReviews = (data.blogs?.pending || 0) + (data.blogs?.revise || 0)
     }
   } catch {}
   const monthlyViews = 0
