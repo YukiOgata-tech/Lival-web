@@ -315,10 +315,12 @@ export default function BlogSubmitForm({ categories }: BlogSubmitFormProps) {
     setError(null)
 
     try {
+      const idToken = await user?.getIdToken().catch(() => undefined)
       const response = await fetch('/api/blogs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
         },
         body: JSON.stringify(formData)
       })
@@ -350,11 +352,13 @@ export default function BlogSubmitForm({ categories }: BlogSubmitFormProps) {
     setError(null)
 
     try {
+      const idToken = await user?.getIdToken().catch(() => undefined)
       // First save as draft
       const saveResponse = await fetch('/api/blogs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
         },
         body: JSON.stringify(formData)
       })
@@ -371,6 +375,7 @@ export default function BlogSubmitForm({ categories }: BlogSubmitFormProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
         },
         body: JSON.stringify({ blogId: saveResult.blogId })
       })
@@ -403,11 +408,13 @@ export default function BlogSubmitForm({ categories }: BlogSubmitFormProps) {
     setError(null)
 
     try {
+      const idToken = await user?.getIdToken().catch(() => undefined)
       // Direct publish for admin
       const publishResponse = await fetch('/api/blogs/admin-publish', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(idToken ? { Authorization: `Bearer ${idToken}` } : {}),
         },
         body: JSON.stringify(formData)
       })

@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerUserRole, getServerUserId } from '@/lib/auth/server'
 import { BlogService } from '@/lib/firebase/blog'
-import { adminDb } from '@/lib/firebase-admin'
+import { adminDb } from '@/lib/firebase/admin'
 
 // POST /api/blogs/admin-publish - Admin direct publish
 export async function POST(request: NextRequest) {

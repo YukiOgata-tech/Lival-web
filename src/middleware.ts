@@ -1,19 +1,15 @@
 // src/middleware.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerUserRole, getServerUserId } from '@/lib/auth/server'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
   try {
-    const userRole = await getServerUserRole(request)
-    const userId = await getServerUserId(request)
-
     // Temporary: Skip authentication checks in development
     const isDevelopment = process.env.NODE_ENV === 'development'
     
     if (isDevelopment) {
-      console.log(`[DEV] Skipping auth check for ${pathname}, userRole: ${userRole}, userId: ${userId}`)
+      console.log(`[DEV] Skipping auth check for ${pathname}`)
       
       // In development, set mock user info
       if (pathname.startsWith('/api/')) {
@@ -26,15 +22,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
-    // Blog submission routes - require subscription
+    // Blog submission routes
+    // Rely on client-side gating for subscription/admin to avoid blocking valid logged-in users in production
     if (pathname.startsWith('/blog/submit') || pathname.startsWith('/submit')) {
-      if (!userId) {
-        return NextResponse.redirect(new URL('/login', request.url))
-      }
-      
-      if (userRole !== 'sub' && userRole !== 'admin') {
-        return NextResponse.redirect(new URL('/subscription', request.url))
-      }
+      return NextResponse.next()
     }
 
     // Admin routes - rely on client-side guard (no server redirect)
@@ -43,17 +34,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
-    // API routes authentication
+    // API routes: no-op in middleware (auth via Authorization: Bearer on server)
     if (pathname.startsWith('/api/')) {
-      const response = NextResponse.next()
-      
-      // Add user info to headers for API routes
-      if (userId) {
-        response.headers.set('x-user-id', userId)
-      }
-      response.headers.set('x-user-role', userRole)
-      
-      return response
+      return NextResponse.next()
     }
 
     return NextResponse.next()
