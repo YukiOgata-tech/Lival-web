@@ -68,7 +68,7 @@ export default function HomeHeroSection() {
   return (
     <section
       ref={heroRef}
-      className="relative md:min-h-[80vh] md:flex md:items-center md:justify-center overflow-hidden pt-8 pb-6 md:pt-14 md:pb-12"
+      className="relative md:min-h-[60vh] md:flex md:items-center md:justify-center overflow-hidden pt-4 pb-2 md:pt-10 md:pb-6"
     >
       {/* Background Animation */}
       <motion.div 
@@ -181,7 +181,7 @@ export default function HomeHeroSection() {
             className="relative mx-auto max-w-4xl px-4 md:px-0"
           >
             <LottieAnimation 
-              className="h-48 sm:h-60 md:h-96 lg:h-[500px]" 
+              className="h-44 sm:h-50 md:h-76 lg:h-[300px]" 
               fallback={
                 <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl md:rounded-3xl p-8 md:p-16 relative">
                   <motion.div
@@ -221,7 +221,7 @@ export default function HomeHeroSection() {
           className="hidden md:block absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10"
         >
           <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-gray-400 rounded-full mt-2" />
+            <div className="w-1 h-3 bg-gray-400 rounded-full mt-1" />
           </div>
         </motion.div>
       )}
