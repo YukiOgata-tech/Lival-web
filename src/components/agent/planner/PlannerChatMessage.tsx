@@ -4,6 +4,7 @@ import React, { useMemo } from 'react'
 import MarkdownMessage from '@/components/agent/common/MarkdownMessage'
 import { motion } from 'framer-motion'
 import PlanCard from '@/components/agent/planner/PlanCard'
+import { BookOpen, Sparkles } from 'lucide-react'
 
 export type ChatMessage = {
   id: string
@@ -46,21 +47,82 @@ export default function PlannerChatMessage({
 
   if (shouldAnimate && isUser === false) {
     return (
-      <div className="my-3 text-gray-900">
-        <TypeReveal text={msg.content} />
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.3, type: "spring", bounce: 0.2 }}
+        className="flex items-start gap-2"
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+          className="flex-shrink-0 mt-1"
+        >
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-md">
+            <BookOpen className="w-4 h-4 text-white" />
+          </div>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-[85%] rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm shadow-lg ring-1 ring-gray-50"
+        >
+          <TypeReveal text={msg.content} />
+        </motion.div>
+      </motion.div>
     )
   }
   if (!isUser) {
     return (
-      <div className="my-3 text-gray-900">
-        <MarkdownMessage text={msg.content} />
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.3, type: "spring", bounce: 0.2 }}
+        className="flex items-start gap-2"
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+          className="flex-shrink-0 mt-1"
+        >
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-md">
+            <BookOpen className="w-4 h-4 text-white" />
+          </div>
+        </motion.div>
+        <motion.div
+          whileHover={{ scale: 1.01 }}
+          className="max-w-[85%] rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm shadow-lg ring-1 ring-gray-50"
+        >
+          <MarkdownMessage text={msg.content} />
+        </motion.div>
+      </motion.div>
     )
   }
   return (
-    <motion.div className="my-2 flex justify-end" initial={msg.animate ? { opacity: 0, y: 8 } : false} animate={msg.animate ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.18, ease: 'easeOut' }}>
-      <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl bg-blue-600 px-4 py-2 text-sm text-white">{msg.content}</div>
+    <motion.div
+      initial={msg.animate ? { opacity: 0, y: 10, scale: 0.95 } : false}
+      animate={msg.animate ? { opacity: 1, y: 0, scale: 1 } : {}}
+      transition={{ duration: 0.3, type: "spring", bounce: 0.2 }}
+      className="flex items-end gap-2 justify-end"
+    >
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        className="max-w-[85%] whitespace-pre-wrap rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 px-4 py-3 text-sm text-white shadow-lg"
+      >
+        {msg.content}
+      </motion.div>
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+        className="flex-shrink-0 mb-1"
+      >
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center shadow-md">
+          <span className="text-white text-xs font-bold">You</span>
+        </div>
+      </motion.div>
     </motion.div>
   )
 }

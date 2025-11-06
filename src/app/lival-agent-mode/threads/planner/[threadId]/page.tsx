@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
 import { useParams } from 'next/navigation'
 import Image from 'next/image'
+import { Loader2 } from 'lucide-react'
 import PlannerInputBar, { type Mode } from '@/components/agent/planner/PlannerInputBar'
 import PlannerChatMessage, { type ChatMessage } from '@/components/agent/planner/PlannerChatMessage'
 import PlanDetailModal from '@/components/agent/planner/PlanDetailModal'
@@ -137,24 +139,36 @@ export default function PlannerThreadPage() {
   }
 
   return (
-    <div className="relative mx-auto min-h-[100dvh] max-w-7xl">
+    <div className="relative mx-auto min-h-[100dvh] max-w-7xl bg-gradient-to-b from-blue-50/30 via-white to-indigo-50/20">
+      {/* 背景装飾 */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob" />
+        <div className="absolute top-40 right-10 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-8 left-1/3 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000" />
+      </div>
+
       {/* 背景ロゴ */}
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
-        <div className="opacity-[0.8] select-none">
-          <Image 
-            src="/images/header-livalAI.png" 
-            alt="LIVAL AI" 
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 0.05, scale: 1 }}
+          transition={{ duration: 1 }}
+          className="select-none"
+        >
+          <Image
+            src="/images/header-livalAI.png"
+            alt="LIVAL AI"
             width={400}
             height={100}
             className="max-w-sm w-auto h-auto"
             priority
           />
-        </div>
+        </motion.div>
       </div>
-      
-      <div className="relative z-10 mx-auto max-w-3xl space-y-3 p-4 pb-32 sm:pb-40">
+
+      <div className="relative z-10 mx-auto max-w-3xl space-y-4 p-4 pb-32 sm:pb-40">
         {messages.map((m) => (
-          <div key={m.id} className="animate-fade-in">
+          <div key={m.id}>
             <PlannerChatMessage
               msg={m}
               onPlanAction={(action, payload) => {
@@ -171,9 +185,38 @@ export default function PlannerThreadPage() {
           </div>
         ))}
         {busy && (
-          <div className="pointer-events-none fixed bottom-28 sm:bottom-32 right-6 z-40 rounded-md border border-sky-200 bg-white/95 px-3 py-2 text-sm text-sky-700 shadow-md">
-            <div className="flex items-center gap-2"><LottieLoader size={24} /><span>生成中…</span></div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-start gap-2"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+              className="flex-shrink-0 mt-1"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-md">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                >
+                  <Loader2 className="w-4 h-4 text-white" />
+                </motion.div>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="max-w-[85%] rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm shadow-lg"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-gray-700 font-medium">
+                  回答を作成中…
+                </span>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
         <div ref={bottomRef} className="h-20" />
       </div>

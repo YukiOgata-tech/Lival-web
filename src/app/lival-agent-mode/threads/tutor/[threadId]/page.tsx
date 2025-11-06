@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import { Sparkles, Loader2 } from 'lucide-react'
 import TutorInputBar from '@/components/agent/tutor/TutorInputBar'
 import TutorChatMessageView, { type TutorChatMessage, type TutorTag, RetryPayload } from '@/components/agent/tutor/TutorChatMessage'
 import LottieLoader from '@/components/agent/common/LottieLoader'
@@ -64,81 +66,226 @@ export default function TutorThreadPage() {
   }
 
   return (
-    <div className="relative mx-auto min-h-[100dvh] max-w-7xl">
+    <div className="relative mx-auto min-h-[100dvh] max-w-7xl bg-gradient-to-b from-emerald-50/30 via-white to-teal-50/20">
+      {/* Background decorative elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob" />
+        <div className="absolute top-40 right-10 w-72 h-72 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-8 left-1/3 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000" />
+      </div>
+
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none z-0">
-        <div className="opacity-[0.8] select-none">
-          <Image 
-            src="/images/header-livalAI.png" 
-            alt="LIVAL AI" 
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 0.05, scale: 1 }}
+          transition={{ duration: 1 }}
+          className="select-none"
+        >
+          <Image
+            src="/images/header-livalAI.png"
+            alt="LIVAL AI"
             width={400}
             height={100}
             className="max-w-sm w-auto h-auto"
             priority
           />
-        </div>
+        </motion.div>
       </div>
-      
-      {toast && (
-        <div className="pointer-events-none fixed right-4 top-16 z-50 rounded-md border border-emerald-200 bg-white/95 px-3 py-2 text-sm text-emerald-700 shadow-md">{toast}</div>
-      )}
-      {error && (
-        <div className="pointer-events-none fixed left-1/2 -translate-x-1/2 top-16 z-50 rounded-md border border-red-300 bg-red-100 px-3 py-2 text-sm text-red-800 shadow-md">{error}</div>
-      )}
 
-      <div className="relative z-10 mx-auto max-w-3xl space-y-3 p-4 pb-32 sm:pb-40">
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className="fixed right-4 top-20 z-50 rounded-xl border border-emerald-300 bg-white/95 backdrop-blur-sm px-4 py-3 text-sm text-emerald-700 shadow-lg flex items-center gap-2"
+          >
+            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <span>{toast}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className="fixed left-1/2 -translate-x-1/2 top-20 z-50 rounded-xl border border-red-300 bg-red-50/95 backdrop-blur-sm px-4 py-3 text-sm text-red-800 shadow-lg"
+          >
+            {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="relative z-10 mx-auto max-w-3xl space-y-4 p-4 pb-32 sm:pb-40">
         {messages.map((m) => (
-          <div key={m.id} className="animate-fade-in">
-            <TutorChatMessageView 
-              msg={m} 
-              enableTagging 
-              uid={user?.uid ?? null} 
-              threadId={threadId || null} 
-              onRetry={(payload) => sendMessage(payload)} 
-              onOpenReport={(p)=> setReportPreview(p)} 
-            />
-          </div>
+          <TutorChatMessageView
+            key={m.id}
+            msg={m}
+            enableTagging
+            uid={user?.uid ?? null}
+            threadId={threadId || null}
+            onRetry={(payload) => sendMessage(payload)}
+            onOpenReport={(p)=> setReportPreview(p)}
+          />
         ))}
         {(status === 'receiving' || status === 'generating_report') && (
-          <div className="my-2 flex items-center gap-2 text-gray-600">
-            <div className="max-w-[80%] rounded-2xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm ring-1 ring-gray-100">
-              <div className="flex items-center gap-2"><LottieLoader size={28} /><span className="text-gray-700">{status === 'receiving' ? '回答を作成中…' : 'レポートを作成中…'}</span></div>
-            </div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-start gap-2"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+              className="flex-shrink-0 mt-1"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="max-w-[85%] rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm shadow-lg"
+            >
+              <div className="flex items-center gap-3">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                >
+                  <Loader2 className="w-5 h-5 text-emerald-500" />
+                </motion.div>
+                <span className="text-gray-700 font-medium">
+                  {status === 'receiving' ? '回答を作成中…' : 'レポートを作成中…'}
+                </span>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
         <div ref={bottomRef} className="h-20" />
       </div>
 
       <TutorInputBar disabled={status === 'receiving' || status === 'generating_report'} onSend={sendMessage} />
 
-      {reportOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setReportOpen(false)} />
-          <div className="relative w-full max-w-md rounded-lg border border-gray-200 bg-white p-4 shadow-xl">
-            <h3 className="mb-2 text-base font-semibold text-gray-900">レポートを作成</h3>
-            <p className="mb-3 text-sm text-gray-600">エンジンを選択し、タグ付きメッセージを元に要約レポートを生成します。</p>
-            <div className="mb-3">
-              <div className="mb-1 text-xs font-medium text-gray-700">エンジン選択</div>
-              <div className="flex gap-2">
-                <button onClick={() => setReportEngine('gpt')} className={`rounded-md border px-3 py-1.5 text-xs ${reportEngine==='gpt' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>GPT</button>
-                <button onClick={() => setReportEngine('gemini')} className={`rounded-md border px-3 py-1.5 text-xs ${reportEngine==='gemini' ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}>Gemini</button>
-              </div>
-            </div>
-            <div className="mb-3 rounded-md bg-gray-50 p-3 text-sm">
-              <div className="mb-1 text-gray-800">このスレッドのタグ付きメッセージ数: <span className="font-semibold">{messages.filter(m => (m.tags||[]).length>0).length}</span></div>
-              <ul className="list-disc pl-5 text-gray-600">
-                <li>重要: <code className="rounded bg-white px-1">important</code></li>
-                <li>暗記: <code className="rounded bg-white px-1">memorize</code></li>
-                <li>確認: <code className="rounded bg-white px-1">check</code></li>
-              </ul>
-              <div className="mt-2 text-xs text-gray-500">ヒント: 大事な要点や覚えたい定義には <b>important/memorize</b>、あとで検算・見直ししたい部分には <b>check</b> を付けると、より使えるレポートになります。</div>
-            </div>
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setReportOpen(false)} className="rounded-md border px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">キャンセル</button>
-              <button onClick={() => { setReportOpen(false); handleGenerateReport(reportEngine); }} className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700">作成する</button>
-            </div>
+      <AnimatePresence>
+        {reportOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              onClick={() => setReportOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
+              className="relative w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <h3 className="mb-2 text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-emerald-500" />
+                  レポートを作成
+                </h3>
+                <p className="mb-4 text-sm text-gray-600">エンジンを選択し、タグ付きメッセージを元に要約レポートを生成します。</p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="mb-4"
+              >
+                <div className="mb-2 text-sm font-semibold text-gray-700">エンジン選択</div>
+                <div className="flex gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setReportEngine('gpt')}
+                    className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all ${reportEngine==='gpt' ? 'border-blue-500 bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-200' : 'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'}`}
+                  >
+                    GPT
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setReportEngine('gemini')}
+                    className={`flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all ${reportEngine==='gemini' ? 'border-emerald-500 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-200' : 'border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'}`}
+                  >
+                    Gemini
+                  </motion.button>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="mb-4 rounded-xl bg-gradient-to-br from-gray-50 to-emerald-50 p-4 border border-gray-200"
+              >
+                <div className="mb-2 text-sm font-semibold text-gray-800">
+                  このスレッドのタグ付きメッセージ数:
+                  <span className="ml-2 inline-flex items-center justify-center rounded-full bg-emerald-600 px-3 py-1 text-xs font-bold text-white">
+                    {messages.filter(m => (m.tags||[]).length>0).length}
+                  </span>
+                </div>
+                <ul className="space-y-1 text-sm text-gray-700">
+                  <li className="flex items-center gap-2">
+                    <span className="text-yellow-500">★</span>
+                    重要: <code className="rounded-md bg-white px-2 py-0.5 text-xs border">important</code>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-blue-500">📚</span>
+                    暗記: <code className="rounded-md bg-white px-2 py-0.5 text-xs border">memorize</code>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-500">✓</span>
+                    確認: <code className="rounded-md bg-white px-2 py-0.5 text-xs border">check</code>
+                  </li>
+                </ul>
+                <div className="mt-3 rounded-lg bg-blue-50 border border-blue-200 p-2 text-xs text-blue-800">
+                  💡 ヒント: 大事な要点や覚えたい定義には <b>important/memorize</b>、あとで検算・見直ししたい部分には <b>check</b> を付けると、より使えるレポートになります。
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="flex justify-end gap-3"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setReportOpen(false)}
+                  className="rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
+                >
+                  キャンセル
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => { setReportOpen(false); handleGenerateReport(reportEngine); }}
+                  className="rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-lg hover:shadow-xl hover:from-emerald-600 hover:to-emerald-700 transition-all"
+                >
+                  作成する
+                </motion.button>
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
       {reportPreview && (
         <TutorReportModal open={true} onClose={() => setReportPreview(null)} reportText={reportPreview.text} title={reportPreview.title} onDownloaded={(kind)=> setToast(kind==='pdf'?'PDFを保存しました':'画像を書き出しました')} />
       )}
