@@ -23,7 +23,6 @@ import {
 
 interface BlogSubmitFormProps {
   categories: BlogCategory[]
-  userRole?: string // Add user role to determine admin privileges
 }
 
 interface FormData {
@@ -179,11 +178,11 @@ const visibilityOptions = [
   }
 ]
 
-export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSubmitFormProps) {
+export default function BlogSubmitForm({ categories }: BlogSubmitFormProps) {
   // Mock user ID - in real implementation, get from auth
   const mockUserId = 'user123'
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, userData, isAdmin } = useAuth()
   const startedAtRef = useRef<number>(Date.now())
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -203,7 +202,37 @@ export default function BlogSubmitForm({ categories, userRole = 'free' }: BlogSu
   const [showDirectPublishWarning, setShowDirectPublishWarning] = useState(false)
   const [completed, setCompleted] = useState<null | { mode: 'draft' | 'submitted' | 'published'; blogId?: string }>(null)
   
-  const isAdmin = userRole === 'admin'
+  // isAdmin comes from authenticated user context
+
+  const isSubscriber = !!userData && userData.subscription?.plan !== 'free_web'
+
+  if (!isAdmin && !isSubscriber) {
+    return (
+      <div className="p-6 sm:p-8 text-center">
+        <div className="max-w-2xl mx-auto bg-blue-50 border border-blue-200 rounded-xl p-6 sm:p-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-blue-900 mb-3">投稿機能はサブスク会員限定です</h2>
+          <p className="text-sm sm:text-base text-blue-800 mb-6 leading-relaxed">
+            申し訳ありません。ブログの作成・投稿は有料プラン（basic／premium）または管理者のみご利用いただけます。
+            プランをご確認いただくか、ブログ一覧へお戻りください。
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href="/blog"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-5 py-2.5 rounded-lg border border-blue-300 text-blue-800 bg-white hover:bg-blue-50 transition-colors font-medium"
+            >
+              ブログ一覧へ戻る
+            </a>
+            <a
+              href="/pricing"
+              className="inline-flex items-center justify-center w-full sm:w-auto px-5 py-2.5 rounded-lg text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-colors font-semibold"
+            >
+              料金プランを見る
+            </a>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // 管理者通知（Resend 経由の既存 contact API を利用）
   const notifyAdmin = async (blogId?: string) => {

@@ -65,7 +65,7 @@ export default async function SubmitPage() {
 
         {/* Submit Form */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <BlogSubmitForm categories={categories} userRole="admin" />
+          <BlogSubmitForm categories={categories} />
         </div>
 
         {/* Process Information */}
