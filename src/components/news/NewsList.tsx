@@ -80,6 +80,7 @@ export default function NewsList() {
 
   useEffect(() => {
     fetchNews()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, searchTerm])
 
   // 優先度によるソート（urgent > high > normal > low）
@@ -163,7 +164,7 @@ export default function NewsList() {
           {Object.entries(NEWS_TYPE_CONFIG).map(([type, config]) => (
             <button
               key={type}
-              onClick={() => setFilters(prev => ({ ...prev, type: prev.type === type ? undefined : (type as any) }))}
+              onClick={() => setFilters(prev => ({ ...prev, type: prev.type === type ? undefined : (type as NewsType) }))}
               className={`shrink-0 px-3 py-1.5 rounded-full text-sm border whitespace-nowrap ${filters.type === type ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-200'}`}
             >
               <span className="mr-1">{config.icon}</span>{config.label}

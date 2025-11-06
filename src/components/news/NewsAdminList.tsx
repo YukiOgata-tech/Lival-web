@@ -38,6 +38,28 @@ export default function NewsAdminList() {
   const [showFilters, setShowFilters] = useState(false)
   const [selectedNews, setSelectedNews] = useState<string | null>(null)
 
+  // 日付フォーマット関数（Firestore Timestamp対応）
+  const formatDate = (date: Date | string | { _seconds?: number; seconds?: number; _nanoseconds?: number; nanoseconds?: number } | null) => {
+    if (!date) return '未設定'
+
+    let d: Date
+
+    // Firestore Timestamp オブジェクトの場合
+    if (date && typeof date === 'object' && ('_seconds' in date || 'seconds' in date)) {
+      const seconds = (date as { _seconds?: number; seconds?: number })._seconds || (date as { _seconds?: number; seconds?: number }).seconds || 0
+      d = new Date(seconds * 1000)
+    } else {
+      d = new Date(date as string | Date)
+    }
+
+    // Invalid Dateチェック
+    if (isNaN(d.getTime())) {
+      return '日付不明'
+    }
+
+    return d.toLocaleDateString('ja-JP')
+  }
+
   // お知らせ一覧を取得
   const fetchNews = async () => {
     try {
@@ -75,6 +97,7 @@ export default function NewsAdminList() {
 
   useEffect(() => {
     fetchNews()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, searchTerm])
 
   // お知らせ削除
@@ -301,12 +324,12 @@ export default function NewsAdminList() {
                       </span>
                       <span className="flex items-center">
                         <Calendar className="w-3 h-3 mr-1" />
-                        作成: {item.createdAt.toLocaleDateString('ja-JP')}
+                        作成: {formatDate(item.createdAt)}
                       </span>
                       {item.publishedAt && (
                         <span className="flex items-center">
                           <Globe className="w-3 h-3 mr-1" />
-                          公開: {item.publishedAt.toLocaleDateString('ja-JP')}
+                          公開: {formatDate(item.publishedAt)}
                         </span>
                       )}
                       <span className="flex items-center">

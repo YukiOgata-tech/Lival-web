@@ -4,6 +4,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
+import ArticleContent from '@/components/blog/ArticleContent'
 import { News, NEWS_PRIORITY_CONFIG, NEWS_TYPE_CONFIG } from '@/lib/types/news'
 import {
   ArrowLeft,
@@ -37,9 +38,23 @@ export default function NewsDetail({ news }: NewsDetailProps) {
     incrementViewCount()
   }, [news.id])
 
-  const formatDate = (date: Date | string) => {
-    const dateObj = date instanceof Date ? date : new Date(date)
-    return dateObj.toLocaleDateString('ja-JP', {
+  const formatDate = (date: Date | string | { _seconds?: number; seconds?: number; _nanoseconds?: number; nanoseconds?: number }) => {
+    let d: Date
+
+    // Firestore Timestamp オブジェクトの場合
+    if (date && typeof date === 'object' && ('_seconds' in date || 'seconds' in date)) {
+      const seconds = (date as { _seconds?: number; seconds?: number })._seconds || (date as { _seconds?: number; seconds?: number }).seconds || 0
+      d = new Date(seconds * 1000)
+    } else {
+      d = new Date(date as string | Date)
+    }
+
+    // Invalid Dateチェック
+    if (isNaN(d.getTime())) {
+      return '日付不明'
+    }
+
+    return d.toLocaleDateString('ja-JP', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -189,10 +204,7 @@ export default function NewsDetail({ news }: NewsDetailProps) {
           transition={{ delay: 0.9 }}
           className="px-8 py-10"
         >
-          <div
-            className="prose prose-slate max-w-none text-sm sm:text-base text-gray-900 prose-headings:text-gray-900 prose-headings:font-bold prose-p:text-gray-800 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-a:font-semibold prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-800 prose-ol:text-gray-800 prose-li:text-gray-800 prose-li:leading-relaxed prose-blockquote:text-gray-700 prose-blockquote:border-l-4 prose-blockquote:border-blue-400 prose-blockquote:bg-blue-50 prose-blockquote:py-2"
-            dangerouslySetInnerHTML={{ __html: news.content }}
-          />
+          <ArticleContent content={news.content} />
         </motion.div>
 
         {/* フッター */}

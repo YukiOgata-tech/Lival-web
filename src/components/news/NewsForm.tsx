@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
 import TiptapEditor from '@/components/blog/TiptapEditor'
+import ArticleContent from '@/components/blog/ArticleContent'
 import { 
   NewsFormData, 
   NewsPriority, 
@@ -122,12 +123,9 @@ function NewsPreview({ title, content, priority, type }: NewsPreviewProps) {
         {/* 本文 */}
         <div className="px-6 py-8">
           {content ? (
-            <div 
-              className="prose prose-lg max-w-none text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-900 prose-ol:text-gray-900 prose-li:text-gray-900 prose-blockquote:text-gray-700"
-              dangerouslySetInnerHTML={{ __html: content }}
-            />
+            <ArticleContent content={content} />
           ) : (
-            <div className="text-gray-500 italic">
+            <div className="text-gray-500 italic text-center p-8">
               内容が入力されていません
             </div>
           )}

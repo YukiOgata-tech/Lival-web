@@ -27,17 +27,47 @@ export default function NewsCard({ news, index = 0 }: NewsCardProps) {
     router.push(`/news/${news.id}`)
   }
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('ja-JP', {
+  const formatDate = (date: Date | string | { _seconds?: number; seconds?: number; _nanoseconds?: number; nanoseconds?: number }) => {
+    let d: Date
+
+    // Firestore Timestamp オブジェクトの場合
+    if (date && typeof date === 'object' && ('_seconds' in date || 'seconds' in date)) {
+      const seconds = (date as { _seconds?: number; seconds?: number })._seconds || (date as { _seconds?: number; seconds?: number }).seconds || 0
+      d = new Date(seconds * 1000)
+    } else {
+      d = new Date(date as string | Date)
+    }
+
+    // Invalid Dateチェック
+    if (isNaN(d.getTime())) {
+      return '日付不明'
+    }
+
+    return d.toLocaleDateString('ja-JP', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     })
   }
 
-  const timeAgo = (date: Date) => {
+  const timeAgo = (date: Date | string | { _seconds?: number; seconds?: number; _nanoseconds?: number; nanoseconds?: number }) => {
+    let d: Date
+
+    // Firestore Timestamp オブジェクトの場合
+    if (date && typeof date === 'object' && ('_seconds' in date || 'seconds' in date)) {
+      const seconds = (date as { _seconds?: number; seconds?: number })._seconds || (date as { _seconds?: number; seconds?: number }).seconds || 0
+      d = new Date(seconds * 1000)
+    } else {
+      d = new Date(date as string | Date)
+    }
+
+    // Invalid Dateチェック
+    if (isNaN(d.getTime())) {
+      return '日付不明'
+    }
+
     const now = new Date()
-    const diff = now.getTime() - date.getTime()
+    const diff = now.getTime() - d.getTime()
     const days = Math.floor(diff / (1000 * 60 * 60 * 24))
 
     if (days === 0) return '今日'
