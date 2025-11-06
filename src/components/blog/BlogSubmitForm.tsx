@@ -5,6 +5,7 @@ import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import TiptapEditor from './TiptapEditor'
+import ArticleContent from './ArticleContent'
 import { BlogCategory } from '@/lib/types/blog'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
@@ -133,9 +134,9 @@ function BlogPreview({ title, content, categories, tags, visibility, coverPath }
         </div>
 
         {/* 記事本文 */}
-        <div className="prose prose-lg max-w-none text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-900 prose-ol:text-gray-900 prose-li:text-gray-900 prose-blockquote:text-gray-700">
+        <div>
           {content ? (
-            <div dangerouslySetInnerHTML={{ __html: content }} />
+            <ArticleContent content={content} />
           ) : (
             <div className="text-gray-500 italic p-8 text-center">
               記事の内容が入力されていません

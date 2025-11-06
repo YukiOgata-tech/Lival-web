@@ -9,16 +9,15 @@ import { ViewCount } from './ViewCount'
 import { ViewCounterPing } from './ViewCounterPing'
 import TeaserOverlay from './TeaserOverlay'
 import { SocialShareCompact } from './SocialShare'
-import { 
+import ArticleContent from './ArticleContent'
+import {
   ArrowLeft,
-  Calendar, 
-  User, 
-  Clock, 
+  Calendar,
+  User,
+  Clock,
   Tag as TagIcon,
   Folder,
-  Share2,
   Bookmark,
-  ChevronRight,
   Lock,
   Star,
   BookOpen
@@ -42,6 +41,7 @@ export default function BlogContent({ slug }: BlogContentProps) {
 
   useEffect(() => {
     fetchBlog()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
   const fetchBlog = async () => {
@@ -68,18 +68,27 @@ export default function BlogContent({ slug }: BlogContentProps) {
     }
   }
 
-  const formatDate = (date: Date | string) => {
-    const d = new Date(date)
+  const formatDate = (date: Date | string | { _seconds?: number; seconds?: number; _nanoseconds?: number; nanoseconds?: number }) => {
+    let d: Date
+
+    // Firestore Timestamp オブジェクトの場合
+    if (date && typeof date === 'object' && ('_seconds' in date || 'seconds' in date)) {
+      const seconds = (date as { _seconds?: number; seconds?: number })._seconds || (date as { _seconds?: number; seconds?: number }).seconds || 0
+      d = new Date(seconds * 1000)
+    } else {
+      d = new Date(date as string | Date)
+    }
+
+    // Invalid Dateチェック
+    if (isNaN(d.getTime())) {
+      return '日付不明'
+    }
+
     return d.toLocaleDateString('ja-JP', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     })
-  }
-
-  const formatContent = (content: string) => {
-    // Basic HTML rendering (in a real app, you'd use a proper HTML parser/sanitizer)
-    return { __html: content }
   }
 
   const getStatusBadge = (blog: Blog) => {
@@ -292,10 +301,7 @@ export default function BlogContent({ slug }: BlogContentProps) {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="p-5 sm:p-8"
             >
-              <div 
-                className="prose max-w-none text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-em:text-gray-700 prose-ul:text-gray-900 prose-ol:text-gray-900 prose-li:text-gray-900 prose-blockquote:text-gray-700 sm:prose-lg"
-                dangerouslySetInnerHTML={formatContent(blog.content || blog.excerpt)}
-              />
+              <ArticleContent content={blog.content || blog.excerpt} />
             </motion.div>
 
             {/* Teaser Overlay */}

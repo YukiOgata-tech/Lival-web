@@ -12,6 +12,7 @@ import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import Placeholder from '@tiptap/extension-placeholder'
 import ImageUpload from './ImageUpload'
+import ArticleContent from './ArticleContent'
 import { storageService, ImageUploadResult } from '@/lib/firebase/storage'
 import { 
   Bold, 
@@ -138,7 +139,7 @@ export default function TiptapEditor({
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-lg max-w-none focus:outline-none p-6 min-h-[400px] bg-white text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-strong:text-gray-900 prose-em:text-gray-900',
+        class: 'article-content focus:outline-none p-6 min-h-[400px] bg-white',
       },
     },
   })
@@ -185,13 +186,13 @@ export default function TiptapEditor({
   if (preview) {
     return (
       <div className="border-t border-gray-200">
-        <div className="bg-gray-50 px-4 py-2 text-sm text-gray-600">
+        <div className="bg-gray-50 px-4 py-2 text-sm text-gray-600 flex items-center">
+          <span className="mr-2">👁️</span>
           プレビューモード
         </div>
-        <div 
-          className="prose prose-lg max-w-none p-6 min-h-[400px] text-gray-900 prose-headings:text-gray-900 prose-p:text-gray-900 prose-strong:text-gray-900 prose-em:text-gray-900"
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+        <div className="p-6 min-h-[400px] bg-white">
+          <ArticleContent content={content} />
+        </div>
       </div>
     )
   }

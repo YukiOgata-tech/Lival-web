@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Blog, UserRole } from '@/lib/types/blog'
+import { Blog } from '@/lib/types/blog'
 import { ViewCount } from './ViewCount'
 import { SocialShareCompact } from './SocialShare'
 import { 
@@ -45,6 +45,7 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
 
   useEffect(() => {
     fetchBlogs()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, tag, query, page])
 
   const fetchBlogs = async () => {
@@ -76,11 +77,25 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
     }
   }
 
-  const formatDate = (date: Date | string) => {
-    const d = new Date(date)
+  const formatDate = (date: Date | string | { _seconds?: number; seconds?: number; _nanoseconds?: number; nanoseconds?: number }) => {
+    let d: Date
+
+    // Firestore Timestamp オブジェクトの場合
+    if (date && typeof date === 'object' && ('_seconds' in date || 'seconds' in date)) {
+      const seconds = (date as { _seconds?: number; seconds?: number })._seconds || (date as { _seconds?: number; seconds?: number }).seconds || 0
+      d = new Date(seconds * 1000)
+    } else {
+      d = new Date(date as string | Date)
+    }
+
+    // Invalid Dateチェック
+    if (isNaN(d.getTime())) {
+      return '日付不明'
+    }
+
     return d.toLocaleDateString('ja-JP', {
       year: 'numeric',
-      month: 'short',
+      month: 'long',
       day: 'numeric'
     })
   }
