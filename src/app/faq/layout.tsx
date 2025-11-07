@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: 'よくあるご質問（FAQ） - サポート情報 | Lival AI',
     description: 'Lival AIの使い方やトラブル解決方法をカテゴリ別に詳しく解説。お困りの際はまずこちらをご確認ください。',
     type: 'website',
-    url: 'https://lival.ai/faq',
+    url: 'https://lival-ai.com/faq',
     images: [
       {
         url: '/og-image-faq.png',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     images: ['/og-image-faq.png']
   },
   alternates: {
-    canonical: 'https://lival.ai/faq'
+    canonical: 'https://lival-ai.com/faq'
   }
 }
 

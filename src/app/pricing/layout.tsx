@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: '料金プラン - 塾より安い月額2,480円から | LIVAL AI',
     description: '無料プランあり。ベーシック月額2,480円、プレミアム月額3,980円。塾・予備校より圧倒的に安く24時間質問し放題。人間講師サポート付き。',
     type: 'website',
-    url: 'https://lival.ai/pricing',
+    url: 'https://lival-ai.com/pricing',
     images: [
       {
         url: '/images/lival-circle.png',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     images: ['/images/lival-circle.png']
   },
   alternates: {
-    canonical: 'https://lival.ai/pricing'
+    canonical: 'https://lival-ai.com/pricing'
   }
 }
 
@@ -72,7 +72,7 @@ export default function PricingLayout({
                 "price": "0",
                 "priceCurrency": "JPY",
                 "availability": "https://schema.org/InStock",
-                "url": "https://lival.ai/pricing",
+                "url": "https://lival-ai.com/pricing",
                 "priceValidUntil": "2025-12-31",
                 "description": "Web版基本機能のみ。無料で始められる。"
               },
@@ -82,7 +82,7 @@ export default function PricingLayout({
                 "price": "2480",
                 "priceCurrency": "JPY",
                 "availability": "https://schema.org/InStock",
-                "url": "https://lival.ai/pricing",
+                "url": "https://lival-ai.com/pricing",
                 "priceValidUntil": "2025-12-31",
                 "billingDuration": "P1M",
                 "description": "AI学習サポート・学習記録管理・Web版全機能・基本的なAIコーチング"
@@ -93,7 +93,7 @@ export default function PricingLayout({
                 "price": "3980",
                 "priceCurrency": "JPY",
                 "availability": "https://schema.org/InStock",
-                "url": "https://lival.ai/pricing",
+                "url": "https://lival-ai.com/pricing",
                 "priceValidUntil": "2025-12-31",
                 "billingDuration": "P1M",
                 "description": "AIサービス全機能・モバイルアプリ対応・無制限学習サポート・専用AIコーチング・進路相談・優先サポート"

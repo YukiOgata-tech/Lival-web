@@ -7,7 +7,7 @@ import { Metadata } from 'next'
 import { ConditionalLayout } from '@/components/layout/ConditionalLayout'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://lival.ai'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://lival-ai.com'),
   title: {
     default: 'LIVAL AI - 中高生のための教育特化AIプラットフォーム',
     template: '%s | LIVAL AI'
@@ -123,7 +123,7 @@ export const metadata: Metadata = {
     google: process.env.GOOGLE_SITE_VERIFICATION
   },
   alternates: {
-    canonical: 'https://lival.ai'
+    canonical: 'https://lival-ai.com'
   }
 }
 
@@ -156,8 +156,8 @@ export default function RootLayout({
               "@type": "EducationalOrganization",
               "name": "LIVAL AI",
               "alternateName": ["ライバルAI", "リバルAI"],
-              "url": "https://lival.ai",
-              "logo": "https://lival.ai/images/lival-circle.png",
+              "url": "https://lival-ai.com",
+              "logo": "https://lival-ai.com/images/lival-circle.png",
               "description": "中高生・保護者のための教育AIプラットフォーム。塾・予備校の代わりに24時間365日いつでも質問可能。人間講師によるサポートあり。Tutor AI（質問応答）・Planner AI（学習計画）・Counselor AI（進路相談）の3つの専門AIが全教科の受験対策・テスト対策を徹底サポート。",
               "sameAs": [
                 "https://twitter.com/lival_ai"
@@ -189,14 +189,14 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               "name": "LIVAL AI",
-              "url": "https://lival.ai",
+              "url": "https://lival-ai.com",
               "description": "中高生のための教育特化AIプラットフォーム",
               "inLanguage": "ja",
               "potentialAction": {
                 "@type": "SearchAction",
                 "target": {
                   "@type": "EntryPoint",
-                  "urlTemplate": "https://lival.ai/search?q={search_term_string}"
+                  "urlTemplate": "https://lival-ai.com/search?q={search_term_string}"
                 },
                 "query-input": "required name=search_term_string"
               }

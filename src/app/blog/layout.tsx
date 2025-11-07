@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     title: '教育ブログ - 勉強方法・受験対策・進路相談 | LIVAL AI',
     description: '中高生・保護者向け教育ブログ。効率的な勉強方法、受験対策、AI学習活用法など実践的な情報が満載。専門家・現役講師による信頼できる記事を毎日更新。',
     type: 'website',
-    url: 'https://lival.ai/blog',
+    url: 'https://lival-ai.com/blog',
     images: [
       {
         url: '/og-image-blog.png',
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     images: ['/og-image-blog.png']
   },
   alternates: {
-    canonical: 'https://lival.ai/blog'
+    canonical: 'https://lival-ai.com/blog'
   }
 }
 
@@ -63,15 +63,15 @@ export default function BlogLayout({
             "@type": "Blog",
             "name": "Lival AI 教育特化ブログ",
             "description": "中高生向けの教育コンテンツを提供するブログ",
-            "url": "https://lival.ai/blog",
+            "url": "https://lival-ai.com/blog",
             "publisher": {
               "@type": "Organization",
               "name": "Lival AI",
-              "logo": "https://lival.ai/logo.png"
+              "logo": "https://lival-ai.com/images/lival-circle.png"
             },
             "mainEntityOfPage": {
               "@type": "WebPage",
-              "@id": "https://lival.ai/blog"
+              "@id": "https://lival-ai.com/blog"
             }
           })
         }}

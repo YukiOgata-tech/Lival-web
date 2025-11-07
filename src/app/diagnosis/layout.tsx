@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     title: '【無料】学習タイプ診断 - 自分に最適な勉強方法が5分でわかる',
     description: '塾・予備校選びで迷っている方必見。無料の学習タイプ診断で自分に合った勉強方法を発見。6つのタイプから最適なAI学習スタイルを提案。中高生・保護者向け。',
     type: 'website',
-    url: 'https://lival.ai/diagnosis',
+    url: 'https://lival-ai.com/diagnosis',
     images: [
       {
         url: '/og-image-diagnosis.png',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     images: ['/og-image-diagnosis.png']
   },
   alternates: {
-    canonical: 'https://lival.ai/diagnosis'
+    canonical: 'https://lival-ai.com/diagnosis'
   }
 }
 

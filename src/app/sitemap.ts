@@ -2,7 +2,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://lival.ai'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://lival-ai.com'
   const currentDate = new Date()
 
   return [
