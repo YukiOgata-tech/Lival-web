@@ -117,7 +117,7 @@ export default function MainFooter() {
                   alt="Lival AI"
                   width={120}
                   height={32}
-                  className="h-8 w-auto mb-1 brightness-0 invert"
+                  className="mb-1 brightness-0 invert"
                   style={{ width: 'auto', height: '32px' }}
                 />
                 <div className="text-sm text-gray-400">

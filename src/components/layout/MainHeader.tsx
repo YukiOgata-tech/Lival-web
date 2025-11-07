@@ -47,7 +47,7 @@ export default function MainHeader() {
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative">
               <div className="w-10 h-10 rounded-lg">
-                <Image src="/images/lival-circle.png" alt="Lival AI Logo" width={40} height={40} />
+                <Image src="/images/lival-circle.png" alt="Lival AI Logo" width={40} height={40} priority />
               </div>
               <motion.div
                 className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full"
