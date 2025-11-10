@@ -63,28 +63,28 @@ const teamValues = [
 
 export default function AboutTeamSection() {
   return (
-    <section className="py-12 sm:py-20 bg-gray-900">
+    <section className="py-8 sm:py-16 md:py-20 bg-gray-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-8 sm:mb-16"
+          className="text-center mb-6 sm:mb-12 md:mb-16"
         >
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 md:mb-6">
             多様なチームが創る未来
           </h2>
-          <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto mb-6 sm:mb-8 px-4 sm:px-0">
+          <p className="text-sm sm:text-base md:text-xl text-gray-300 max-w-3xl mx-auto mb-4 sm:mb-6 md:mb-8 px-2 sm:px-0">
             大学生の新鮮な発想力と、現場を知る教育者の経験が融合。
             世代を超えたコラボレーションで、革新的な教育プラットフォームを開発しています。
           </p>
         </motion.div>
 
         {/* Team Roles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12 md:mb-20">
           {teamRoles.map((role, index) => (
             <motion.div
               key={role.title}
@@ -97,13 +97,13 @@ export default function AboutTeamSection() {
               <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl blur-xl" 
                    style={{ background: `linear-gradient(to right, var(--tw-gradient-stops))` }} />
               
-              <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
-                <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r ${role.color} rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <role.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-gradient-to-r ${role.color} rounded-xl flex items-center justify-center mb-3 sm:mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <role.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
                 </div>
-                
-                <h3 className="text-xl sm:text-2xl font-bold text-white mb-4">{role.title}</h3>
-                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">{role.description}</p>
+
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 sm:mb-3 md:mb-4">{role.title}</h3>
+                <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{role.description}</p>
               </div>
             </motion.div>
           ))}
@@ -115,11 +115,11 @@ export default function AboutTeamSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="bg-gradient-to-r from-gray-800/50 to-slate-800/50 rounded-3xl p-8 border border-gray-700/50"
+          className="bg-gradient-to-r from-gray-800/50 to-slate-800/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-gray-700/50"
         >
-          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8 text-center">チームの価値観</h3>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 sm:mb-6 md:mb-8 text-center">チームの価値観</h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {teamValues.map((value, index) => (
               <motion.div
                 key={value.title}
@@ -129,7 +129,7 @@ export default function AboutTeamSection() {
                 viewport={{ once: true }}
                 className="text-center"
               >
-                <h4 className="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">{value.title}</h4>
+                <h4 className="text-sm sm:text-base md:text-lg font-semibold text-white mb-1 sm:mb-2 md:mb-3">{value.title}</h4>
                 <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">{value.description}</p>
               </motion.div>
             ))}

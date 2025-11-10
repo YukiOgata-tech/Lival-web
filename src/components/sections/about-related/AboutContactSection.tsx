@@ -136,27 +136,27 @@ export default function AboutContactSection() {
   }
 
   return (
-    <section className="py-12 sm:py-20 bg-gray-900">
+    <section className="py-8 sm:py-16 md:py-20 bg-gray-900">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-8 sm:mb-16"
+          className="text-center mb-6 sm:mb-12 md:mb-16"
         >
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 md:mb-6">
             お気軽にご連絡ください
           </h2>
-          <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto px-4 sm:px-0">
+          <p className="text-sm sm:text-base md:text-xl text-gray-300 max-w-3xl mx-auto px-2 sm:px-0">
             ご質問、ご提案、協業のご相談など、どんなことでもお気軽にお声がけください。
             若いチームならではのフットワークで、迅速に対応いたします。
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 sm:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           
           {/* Contact Methods */}
           <div className="lg:col-span-3">
@@ -170,12 +170,12 @@ export default function AboutContactSection() {
                   viewport={{ once: true }}
                   className="group"
                 >
-                  <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r ${method.color} rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                      <method.icon className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
+                  <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
+                    <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-gradient-to-r ${method.color} rounded-xl flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                      <method.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-white" />
                     </div>
-                    
-                    <h3 className="text-base sm:text-lg font-bold text-white mb-2">{method.title}</h3>
+
+                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-2">{method.title}</h3>
                     <p className="text-gray-400 mb-3 sm:mb-4 text-xs sm:text-sm">{method.description}</p>
                     
                     <a 
@@ -195,9 +195,9 @@ export default function AboutContactSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50"
+              className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-gray-700/50"
             >
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">簡単お問い合わせ</h3>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-4 sm:mb-6">簡単お問い合わせ</h3>
               
               <form className="space-y-4" onSubmit={handleSubmit} noValidate>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -316,17 +316,17 @@ export default function AboutContactSection() {
           </div>
 
           {/* Social & Response Info */}
-          <div className="space-y-6 sm:space-y-8">
-            
+          <div className="space-y-4 sm:space-y-6 md:space-y-8">
+
             {/* Social Links */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50"
+              className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-gray-700/50"
             >
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-4 sm:mb-6">SNS・コミュニティ</h3>
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-3 sm:mb-4 md:mb-6">SNS・コミュニティ</h3>
               
               <div className="space-y-4">
                 {socialLinks.map((social, index) => (
@@ -357,24 +357,24 @@ export default function AboutContactSection() {
               viewport={{ once: true }}
               className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 rounded-2xl p-4 sm:p-6 border border-blue-500/20"
             >
-              <h3 className="text-base sm:text-lg font-bold text-white mb-3 sm:mb-4">レスポンス目標</h3>
-              
-              <div className="space-y-3">
+              <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-3 sm:mb-4">レスポンス目標</h3>
+
+              <div className="space-y-2 sm:space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300">一般お問い合わせ</span>
-                  <span className="text-blue-400 font-semibold">24時間以内</span>
+                  <span className="text-gray-300 text-xs sm:text-sm">一般お問い合わせ</span>
+                  <span className="text-blue-400 font-semibold text-xs sm:text-sm">24時間以内</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300">法人・導入相談</span>
-                  <span className="text-blue-400 font-semibold">12時間以内</span>
+                  <span className="text-gray-300 text-xs sm:text-sm">法人・導入相談</span>
+                  <span className="text-blue-400 font-semibold text-xs sm:text-sm">12時間以内</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300">メディア取材</span>
-                  <span className="text-blue-400 font-semibold">48時間以内</span>
+                  <span className="text-gray-300 text-xs sm:text-sm">メディア取材</span>
+                  <span className="text-blue-400 font-semibold text-xs sm:text-sm">48時間以内</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-300">緊急事項</span>
-                  <span className="text-blue-400 font-semibold">即座</span>
+                  <span className="text-gray-300 text-xs sm:text-sm">緊急事項</span>
+                  <span className="text-blue-400 font-semibold text-xs sm:text-sm">即座</span>
                 </div>
               </div>
             </motion.div>
@@ -387,9 +387,9 @@ export default function AboutContactSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mt-12 sm:mt-16 p-4 sm:p-8 bg-gradient-to-r from-gray-800/30 to-slate-800/30 rounded-2xl border border-gray-700/30"
+          className="text-center mt-8 sm:mt-12 md:mt-16 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-gray-800/30 to-slate-800/30 rounded-2xl border border-gray-700/30"
         >
-          <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
+          <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed">
             LIVAL AIは、大学生を中心とした若いチームが運営しています。<br />
             フレッシュな視点と情熱で、皆様のご期待にお応えできるよう努めております。<br />
             どんな小さなことでも、お気軽にお声がけください。

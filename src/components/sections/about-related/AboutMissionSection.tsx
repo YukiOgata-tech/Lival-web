@@ -36,24 +36,24 @@ const missions = [
 
 export default function AboutMissionSection() {
   return (
-    <section className="py-12 sm:py-20 bg-slate-900/50">
+    <section className="py-8 sm:py-16 md:py-20 bg-slate-900/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-8 sm:mb-16"
+          className="text-center mb-6 sm:mb-12 md:mb-16"
         >
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 md:mb-6">
             私たちの使命
           </h2>
-          <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto px-4 sm:px-0">
+          <p className="text-sm sm:text-base md:text-xl text-gray-300 max-w-3xl mx-auto px-2 sm:px-0">
             教育の力で世界を変える。それが私たちLIVAL AIの使命です。
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
           {missions.map((mission, index) => (
             <motion.div
               key={mission.title}
@@ -66,14 +66,14 @@ export default function AboutMissionSection() {
               <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl blur-xl" 
                    style={{ background: `linear-gradient(to right, var(--tw-gradient-stops))` }} />
               
-              <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-8 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300">
-                <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r ${mission.color} rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <mission.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300">
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-gradient-to-r ${mission.color} rounded-xl flex items-center justify-center mb-3 sm:mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <mission.icon className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
                 </div>
-                
-                <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">{mission.title}</h3>
-                <h4 className="text-base sm:text-lg font-semibold text-gray-300 mb-3 sm:mb-4">{mission.subtitle}</h4>
-                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">{mission.description}</p>
+
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-1 sm:mb-2">{mission.title}</h3>
+                <h4 className="text-sm sm:text-base md:text-lg font-semibold text-gray-300 mb-2 sm:mb-3 md:mb-4">{mission.subtitle}</h4>
+                <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{mission.description}</p>
               </div>
             </motion.div>
           ))}

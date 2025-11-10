@@ -1,7 +1,7 @@
 // src/app/layout.tsx
 import "./globals.css";
-import MainHeader from '@/components/layout/MainHeader'
-import MainFooter from '@/components/layout/MainFooter'
+// import MainHeader from '@/components/layout/MainHeader'
+// import MainFooter from '@/components/layout/MainFooter'
 import { AuthProvider } from '@/hooks/useAuth'
 import { Metadata } from 'next'
 import { ConditionalLayout } from '@/components/layout/ConditionalLayout'
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   description: 'LIVAL AIは中高生・保護者のための教育AI。塾・予備校の代わりに24時間365日いつでも質問できる。人間講師サポート付き。Tutor AI（質問応答）、Planner AI（学習計画）、Counselor AI（進路相談）が全教科対応。月額2,480円から。無料プランあり。オンライン学習塾として受験対策・テスト対策を徹底サポート。',
   keywords: [
     // ブランド名
-    'LIVAL AI', 'リバルAI', 'ライバルAI', 'Lival', 'lival.ai',
+    'LIVAL AI', 'リバルAI', 'ライバルAI', 'Lival', 'lival-ai',
 
     // コアコンセプト
     '教育AI', 'AI学習', '学習AI', 'AIチューター', 'AI先生', '教育特化AI', 'AI教育プラットフォーム', '学習支援AI',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
     // 塾・予備校比較
     '塾', '予備校', '学習塾', 'オンライン学習塾', '塾代わり', '予備校代わり', '塾 比較', '予備校 比較',
-    '塾 安い', '塾 費用', '予備校 料金', 'オンライン塾', 'ネット塾', 'AI塾',
+    '塾 安い', '塾 費用', '予備校 料金', 'オンライン塾', 'ネット塾', 'AI塾', '教育格差', '貧困格差',
 
     // 家庭教師比較
     '家庭教師', 'オンライン家庭教師', '家庭教師AI', '家庭教師 代わり', '家庭教師 安い', '家庭教師 24時間',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
 
     // 試験対策
     'テスト対策', '定期テスト', '受験対策', '高校受験', '大学受験', '入試対策', '模試対策',
-    '中間テスト', '期末テスト', '実力テスト',
+    'センター試験', '共通テスト', '実力テスト', '資格試験',
 
     // プラン・価格
     '無料プラン', '月額2480円', '月額3980円', '安い', '格安', 'コスパ',

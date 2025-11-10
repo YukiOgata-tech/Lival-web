@@ -25,21 +25,21 @@ const testimonials = [
 
 export default function AboutPartnersSection() {
   return (
-    <section className="py-12 sm:py-20 bg-slate-800/30">
+    <section className="py-8 sm:py-16 md:py-20 bg-slate-800/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-8 sm:mb-16"
+          className="text-center mb-6 sm:mb-12 md:mb-16"
         >
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 md:mb-6">
             パートナーの声
           </h2>
-          <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto px-4 sm:px-0">
+          <p className="text-sm sm:text-base md:text-xl text-gray-300 max-w-3xl mx-auto px-2 sm:px-0">
             現場を知る教育者、技術専門家、研究者の方々から
             いただいた貴重なご意見とメッセージです。
           </p>
@@ -53,7 +53,7 @@ export default function AboutPartnersSection() {
           viewport={{ once: true }}
           className="max-w-6xl mx-auto"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={testimonial.name}
@@ -64,19 +64,19 @@ export default function AboutPartnersSection() {
                 className="group relative"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl blur-xl" />
-                
-                <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
-                  <div className="flex items-center mb-6">
-                    <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-2xl mr-4 group-hover:scale-110 transition-transform duration-300">
+
+                <div className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 h-full">
+                  <div className="flex items-center mb-3 sm:mb-4 md:mb-6">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-lg sm:text-xl md:text-2xl mr-3 sm:mr-4 group-hover:scale-110 transition-transform duration-300">
                       {testimonial.avatar}
                     </div>
                     <div>
-                      <div className="font-bold text-white text-lg">{testimonial.name}</div>
-                      <div className="text-gray-400 text-sm">{testimonial.role}</div>
+                      <div className="font-bold text-white text-sm sm:text-base md:text-lg">{testimonial.name}</div>
+                      <div className="text-gray-400 text-xs sm:text-sm">{testimonial.role}</div>
                     </div>
                   </div>
-                  
-                  <blockquote className="text-gray-300 leading-relaxed italic">
+
+                  <blockquote className="text-gray-300 leading-relaxed italic text-xs sm:text-sm md:text-base">
                     "{testimonial.comment}"
                   </blockquote>
                 </div>
