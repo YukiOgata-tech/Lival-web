@@ -10,7 +10,6 @@ export interface FAQArticle {
   isPopular: boolean
   lastUpdated: string
   estimatedReadTime: number
-  views?: number
   relatedArticles?: string[]
 }
 

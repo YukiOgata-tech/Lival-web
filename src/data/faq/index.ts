@@ -83,7 +83,6 @@ export const getArticlesByCategory = (categoryId: string): FAQArticle[] => {
 export const getPopularArticles = (limit: number = 5): FAQArticle[] => {
   return allFAQArticles
     .filter(article => article.isPopular)
-    .sort((a, b) => (b.views || 0) - (a.views || 0))
     .slice(0, limit)
 }
 
@@ -127,7 +126,6 @@ export const getFAQStats = () => {
     totalArticles: allFAQArticles.length,
     totalCategories: faqCategories.length,
     popularArticles: allFAQArticles.filter(article => article.isPopular).length,
-    totalViews: allFAQArticles.reduce((sum, article) => sum + (article.views || 0), 0),
     averageReadTime: Math.round(
       allFAQArticles.reduce((sum, article) => sum + article.estimatedReadTime, 0) / allFAQArticles.length
     )
@@ -140,7 +138,6 @@ export const getCategoryStats = (categoryId: string) => {
   return {
     totalArticles: categoryArticles.length,
     popularArticles: categoryArticles.filter(article => article.isPopular).length,
-    totalViews: categoryArticles.reduce((sum, article) => sum + (article.views || 0), 0),
     averageReadTime: categoryArticles.length > 0 
       ? Math.round(categoryArticles.reduce((sum, article) => sum + article.estimatedReadTime, 0) / categoryArticles.length)
       : 0

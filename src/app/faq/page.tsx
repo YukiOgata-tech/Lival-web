@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
@@ -15,8 +15,8 @@ import {
   MessageCircle,
   ChevronRight,
   TrendingUp,
-  Eye,
-  Star
+  Star,
+  ChevronDown
 } from 'lucide-react'
 
 const faqCategories = [
@@ -252,39 +252,110 @@ const popularArticles = [
     id: 'account-creation',
     title: 'アカウントの作成方法',
     category: 'はじめに',
-    views: 1250
   },
   {
     id: 'ai-types',
     title: '3つのAIエージェントの違い',
     category: 'AIコーチング',
-    views: 890
   },
   {
     id: 'pricing-plans',
     title: '料金プランの詳細',
     category: '料金・サブスクリプション',
-    views: 756
   },
   {
     id: 'login-issues',
     title: 'ログインできない場合',
     category: '技術的な問題',
-    views: 623
   },
   {
     id: 'personality-test',
     title: '性格診断の受け方',
     category: 'はじめに',
-    views: 445
   },
   {
     id: 'blog-about',
     title: 'ブログの仕組みと価値',
     category: '教育ブログ',
-    views: 387
   }
 ]
+
+function CategoryCard({ category, index }: { category: typeof faqCategories[0], index: number }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <motion.div
+      key={category.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
+    >
+      {/* Category Header */}
+      <div 
+        className={`bg-gradient-to-r ${category.color} p-5 text-white cursor-pointer`}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <category.icon className="w-7 h-7 mr-3 flex-shrink-0" />
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold">{category.title}</h3>
+              <p className="text-sm text-white/80">{category.description}</p>
+            </div>
+          </div>
+          <ChevronDown 
+            className={`w-6 h-6 text-white/80 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} 
+          />
+        </div>
+      </div>
+
+      {/* Articles List */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="bg-white"
+          >
+            <div className="p-4 sm:p-5">
+              <div className="space-y-2">
+                {category.articles.map((article) => (
+                  <Link
+                    key={article.id}
+                    href={`/faq/articles/${article.id}`}
+                    className="block group"
+                  >
+                    <div className="flex items-start justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="flex-1">
+                        <div className="flex items-center mb-1">
+                          <h4 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+                            {article.title}
+                          </h4>
+                          {article.isPopular && (
+                            <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-800 text-xs rounded-full">
+                              人気
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-gray-600 text-sm line-clamp-2">
+                          {article.preview}
+                        </p>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400 ml-2 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
 
 export default function FAQPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -300,35 +371,28 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12 sm:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                <HelpCircle className="w-8 h-8 text-white" />
+            <div className="flex justify-center mb-4">
+              <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
+                <HelpCircle className="w-7 h-7 text-white" />
               </div>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-3">
               よくあるご質問
             </h1>
-            <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8 flex items-center justify-center">
-              <Image
-                src="/images/header-livalAI.png"
-                alt="Lival AI"
-                width={100}
-                height={28}
-                className="h-6 w-auto brightness-0 invert mr-2"
-              />
-              に関するよくあるご質問と回答を掲載しています
+            <p className="text-base sm:text-lg text-blue-100 max-w-3xl mx-auto mb-6">
+              LIVAL AIに関するよくあるご質問と回答を掲載しています
             </p>
 
             {/* Search Box */}
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-xl mx-auto">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
@@ -336,7 +400,7 @@ export default function FAQPage() {
                   placeholder="キーワードで検索..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 text-gray-900 bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg placeholder:text-gray-400"
+                  className="w-full pl-12 pr-4 py-3 text-gray-900 bg-white rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-lg placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -344,10 +408,10 @@ export default function FAQPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="max-w-6xl mx-auto">
           
-          {/* お知らせ（サービス最新情報） */}
+          {/* お知らせ */}
           {!searchQuery && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -355,11 +419,11 @@ export default function FAQPage() {
               transition={{ duration: 0.5 }}
               className="mb-8 rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 sm:p-5"
             >
-              <h3 className="text-base sm:text-lg font-bold text-emerald-800 mb-2">最近のアップデート</h3>
-              <ul className="text-sm sm:text-base text-emerald-900 space-y-1 list-disc pl-5">
-                <li>家庭教師AIで「写真からの質問」に対応しました。手書きノートや問題用紙でもOKです。</li>
+              <h3 className="text-base font-bold text-emerald-800 mb-2">最近のアップデート</h3>
+              <ul className="text-sm text-emerald-900 space-y-1 list-disc pl-5">
+                <li>家庭教師AIで「写真からの質問」に対応しました。</li>
                 <li>進路カウンセラーAIは<strong>モバイルアプリ限定</strong>でご利用いただけます。</li>
-                <li>AIでも解決しづらい内容は、会員限定のLINEオープンチャット（現役プロが複数人体制）でフォロー予定です。</li>
+                <li>AIで解決しづらい内容は、会員限定のLINEオープンチャットでフォロー予定です。</li>
               </ul>
             </motion.div>
           )}
@@ -367,17 +431,17 @@ export default function FAQPage() {
           {/* Popular Articles */}
           {!searchQuery && (
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="mb-12"
+              className="mb-8 sm:mb-12"
             >
-              <div className="flex items-center mb-8">
+              <div className="flex items-center mb-4 sm:mb-6">
                 <TrendingUp className="w-6 h-6 text-orange-500 mr-2" />
-                <h2 className="text-2xl font-bold text-gray-900">人気の記事</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">人気の記事</h2>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {popularArticles.slice(0, 6).map((article, index) => (
                   <motion.div
                     key={article.id}
@@ -387,22 +451,18 @@ export default function FAQPage() {
                   >
                     <Link
                       href={`/faq/articles/${article.id}`}
-                      className="block bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 group"
+                      className="block bg-white rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 group h-full"
                     >
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center">
-                          <Star className="w-4 h-4 text-yellow-500 mr-2" />
-                          <span className="text-sm text-gray-500">{article.category}</span>
-                        </div>
-                        <div className="flex items-center text-xs text-gray-400">
-                          <Eye className="w-3 h-3 mr-1" />
-                          {article.views}
-                        </div>
+                      <div className="flex items-center mb-3">
+                        <Star className="w-4 h-4 text-yellow-500 mr-2" />
+                        <span className="text-sm text-gray-500">{article.category}</span>
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
                         {article.title}
                       </h3>
-                      <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                      <div className="flex justify-end">
+                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                      </div>
                     </Link>
                   </motion.div>
                 ))}
@@ -412,66 +472,17 @@ export default function FAQPage() {
 
           {/* Categories */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">
               {searchQuery ? `"${searchQuery}" の検索結果` : 'カテゴリ別よくある質問'}
             </h2>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
               {(searchQuery ? filteredCategories : faqCategories).map((category, index) => (
-                <motion.div
-                  key={category.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
-                >
-                  {/* Category Header */}
-                  <div className={`bg-gradient-to-r ${category.color} p-6 text-white`}>
-                    <div className="flex items-center">
-                      <category.icon className="w-8 h-8 mr-3" />
-                      <div>
-                        <h3 className="text-xl font-bold">{category.title}</h3>
-                        <p className="text-white/80">{category.description}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Articles List */}
-                  <div className="p-6">
-                    <div className="space-y-4">
-                      {category.articles.map((article, articleIndex) => (
-                        <Link
-                          key={article.id}
-                          href={`/faq/articles/${article.id}`}
-                          className="block group"
-                        >
-                          <div className="flex items-start justify-between p-4 rounded-lg hover:bg-gray-50 transition-colors">
-                            <div className="flex-1">
-                              <div className="flex items-center mb-2">
-                                <h4 className="text-lg font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-                                  {article.title}
-                                </h4>
-                                {article.isPopular && (
-                                  <span className="ml-2 px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
-                                    人気
-                                  </span>
-                                )}
-                              </div>
-                              <p className="text-gray-600 text-sm line-clamp-2">
-                                {article.preview}
-                              </p>
-                            </div>
-                            <ChevronRight className="w-5 h-5 text-gray-400 ml-4 group-hover:translate-x-1 transition-transform flex-shrink-0" />
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
+                <CategoryCard key={category.id} category={category} index={index} />
               ))}
             </div>
           </motion.div>
@@ -481,10 +492,10 @@ export default function FAQPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-16"
+              className="text-center py-12"
             >
-              <HelpCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <HelpCircle className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
                 検索結果が見つかりませんでした
               </h3>
               <p className="text-gray-600 mb-6">
@@ -502,23 +513,22 @@ export default function FAQPage() {
 
           {/* Diagnosis CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-12 bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-8 text-center border border-purple-100"
+            className="mt-12 bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-6 sm:p-8 text-center border border-purple-100"
           >
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
               まずは学習タイプ診断から始めませんか？
             </h3>
-            <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-700 mb-6 max-w-2xl mx-auto text-sm sm:text-base">
               わずか5-8分の診断で、あなたに最適化されたAIコーチング体験を開始できます。
-              6つの学習タイプから、あなたの特性を科学的に分析します。
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Link
                 href="/diagnosis"
-                className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-full hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-full transition-all duration-300"
               >
                 <HelpCircle className="w-5 h-5 mr-2" />
                 無料診断を始める
@@ -526,7 +536,7 @@ export default function FAQPage() {
               
               <Link
                 href="/diagnosis/types"
-                className="inline-flex items-center px-8 py-3 border border-purple-300 text-purple-700 font-semibold rounded-full hover:border-purple-400 hover:bg-purple-50 transition-all duration-300"
+                className="inline-flex items-center justify-center px-6 py-3 border border-purple-300 text-purple-700 font-semibold rounded-full hover:border-purple-400 hover:bg-purple-50 transition-all duration-300"
               >
                 6つのタイプを見る
               </Link>
@@ -535,28 +545,27 @@ export default function FAQPage() {
 
           {/* Blog CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-8 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-8 text-center border border-indigo-100"
+            className="mt-8 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-6 sm:p-8 text-center border border-indigo-100"
           >
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center">
-                <BookOpen className="w-8 h-8 text-indigo-600" />
+            <div className="flex justify-center mb-4">
+              <div className="w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center">
+                <BookOpen className="w-7 h-7 text-indigo-600" />
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              教育の専門知識をもっと深く学びませんか？
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
+              教育の専門知識をもっと深く
             </h3>
-            <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-700 mb-6 max-w-2xl mx-auto text-sm sm:text-base">
               Lival AIブログでは、教育・学習の専門家が厳選した高品質なコンテンツを提供しています。
-              実践的な学習法から最新の教育研究まで、あなたの成長をサポートします。
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Link
                 href="/blog"
-                className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-semibold rounded-full hover:from-indigo-700 hover:to-blue-700 transition-all duration-300"
+                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-semibold rounded-full transition-all duration-300"
               >
                 <BookOpen className="w-5 h-5 mr-2" />
                 ブログを読む
@@ -564,32 +573,31 @@ export default function FAQPage() {
               
               <Link
                 href="/blog/about"
-                className="inline-flex items-center px-8 py-3 border border-indigo-300 text-indigo-700 font-semibold rounded-full hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-300"
+                className="inline-flex items-center justify-center px-6 py-3 border border-indigo-300 text-indigo-700 font-semibold rounded-full hover:border-indigo-400 hover:bg-indigo-50 transition-all duration-300"
               >
-                ブログについて詳しく
+                ブログについて
               </Link>
             </div>
           </motion.div>
 
           {/* Contact CTA */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 text-center border border-blue-100"
+            className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 sm:p-8 text-center border border-blue-100"
           >
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
               解決しない問題がありますか？
             </h3>
-            <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-700 mb-6 max-w-2xl mx-auto text-sm sm:text-base">
               FAQで解決しない場合は、カスタマーサポートまでお気軽にお問い合わせください。
-              平日10:00-18:00にて対応いたします。
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Link
                 href="/contact"
-                className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+                className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full transition-all duration-300"
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 お問い合わせ
@@ -597,7 +605,7 @@ export default function FAQPage() {
               
               <Link
                 href="mailto:info@lival-ai.com"
-                className="inline-flex items-center px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-full hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
+                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-full hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
               >
                 メールで問い合わせ
               </Link>

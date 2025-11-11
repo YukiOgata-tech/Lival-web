@@ -119,7 +119,7 @@ export default function PricingPage() {
             />
             <FAQItem
               question="支払い方法は何がありますか？"
-              answer="クレジットカード・デビットカードでのお支払いが可能です。"
+              answer="クレジットカード・デビットカードでのお支払いが可能です。Apple PayやGoogle Payなどのモバイル決済には現在対応しておりません。"
             />
             <FAQItem
               question="いつでもキャンセルできますか？"

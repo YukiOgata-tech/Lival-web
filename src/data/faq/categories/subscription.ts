@@ -92,89 +92,51 @@ export const subscriptionArticles: FAQArticle[] = [
 
   {
     id: 'payment-methods',
-    title: '支払い方法について',
+    title: 'お支払い方法について',
     category: '料金・サブスクリプション',
     categoryId: 'subscription',
-    description: '利用可能な決済手段と支払いサイクルについて詳しく説明します。安全で便利な決済方法をご案内します。',
+    description: 'ご利用いただける決済手段と、お支払いの安全性についてご案内します。',
     isPopular: true,
-    lastUpdated: '2024-08-22',
-    estimatedReadTime: 4,
-    views: 523,
-    tags: ['決済', '支払い', 'クレジットカード'],
+    lastUpdated: '2024-11-11',
+    estimatedReadTime: 2,
+    tags: ['決済', '支払い', 'クレジットカード', 'セキュリティ'],
     relatedArticles: ['pricing-plans', 'cancellation'],
     content: [
-      createHeading('対応決済方法一覧', 1),
-      createParagraph('LIVAL AIでは、多様な決済方法に対応し、世界中のユーザーに便利で安全な決済体験を提供しています。'),
-
-      createHeading('クレジットカード決済'),
+      createHeading('ご利用可能なお支払い方法', 1),
+      createParagraph('現在、LIVAL AIでは以下のブランドのクレジットカードおよびデビットカードをご利用いただけます。'),
       createList([
-        '対応ブランド: Visa、Mastercard、JCB、American Express、Diners Club',
-        '国際カード: 海外発行のクレジットカードも利用可能',
-        'デビットカード: 銀行発行のデビットカードも対応',
-        'プリペイドカード: Visa・Mastercard準拠のプリペイドカード',
-        '自動更新: 毎月自動で決済されるため手続き不要',
-        'セキュリティ: PCI DSS準拠の高セキュリティ決済'
+        'Visa',
+        'Mastercard',
+        'JCB',
+        'American Express',
       ]),
+      createInfo('上記ブランドのロゴが付いたデビットカードやプリペイドカードも、基本的にはご利用いただけます。ただし、カード発行会社の仕様によってはご利用いただけない場合もございます。'),
 
-      createInfo('クレジットカード情報は暗号化されて安全に保存され、当社では一切保持しません。'),
-
-      createHeading('デジタル決済'),
+      createHeading('対応していないお支払い方法'),
+      createWarning('現在、以下の支払い方法には対応しておりません。ご不便をおかけしますが、ご了承ください。'),
       createList([
-        'PayPal: PayPalアカウントでの決済',
-        'Apple Pay: iOSアプリ内での決済',
-        'Google Pay: Androidアプリ内での決済',
-        'Amazon Pay: Amazonアカウントでの決済',
-        '楽天ペイ: 楽天会員の方は楽天ポイント利用可能'
-      ]),
-
-      createHeading('携帯電話決済'),
-      createList([
-        'ドコモ払い: ドコモユーザー向けキャリア決済',
-        'auかんたん決済: auユーザー向けキャリア決済',
-        'ソフトバンクまとめて支払い: ソフトバンクユーザー向け',
-        'ワイモバイルまとめて支払い: ワイモバイルユーザー向け',
-        '決済限度額: 各キャリアの設定限度額に準拠'
-      ]),
-
-      createHeading('コンビニ決済'),
-      createParagraph('全国のコンビニエンスストアで現金決済が可能です。'),
-      
-      createList([
-        '対応店舗: セブン-イレブン、ローソン、ファミリーマート、ミニストップ、デイリーヤマザキ',
-        '支払い方法: 店頭で現金支払い',
-        '決済手数料: 150円（税込）',
-        '支払い期限: 決済情報発行から7日間',
-        '注意事項: プレミアムプラン以上のみ対応'
+        'Apple Pay',
+        'Google Pay',
+        'PayPal',
+        'コンビニ決済',
+        '銀行振込',
+        'キャリア決済（ドコモ払い、auかんたん決済など）',
       ]),
 
       createHeading('決済のタイミング'),
       createList([
-        '月額プラン: 契約日と同じ日付で毎月自動決済',
-        '年間プラン: 契約日と同じ日付で毎年自動決済',
-        '無料体験: 体験期間終了日の翌日に初回決済',
-        'プラン変更: 変更時に差額を即座に決済',
-        '追加購入: 画像解析追加等は即座に決済'
+        '月額プラン: ご契約日と同じ日付で毎月自動的に決済されます。',
+        '年間プラン: ご契約日と同じ日付で毎年自動的に決済されます。',
+        '無料体験: 体験期間が終了した翌日に初回の決済が行われます。',
       ]),
 
-      createHeading('セキュリティ対策'),
+      createHeading('セキュリティについて'),
+      createParagraph('LIVAL AIでは、決済代行サービスとしてStripe社を利用しており、お客様のカード情報を安全に取り扱っています。'),
       createList([
-        'PCI DSS準拠: 国際的なセキュリティ基準に完全準拠',
-        'SSL暗号化: 全ての決済通信をSSL暗号化で保護',
-        '不正検知: AIによる不正利用検知システム',
-        '3Dセキュア: Visa・Mastercardの本人認証に対応',
-        '情報保存: クレジットカード情報は当社サーバーに保存せず',
-        '監査: 定期的な外部セキュリティ監査実施'
+        'PCI DSS準拠: Stripeは国際的なセキュリティ基準であるPCI DSSに完全に準拠しています。',
+        '情報の非保持化: お客様のクレジットカード情報は、当社のサーバーには一切保存・経由されません。すべての情報はStripeによって安全に管理されます。',
+        '通信の暗号化: 決済に関するすべての通信は、SSL/TLSによって暗号化されています。',
       ]),
-
-      createHeading('よくある質問'),
-      createParagraph('**Q: クレジットカードの変更方法は？**'),
-      createParagraph('A: 設定画面の「支払い方法」から新しいカード情報を登録してください。'),
-      
-      createParagraph('**Q: 決済日の変更はできますか？**'),
-      createParagraph('A: 決済日は契約開始日に基づいているため、原則変更できません。'),
-      
-      createParagraph('**Q: 海外のクレジットカードは使えますか？**'),
-      createParagraph('A: はい。Visa・Mastercardであれば世界中のカードが利用可能です。')
     ]
   },
 

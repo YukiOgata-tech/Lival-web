@@ -46,6 +46,7 @@ CLAUDE.md
 /codex/
 AGENT.md
 docs/
+GEMINI.md
 
 # security-related
 firestore.rules
