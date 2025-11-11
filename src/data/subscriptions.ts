@@ -14,7 +14,9 @@ export const SUBSCRIPTION_PLANS: Record<string, PricingPlanDetail> = {
     description: 'Web版限定・基本機能のみ',
     features: [
       'Web版基本機能',
-      '限定的なAI利用'
+      '限定的なAI利用',
+      'アプリ利用時に広告が表示されます',
+      'パーソナライズ機能が制限され、学習効果が低下する可能性があります'
     ],
     restrictions: [
       'モバイルアプリ利用不可',

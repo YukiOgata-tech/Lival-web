@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
 import VerifyEmailBanner from '@/components/account/VerifyEmailBanner'
 import { SUBSCRIPTION_PLANS, formatPrice } from '@/data/subscriptions'
-import { Check, Sparkles, Zap } from 'lucide-react'
+import { Check, Sparkles, Zap, ChevronDown } from 'lucide-react'
 
 export default function PricingPage() {
   const router = useRouter()
@@ -39,30 +40,29 @@ export default function PricingPage() {
   const currentPlan = userData?.subscription?.plan || 'free_web'
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* ヘッダー */}
-        {/* ヘッダー */}
-        <div className="text-center mb-6 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
             あなたに最適なプランを選択
           </h1>
-          <p className="text-base sm:text-xl text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600">
             AI学習サポートで、最短の学習の近道
           </p>
         </div>
         {/* 未認証ユーザー向けバナー */}
-        <div className="mb-4 sm:mb-6">
+        <div className="mb-6 sm:mb-8">
           <VerifyEmailBanner />
         </div>
 
         {/* 現在のプラン表示 */}
         {currentPlan !== 'free_web' && (
-          <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
-            <p className="text-blue-800 mb-2">
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+            <p className="text-blue-800 mb-1.5 text-sm sm:text-base">
               現在のプラン: <span className="font-bold">{SUBSCRIPTION_PLANS[currentPlan]?.name}</span>
             </p>
-            <p className="text-sm text-blue-700">
+            <p className="text-xs sm:text-sm text-blue-700">
               プラン変更をご希望の場合は、プランカードをクリックしてサブスクリプション管理ページにアクセスしてください
             </p>
           </div>
@@ -75,7 +75,7 @@ export default function PricingPage() {
             plan={SUBSCRIPTION_PLANS.basic}
             isCurrentPlan={currentPlan === 'basic'}
             onSelect={() => handleSubscribe('basic')}
-            icon={<Zap className="w-6 h-6 text-blue-600" />}
+            icon={<Zap className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />}
           />
 
           {/* プレミアムプラン */}
@@ -85,22 +85,22 @@ export default function PricingPage() {
             onSelect={() => handleSubscribe('premium')}
             isPopular
             hasTrial={!userData?.subscription?.hasUsedTrial}
-            icon={<Sparkles className="w-6 h-6 text-purple-600" />}
+            icon={<Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />}
           />
         </div>
 
         {/* フリープランの説明 */}
-        <div className="mt-8 sm:mt-12 p-5 sm:p-6 bg-gray-100 rounded-lg max-w-3xl mx-auto">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">
+        <div className="mt-8 sm:mt-10 p-4 sm:p-5 bg-gray-100 rounded-lg max-w-3xl mx-auto">
+          <h3 className="text-base font-semibold text-gray-900 mb-2">
             フリープランをご利用中の方へ
           </h3>
-          <p className="text-gray-700 text-sm sm:text-base mb-3 sm:mb-4">
+          <p className="text-gray-700 text-sm mb-3">
             {SUBSCRIPTION_PLANS.free_web.description}
           </p>
-          <ul className="space-y-1.5 sm:space-y-2">
+          <ul className="space-y-1.5">
             {SUBSCRIPTION_PLANS.free_web.features?.map((feature, index) => (
-              <li key={index} className="flex items-start text-gray-700">
-                <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+              <li key={index} className="flex items-start text-gray-700 text-sm">
+                <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                 <span>{feature}</span>
               </li>
             ))}
@@ -108,14 +108,14 @@ export default function PricingPage() {
         </div>
 
         {/* FAQ */}
-        <div className="mt-16 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+        <div className="mt-12 sm:mt-16 max-w-3xl mx-auto">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 text-center">
             よくある質問
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <FAQItem
               question="プレミアムプランはいつ利用できますか？"
-              answer="プレミアムプランは現在準備中で、近日中に公開予定です。公開までもうしばらくお待ちください。初回リリース時には3無料トライアル期間を提供する予定です。"
+              answer="プレミアムプランは現在準備中で、近日中に公開予定です。公開までもうしばらくお待ちください。リリース時には3日間無料トライアル期間を提供する予定です。"
             />
             <FAQItem
               question="支払い方法は何がありますか？"
@@ -165,48 +165,48 @@ function PlanCard({ plan, isCurrentPlan, isPopular, hasTrial, onSelect, icon }: 
     >
       {/* 近日公開予定バッジ */}
       {isComingSoon && (
-        <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-4 py-1 text-sm font-semibold rounded-bl-lg z-10">
+        <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-3 py-1 text-xs font-semibold rounded-bl-lg z-10">
           🔜 近日公開予定
         </div>
       )}
 
       {/* 人気バッジ */}
       {isPopular && !isComingSoon && (
-        <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 text-sm font-semibold rounded-bl-lg">
+        <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 text-xs font-semibold rounded-bl-lg">
           人気 No.1
         </div>
       )}
 
       {/* トライアルバッジ */}
       {hasTrial && !isComingSoon && (
-        <div className="absolute top-0 left-0 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-1 text-sm font-semibold rounded-br-lg">
+        <div className="absolute top-0 left-0 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 text-xs font-semibold rounded-br-lg">
           🎁 3日間無料
         </div>
       )}
 
-      <div className="p-5 sm:p-8">
+      <div className="p-5 sm:p-6">
         {/* アイコンとプラン名 */}
-        <div className="flex items-center mb-3 sm:mb-4">
+        <div className="flex items-center mb-3">
           {icon}
-          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 ml-3">{plan.name}</h3>
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 ml-2.5">{plan.name}</h3>
         </div>
 
         {/* 価格 */}
-        <div className="mb-4 sm:mb-6">
+        <div className="mb-4">
           <div className="flex items-baseline">
-            <span className="text-3xl sm:text-5xl font-extrabold text-gray-900">
+            <span className="text-3xl sm:text-4xl font-extrabold text-gray-900">
               {plan.price.toLocaleString()}
             </span>
-            <span className="text-gray-600 ml-2 text-sm sm:text-base">/月</span>
+            <span className="text-gray-600 ml-1.5 text-sm">/月</span>
           </div>
-          <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">{plan.description}</p>
+          <p className="text-gray-600 mt-1 text-sm">{plan.description}</p>
         </div>
 
         {/* 機能リスト */}
-        <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8">
+        <ul className="space-y-2 mb-6">
           {plan.features?.map((feature, index) => (
-            <li key={index} className="flex items-start">
-              <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
+            <li key={index} className="flex items-start text-sm">
+              <Check className="w-4 h-4 text-green-500 mr-2.5 flex-shrink-0 mt-0.5" />
               <span className="text-gray-700">{feature}</span>
             </li>
           ))}
@@ -216,7 +216,7 @@ function PlanCard({ plan, isCurrentPlan, isPopular, hasTrial, onSelect, icon }: 
         <button
           onClick={isComingSoon ? undefined : onSelect}
           disabled={isCurrentPlan || isComingSoon}
-          className={`w-full py-3 px-6 rounded-lg font-semibold text-lg transition-all ${
+          className={`w-full py-2.5 px-5 rounded-lg font-semibold text-base sm:text-lg transition-all ${
             isComingSoon
               ? 'bg-gradient-to-r from-orange-100 to-amber-100 text-orange-800 cursor-not-allowed border-2 border-orange-300'
               : isCurrentPlan
@@ -231,7 +231,7 @@ function PlanCard({ plan, isCurrentPlan, isPopular, hasTrial, onSelect, icon }: 
 
         {/* 近日公開予定の説明 */}
         {isComingSoon && (
-          <p className="text-sm text-center text-gray-600 mt-3">
+          <p className="text-xs text-center text-gray-600 mt-2.5">
             プレミアムプランは現在準備中です。<br />
             公開までもうしばらくお待ちください。
           </p>
@@ -247,13 +247,36 @@ interface FAQItemProps {
 }
 
 function FAQItem({ question, answer }: FAQItemProps) {
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
-    <details className="bg-white p-6 rounded-lg border border-gray-200">
-      <summary className="font-semibold text-gray-900 cursor-pointer">
-        {question}
-      </summary>
-      <p className="mt-3 text-gray-700">{answer}</p>
-    </details>
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <button
+        className="w-full flex justify-between items-center text-left p-4 sm:p-5"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className="font-semibold text-gray-900 text-sm sm:text-base">{question}</span>
+        <ChevronDown
+          className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+          >
+            <div className="px-4 sm:px-5 pb-4 sm:pb-5">
+              <p className="text-gray-700 text-sm">{answer}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
 
