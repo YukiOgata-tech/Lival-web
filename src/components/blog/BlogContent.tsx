@@ -5,11 +5,13 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Blog, UserRole } from '@/lib/types/blog'
+import { useAuth } from '@/hooks/useAuth'
 import { ViewCount } from './ViewCount'
 import { ViewCounterPing } from './ViewCounterPing'
 import TeaserOverlay from './TeaserOverlay'
 import SocialShare from './SocialShare'
 import ArticleContent from './ArticleContent'
+import { BlogService } from '@/lib/firebase/blog'
 import {
   ArrowLeft,
   Calendar,
@@ -24,49 +26,21 @@ import {
 } from 'lucide-react'
 
 interface BlogContentProps {
-  slug: string
+  initialBlog: Blog
 }
 
-interface BlogDetailResponse {
-  blog: Blog
-  isTeaser: boolean
-  canAccess: boolean
-  userRole: UserRole
-}
+export default function BlogContent({ initialBlog }: BlogContentProps) {
+  const { user, userData } = useAuth()
+  const [blog, setBlog] = useState<Blog>(initialBlog)
 
-export default function BlogContent({ slug }: BlogContentProps) {
-  const [data, setData] = useState<BlogDetailResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  // Determine user role
+  const userRole: UserRole = userData?.subscription?.plan === 'premium' || userData?.subscription?.plan === 'basic'
+    ? 'sub'
+    : user ? 'free' : 'guest'
 
-  useEffect(() => {
-    fetchBlog()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug])
-
-  const fetchBlog = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const response = await fetch(`/api/blogs/${slug}`)
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('記事が見つかりませんでした')
-        }
-        throw new Error('記事の読み込みに失敗しました')
-      }
-
-      const blogData: BlogDetailResponse = await response.json()
-      setData(blogData)
-
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'エラーが発生しました')
-    } finally {
-      setLoading(false)
-    }
-  }
+  // Determine access rights
+  const canAccess = BlogService.canAccessFullContent(blog, userRole)
+  const isTeaser = blog.visibility === 'teaser'
 
   const formatDate = (date: Date | string | { _seconds?: number; seconds?: number; _nanoseconds?: number; nanoseconds?: number }) => {
     let d: Date
@@ -124,53 +98,6 @@ export default function BlogContent({ slug }: BlogContentProps) {
     }
     return null
   }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 py-12">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 rounded mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded mb-6 w-1/2"></div>
-              <div className="space-y-3">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !data) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              {error || '記事が見つかりません'}
-            </h1>
-            <p className="text-gray-600 mb-6">
-              お探しの記事は削除されたか、URLが正しくない可能性があります。
-            </p>
-            <Link
-              href="/blog"
-              className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              ブログ一覧に戻る
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  const { blog, isTeaser, canAccess, userRole } = data
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -232,10 +159,12 @@ export default function BlogContent({ slug }: BlogContentProps) {
                   <Calendar className="w-4 h-4" />
                   <span>{formatDate(blog.createdAt)}</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4" />
-                  <span>{blog.readTimeMins}分で読める</span>
-                </div>
+                {blog.readTimeMins > 0 && (
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4" />
+                    <span>{blog.readTimeMins}分で読める</span>
+                  </div>
+                )}
                 <ViewCount count={blog.viewCount} />
               </div>
 
@@ -301,7 +230,7 @@ export default function BlogContent({ slug }: BlogContentProps) {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="p-5 sm:p-8"
             >
-              <ArticleContent content={blog.content || blog.excerpt} />
+              <ArticleContent content={canAccess ? blog.content || '' : blog.excerpt} />
             </motion.div>
 
             {/* Teaser Overlay */}

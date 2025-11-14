@@ -256,10 +256,12 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
                         <Calendar className="w-4 h-4" />
                         <span>{formatDate(blog.createdAt)}</span>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{blog.readTimeMins}分</span>
-                      </div>
+                      {blog.readTimeMins > 0 && (
+                        <div className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{blog.readTimeMins}分で読める</span>
+                        </div>
+                      )}
                       <ViewCount count={blog.viewCount} />
                     </div>
                   </div>

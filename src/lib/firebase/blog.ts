@@ -1,4 +1,5 @@
 // src/lib/firebase/blog.ts
+import { cache } from 'react'
 import { 
   collection, 
   doc, 
@@ -37,10 +38,19 @@ export const reviewTemplatesCollection = collection(db, 'review_templates')
 
 // Blog CRUD operations
 export class BlogService {
+  // Helper: Calculate read time
+  private static _calculateReadTime(content: string | undefined): number {
+    if (!content) return 0
+    const wordsPerMinute = 500 // Average reading speed
+    const textLength = content.replace(/<[^>]+>/g, '').length // Strip HTML tags
+    return Math.ceil(textLength / wordsPerMinute)
+  }
+
   // Create a new blog
   static async createBlog(blogData: Partial<Blog>, authorId: string): Promise<string> {
     const blogRef = doc(blogsCollection)
     const slug = await this.generateUniqueSlug(blogData.title || '')
+    const readTimeMins = this._calculateReadTime(blogData.content)
     
     const blog: Partial<Blog> = {
       ...blogData,
@@ -50,6 +60,7 @@ export class BlogService {
       status: 'draft',
       viewCount: 0,
       version: 1,
+      readTimeMins,
       createdAt: (blogData as any)?.createdAt || new Date(),
       updatedAt: new Date(),
       approvedAt: null,
@@ -74,10 +85,15 @@ export class BlogService {
       throw new Error('Blog not found')
     }
 
-    const updatedData = {
+    const updatedData: Partial<Blog> & { updatedAt: Date; version: any } = {
       ...updates,
       updatedAt: new Date(),
       version: increment(1)
+    }
+
+    // Recalculate read time if content is updated
+    if (updates.content) {
+      updatedData.readTimeMins = this._calculateReadTime(updates.content)
     }
 
     await updateDoc(blogRef, updatedData)
@@ -353,3 +369,6 @@ export class ReviewTemplateService {
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ReviewTemplate))
   }
 }
+
+// Cached version of getBlogBySlug
+export const getCachedBlogBySlug = cache(BlogService.getBlogBySlug)
