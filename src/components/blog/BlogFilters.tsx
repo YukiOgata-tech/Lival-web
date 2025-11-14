@@ -105,8 +105,8 @@ export default function BlogFilters({
         animate={{ height: isExpanded ? 'auto' : 0 }}
         className="overflow-hidden lg:!h-auto"
       >
-        {/* Search */}
-        <div className="mb-6">
+        {/* Search (desktop sidebar) */}
+        <div className="mb-6 hidden lg:block">
           <form onSubmit={handleSearch} className="space-y-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />

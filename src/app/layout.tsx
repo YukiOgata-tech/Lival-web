@@ -5,6 +5,7 @@ import "./globals.css";
 import { AuthProvider } from '@/hooks/useAuth'
 import { Metadata } from 'next'
 import { ConditionalLayout } from '@/components/layout/ConditionalLayout'
+import BlogCtaAuthButton from '@/components/blog/BlogCtaAuthButton'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://lival-ai.com'),
@@ -265,6 +266,7 @@ export default function RootLayout({
           <ConditionalLayout>
             {children}
           </ConditionalLayout>
+          <BlogCtaAuthButton />
         </AuthProvider>
       </body>
     </html>

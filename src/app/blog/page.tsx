@@ -2,6 +2,7 @@
 import { Suspense } from 'react'
 import BlogList from '@/components/blog/BlogList'
 import BlogFilters from '@/components/blog/BlogFilters'
+import BlogSearchBar from '@/components/blog/BlogSearchBar'
 import Link from 'next/link'
 import { BookOpen, Search, Clock, PenTool, ArrowRight } from 'lucide-react'
 import { BLOG_CATEGORIES } from '@/data/blogCategories'
@@ -26,11 +27,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: '教育特化ブログ | Lival AI',
     description: '専門家やインフルエンサーによる質の高い教育コンテンツ。学習に役立つ実践的な情報をお届けします。',
-    url: 'https://www.lival.dev/blog',
+    url: 'https://www.lival-ai.com/blog',
     type: 'website',
     images: [
       {
-        url: 'https://www.lival-ai.com/public/images/og-image.png',
+        url: 'https://www.lival-ai.com/public/images/lival-blog.png',
         width: 1200,
         height: 630,
         alt: 'Lival AI Blog',
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '教育特化ブログ | Lival AI',
     description: '専門家やインフルエンサーによる質の高い教育コンテンツ。学習に役立つ実践的な情報をお届けします。',
-    images: ['https://www.lival.dev/images/og-image.png'],
+    images: ['https://www.lival-ai.com/public/images/lival-blog.png'],
   },
 }
 
@@ -101,7 +102,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
-          {/* Sidebar Filters */}
+          {/* Sidebar Filters (desktop only) */}
           <aside className="hidden lg:block lg:col-span-1">
             <div className="sticky top-24">
               <Suspense fallback={<div>フィルターを読み込み中...</div>}>
@@ -117,6 +118,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
           {/* Blog List */}
           <main className="lg:col-span-3">
+            {/* Mobile search bar at top */}
+            <div className="mb-6 lg:hidden">
+              <BlogSearchBar />
+            </div>
             {(q || category || tag) && (
               <div className="mb-6 sm:mb-8 p-3 sm:p-4 bg-blue-50 border border-blue-300 rounded-lg">
                 <div className="flex items-center space-x-2 text-blue-800 text-sm sm:text-base">

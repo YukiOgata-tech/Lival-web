@@ -32,6 +32,7 @@ interface BlogContentProps {
 export default function BlogContent({ initialBlog }: BlogContentProps) {
   const { user, userData } = useAuth()
   const [blog, setBlog] = useState<Blog>(initialBlog)
+  const [helpfulState, setHelpfulState] = useState<'idle' | 'yes'>('idle')
 
   // Determine user role
   const userRole: UserRole = userData?.subscription?.plan === 'premium' || userData?.subscription?.plan === 'basic'
@@ -245,10 +246,24 @@ export default function BlogContent({ initialBlog }: BlogContentProps) {
               <div className="flex items-center space-x-3 sm:space-x-4">
                 <span className="text-sm text-gray-600">この記事は役に立ちましたか？</span>
                 <div className="flex items-center space-x-2">
-                  <button className="flex items-center space-x-1 px-3 py-1 text-sm text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
-                    <Star className="w-4 h-4" />
-                    <span>役に立った</span>
-                  </button>
+                  <motion.button
+                    type="button"
+                    onClick={() => setHelpfulState('yes')}
+                    whileTap={{ scale: 0.95 }}
+                    animate={helpfulState === 'yes' ? { scale: 1.05 } : { scale: 1 }}
+                    className={`flex items-center space-x-1 px-3 py-1 text-sm rounded-lg transition-colors ${
+                      helpfulState === 'yes'
+                        ? 'text-green-700 bg-green-50'
+                        : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
+                    }`}
+                  >
+                    <Star
+                      className={`w-4 h-4 ${
+                        helpfulState === 'yes' ? 'fill-green-500 text-green-500' : ''
+                      }`}
+                    />
+                    <span>{helpfulState === 'yes' ? 'ありがとうございます！' : '役に立った'}</span>
+                  </motion.button>
                 </div>
               </div>
               
