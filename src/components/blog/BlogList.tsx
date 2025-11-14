@@ -3,10 +3,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
 import { Blog } from '@/lib/types/blog'
 import { ViewCount } from './ViewCount'
-import { SocialShareCompact } from './SocialShare'
 import { 
   Calendar, 
   User, 
@@ -17,7 +17,20 @@ import {
   Tag as TagIcon
 } from 'lucide-react'
 
+const SocialShareCompact = dynamic(
+  () => import('./SocialShare').then((m) => m.SocialShareCompact),
+  { ssr: false }
+)
+
+interface PaginationState {
+  currentPage: number
+  hasMore: boolean
+  totalCount: number
+}
+
 interface BlogListProps {
+  initialBlogs?: (Blog & { isTeaser: boolean })[]
+  initialPagination?: PaginationState
   category?: string
   tag?: string
   query?: string
@@ -26,24 +39,38 @@ interface BlogListProps {
 
 interface BlogListResponse {
   blogs: (Blog & { isTeaser: boolean })[]
-  pagination: {
-    currentPage: number
-    hasMore: boolean
-    totalCount: number
-  }
+  pagination: PaginationState
 }
 
-export default function BlogList({ category, tag, query, page = 1 }: BlogListProps) {
-  const [blogs, setBlogs] = useState<(Blog & { isTeaser: boolean })[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [pagination, setPagination] = useState({
+export default function BlogList({ 
+  initialBlogs = [], 
+  initialPagination,
+  category, 
+  tag, 
+  query, 
+  page = 1 
+}: BlogListProps) {
+  const [blogs, setBlogs] = useState<(Blog & { isTeaser: boolean })[]>(initialBlogs)
+  const [pagination, setPagination] = useState<PaginationState>(initialPagination || {
     currentPage: 1,
     hasMore: false,
     totalCount: 0
   })
+  const [loading, setLoading] = useState(initialBlogs.length === 0)
+  const [error, setError] = useState<string | null>(null)
+
+  const isFirstPageLoad = page === 1 && !category && !tag && !query
 
   useEffect(() => {
+    // If it's the first page load and we have initial data, don't fetch again.
+    if (isFirstPageLoad && initialBlogs.length > 0) {
+      if (initialPagination) {
+        setPagination(initialPagination);
+      }
+      setLoading(false)
+      return
+    }
+    
     fetchBlogs()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, tag, query, page])
@@ -58,7 +85,7 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
       if (tag) params.append('tag', tag)
       if (query) params.append('q', query)
       params.append('page', page.toString())
-      params.append('pageSize', '12')
+      params.append('pageSize', '15')
 
       const response = await fetch(`/api/blogs?${params}`)
       
@@ -179,7 +206,7 @@ export default function BlogList({ category, tag, query, page = 1 }: BlogListPro
   if (loading) {
     return (
       <div className="space-y-6">
-        {[...Array(6)].map((_, i) => (
+        {[...Array(15)].map((_, i) => (
           <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <div className="animate-pulse">
               <div className="h-6 bg-gray-200 rounded mb-3"></div>

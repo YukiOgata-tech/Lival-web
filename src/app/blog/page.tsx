@@ -1,14 +1,15 @@
 // src/app/blog/page.tsx
-'use client'
-import { Suspense, use, useState } from 'react'
+import { Suspense } from 'react'
 import BlogList from '@/components/blog/BlogList'
 import BlogFilters from '@/components/blog/BlogFilters'
-import { useAuth } from '@/hooks/useAuth'
 import Link from 'next/link'
 import { BookOpen, Search, Clock, PenTool, ArrowRight } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { BLOG_CATEGORIES } from '@/data/blogCategories'
+import { BlogService } from '@/lib/firebase/blog'
+import { Metadata } from 'next'
 
+// ISR setting: revalidate every 60 seconds for the main blog list page
+export const revalidate = 60
 
 interface BlogPageProps {
   searchParams: Promise<{
@@ -19,21 +20,53 @@ interface BlogPageProps {
   }>
 }
 
-export default function BlogPage({ searchParams }: BlogPageProps) {
-  const { user, userData } = useAuth()
-  const params = use(searchParams)
-  const router = useRouter()
+export const metadata: Metadata = {
+  title: '教育特化ブログ | Lival AI',
+  description: '専門家やインフルエンサーによる質の高い教育コンテンツ。学習に役立つ実践的な情報をお届けします。',
+  openGraph: {
+    title: '教育特化ブログ | Lival AI',
+    description: '専門家やインフルエンサーによる質の高い教育コンテンツ。学習に役立つ実践的な情報をお届けします。',
+    url: 'https://www.lival.dev/blog',
+    type: 'website',
+    images: [
+      {
+        url: 'https://www.lival-ai.com/public/images/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Lival AI Blog',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '教育特化ブログ | Lival AI',
+    description: '専門家やインフルエンサーによる質の高い教育コンテンツ。学習に役立つ実践的な情報をお届けします。',
+    images: ['https://www.lival.dev/images/og-image.png'],
+  },
+}
 
-  // Mobile toolbar state (compact search + quick chips)
-  const [mobileQuery, setMobileQuery] = useState(params.q || '')
-  
-  // 共有カテゴリ定義（src/data/blogCategories）
+// This is now a Server Component
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const { category, tag, q, page } = await searchParams
+  const currentPage = parseInt(page || '1')
+
+  const isFirstPage = currentPage === 1 && !category && !tag && !q
+
+  const initialResult = isFirstPage
+    ? await BlogService.getBlogs({
+        page: 1,
+        pageSize: 15,
+        status: ['approved'],
+      })
+    : { blogs: [], lastDoc: null, hasMore: false }
+
+  const initialPagination = {
+    currentPage: 1,
+    hasMore: initialResult.hasMore,
+    totalCount: 0, // totalCount is not available from getBlogs, so we default to 0 for SSG
+  }
+
   const categories = BLOG_CATEGORIES
-  const currentPage = parseInt(params.page || '1')
-  
-  // Check if user is premium (not free plan)
-  const isFreePlan = !userData || userData.subscription.plan === 'free_web'
-  const isPremiumUser = user && userData && !isFreePlan
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -41,19 +74,6 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-6 sm:py-12">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center relative">
-            {/* Blog posting button for premium users */}
-            {isPremiumUser && (
-              <div className="hidden sm:block absolute top-0 right-0">
-                <Link
-                  href="/submit"
-                  className="inline-flex items-center bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full hover:bg-white/30 transition-all duration-300 font-medium border border-white/30"
-                >
-                  <PenTool className="w-5 h-5 mr-2" />
-                  記事を投稿
-                </Link>
-              </div>
-            )}
-            
             <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-full mb-3 sm:mb-5">
               <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
             </div>
@@ -73,53 +93,6 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </div>
-            </div>
-          </div>
-      </div>
-
-      <div className="lg:hidden sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-gray-300">
-        <div className="max-w-6xl mx-auto px-4 py-3">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              const q = mobileQuery.trim()
-              const sp = new URLSearchParams()
-              if (q) sp.set('q', q)
-              router.push(sp.toString() ? `/blog?${sp.toString()}` : '/blog')
-            }}
-          >
-            <div className="flex items-center gap-2 border border-gray-500 rounded-lg px-3 py-2 bg-white">
-              <Search className="w-4 h-4 text-gray-500" />
-              <input
-                value={mobileQuery}
-                onChange={(e) => setMobileQuery(e.target.value)}
-                placeholder="記事を検索"
-                className="w-full outline-none text-sm"
-              />
-              {mobileQuery && (
-                <button
-                  aria-label="検索クリア"
-                  type="button"
-                  onClick={() => setMobileQuery('')}
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          </form>
-
-          {/* popular tags as quick chips */}
-          <div className="mt-3 overflow-x-auto no-scrollbar flex gap-2">
-            {['学習法','記憶術','集中力','モチベーション','時間管理','受験対策','英語学習','数学','読書法'].map(tag => (
-              <button
-                key={tag}
-                onClick={() => router.push(`/blog?${new URLSearchParams({ q: tag }).toString()}`)}
-                className="shrink-0 px-3 py-1.5 rounded-full text-s border border-gray-400 bg-gray-50 text-gray-800"
-              >
-                #{tag}
-              </button>
-            ))}
           </div>
         </div>
       </div>
@@ -134,9 +107,9 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
               <Suspense fallback={<div>フィルターを読み込み中...</div>}>
                 <BlogFilters 
                   categories={categories}
-                  currentCategory={params.category}
-                  currentTag={params.tag}
-                  currentQuery={params.q}
+                  currentCategory={category}
+                  currentTag={tag}
+                  currentQuery={q}
                 />
               </Suspense>
             </div>
@@ -144,15 +117,14 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
 
           {/* Blog List */}
           <main className="lg:col-span-3">
-            {/* Search Summary */}
-            {(params.q || params.category || params.tag) && (
+            {(q || category || tag) && (
               <div className="mb-6 sm:mb-8 p-3 sm:p-4 bg-blue-50 border border-blue-300 rounded-lg">
                 <div className="flex items-center space-x-2 text-blue-800 text-sm sm:text-base">
                   <Search className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span className="font-medium">
-                    {params.q && `検索: "${params.q}"`}
-                    {params.category && `カテゴリ: ${params.category}`}
-                    {params.tag && `タグ: ${params.tag}`}
+                    {q && `検索: "${q}"`}
+                    {category && `カテゴリ: ${category}`}
+                    {tag && `タグ: ${tag}`}
                   </span>
                 </div>
               </div>
@@ -161,7 +133,7 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
             <Suspense 
               fallback={
                 <div className="space-y-6">
-                  {[...Array(6)].map((_, i) => (
+                  {[...Array(15)].map((_, i) => (
                     <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
                       <div className="animate-pulse">
                         <div className="h-6 bg-gray-200 rounded mb-3"></div>
@@ -169,14 +141,16 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
                         <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                       </div>
                     </div>
-                  ))}
+               ))}
                 </div>
               }
             >
               <BlogList 
-                category={params.category}
-                tag={params.tag}
-                query={params.q}
+                initialBlogs={initialResult.blogs}
+                initialPagination={isFirstPage ? initialPagination : undefined}
+                category={category}
+                tag={tag}
+                query={q}
                 page={currentPage}
               />
             </Suspense>
@@ -184,33 +158,35 @@ export default function BlogPage({ searchParams }: BlogPageProps) {
         </div>
       </div>
 
-      {/* CTA Section for Non-Subscribers */}
+      {/* CTA Section */}
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 py-8 sm:py-16">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center rounded-2xl bg-white/70 backdrop-blur-sm border border-gray-200/70 shadow-sm p-5 sm:p-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
-            全ての記事を読むには
-          </h2>
-          <p className="text-sm sm:text-base leading-relaxed text-gray-600 mb-6 sm:mb-8">
-            プレミアム記事や限定コンテンツにアクセスするには、
-            サブスクリプションプランにご加入ください。
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
-            <a
-              href="/pricing"
-              className="inline-flex items-center justify-center w-full sm:w-auto max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-semibold"
-            >
-              <BookOpen className="w-5 h-5 mr-2" />
-              サブスクリプション詳細
-            </a>
-            <div className="flex items-center text-xs sm:text-sm text-gray-600">
-              <Clock className="w-4 h-4 mr-1" />
-              いつでもキャンセル可能
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
+              全ての記事を読むには
+            </h2>
+            <p className="text-sm sm:text-base leading-relaxed text-gray-600 mb-6 sm:mb-8">
+              プレミアム記事や限定コンテンツにアクセスするには、
+              サブスクリプションプランにご加入ください。
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
+              <Link
+                href="/pricing"
+                className="inline-flex items-center justify-center w-full sm:w-auto max-w-xs bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all duration-300 font-semibold"
+              >
+                <BookOpen className="w-5 h-5 mr-2" />
+                サブスクリプション詳細
+              </Link>
+              <Link
+                href="/login"
+                className="text-purple-600 hover:text-purple-700 font-medium"
+              >
+                既にアカウントをお持ちですか？ログイン
+              </Link>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   )
 }
