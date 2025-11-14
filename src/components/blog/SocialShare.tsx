@@ -265,73 +265,56 @@ export function SocialShareCompact({
   url, 
   title, 
   description, 
-  hashtags = [], 
-  via,
   className = '' 
 }: SocialShareProps) {
   const [copied, setCopied] = useState(false)
 
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (error) {
-      console.error('Failed to copy URL:', error)
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title,
+          text: description,
+          url,
+        })
+      } catch (error) {
+        console.error('Native share failed:', error)
+      }
+    } else {
+      // Fallback for desktop browsers
+      try {
+        await navigator.clipboard.writeText(url)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      } catch (error) {
+        console.error('Failed to copy URL:', error)
+        alert('リンクのコピーに失敗しました。')
+      }
     }
-  }
-
-  const getShareUrl = (platform: string) => {
-    const platforms: Record<string, string> = {
-      twitter: sharePlatforms[0].getUrl({ url, title, description, hashtags, via }),
-      facebook: sharePlatforms[1].getUrl({ url, title, description, hashtags, via }),
-      linkedin: sharePlatforms[2].getUrl({ url, title, description, hashtags, via }),
-      line: sharePlatforms[3].getUrl({ url, title, description, hashtags, via })
-    }
-    return platforms[platform]
-  }
-
-  const handleQuickShare = (platform: string) => {
-    const shareUrl = getShareUrl(platform)
-    window.open(shareUrl, '_blank', 'width=600,height=400')
   }
 
   return (
-    <div className={`flex items-center space-x-2 ${className}`}>
+    <div className={`flex items-center ${className}`}>
       <button
-        onClick={() => handleQuickShare('twitter')}
-        className="p-2 text-gray-600 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-        title="Twitterで共有"
-      >
-        <Twitter className="w-4 h-4" />
-      </button>
-      
-      <button
-        onClick={() => handleQuickShare('facebook')}
-        className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-        title="Facebookで共有"
-      >
-        <Facebook className="w-4 h-4" />
-      </button>
-      
-      <button
-        onClick={() => handleQuickShare('line')}
-        className="p-2 text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-lg transition-colors"
-        title="LINEで共有"
-      >
-        <MessageCircle className="w-4 h-4" />
-      </button>
-      
-      <button
-        onClick={handleCopyLink}
-        className={`p-2 rounded-lg transition-colors ${
+        onClick={handleShare}
+        className={`p-2 rounded-lg transition-colors flex items-center space-x-2 ${
           copied 
             ? 'text-green-600 bg-green-50' 
-            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+            : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
         }`}
-        title="リンクをコピー"
+        title={navigator.share ? '共有' : 'リンクをコピー'}
       >
-        {copied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
+        {copied ? (
+          <>
+            <Check className="w-5 h-5" />
+            <span className="text-sm font-medium hidden sm:inline">コピーしました</span>
+          </>
+        ) : (
+          <>
+            <Share2 className="w-5 h-5" />
+            <span className="text-sm font-medium hidden sm:inline">共有</span>
+          </>
+        )}
       </button>
     </div>
   )

@@ -8,7 +8,7 @@ import { Blog, UserRole } from '@/lib/types/blog'
 import { ViewCount } from './ViewCount'
 import { ViewCounterPing } from './ViewCounterPing'
 import TeaserOverlay from './TeaserOverlay'
-import { SocialShareCompact } from './SocialShare'
+import SocialShare from './SocialShare'
 import ArticleContent from './ArticleContent'
 import {
   ArrowLeft,
@@ -205,7 +205,7 @@ export default function BlogContent({ slug }: BlogContentProps) {
                   {getStatusBadge(blog)}
                 </div>
                 <div className="flex items-center space-x-4">
-                  <SocialShareCompact
+                  <SocialShare
                     url={typeof window !== 'undefined' ? window.location.href : ''}
                     title={blog.title}
                     description={blog.excerpt}
