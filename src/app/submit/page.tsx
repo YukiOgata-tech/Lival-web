@@ -17,16 +17,16 @@ export default async function SubmitPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-16">
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-8 sm:py-16 ">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-2 sm:mb-6">
               <PenTool className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-3xl md:text-5xl font-bold mb-2 sm:mb-4">
               ブログ記事を投稿
             </h1>
-            <p className="text-xl text-purple-100 max-w-3xl mx-auto">
+            <p className="text-md sm:text-xl text-purple-100 max-w-3xl mx-auto">
               あなたの知識と経験を共有し、学習者の役に立つコンテンツを作成しましょう。
               すべての記事は品質確保のため審査を経て公開されます。
             </p>

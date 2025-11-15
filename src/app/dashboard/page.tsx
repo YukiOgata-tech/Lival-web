@@ -278,12 +278,38 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-          {/* Quick Actions */}
-          <div className="lg:col-span-2">
+          {/* Main Content (Study Summary) */}
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            {/* Study Summary */}
+            <Link href="/dashboard/study" className="block group">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="h-full rounded-lg sm:rounded-xl shadow-sm border border-gray-200 transition-all duration-300 group-hover:shadow-lg group-hover:-translate-y-1"
+              >
+                <StudySummaryCard userId={user.uid} isLinked={true} />
+              </motion.div>
+            </Link>
+
+            {isAdmin && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+              >
+                <FeatureSurveyResults max={50} />
+              </motion.div>
+            )}
+          </div>
+
+          {/* Sidebar (Quick Actions & other info) */}
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
+            {/* Quick Actions */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.6 }}
               className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6"
             >
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">クイックアクション</h2>
@@ -319,21 +345,6 @@ export default function DashboardPage() {
                 </Link>
 
                 <Link
-                  href="/dashboard/study"
-                  className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors flex-shrink-0">
-                      <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-gray-900 text-sm sm:text-base">学習開始</h3>
-                      <p className="text-xs sm:text-sm text-gray-600 truncate">今日の学習プランを実行</p>
-                    </div>
-                  </div>
-                </Link>
-
-                <Link
                   href="/group"
                   className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
                 >
@@ -352,7 +363,7 @@ export default function DashboardPage() {
                 {!isFreePlan && (
                   <Link
                     href="/submit"
-                    className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group sm:col-span-2"
+                    className="p-3 sm:p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
                   >
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 transition-colors flex-shrink-0">
@@ -367,28 +378,6 @@ export default function DashboardPage() {
                 )}
               </div>
             </motion.div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-4 sm:space-y-6">
-            {/* Study Summary */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <StudySummaryCard userId={user.uid} />
-            </motion.div>
-
-            {isAdmin && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-              >
-                <FeatureSurveyResults max={50} />
-              </motion.div>
-            )}
 
             {/* Current Plan */}
             <motion.div

@@ -9,9 +9,10 @@ import { BookOpen, Clock, Award, TrendingUp, ArrowRight } from 'lucide-react';
 
 interface StudySummaryCardProps {
   userId: string;
+  isLinked?: boolean;
 }
 
-export default function StudySummaryCard({ userId }: StudySummaryCardProps) {
+export default function StudySummaryCard({ userId, isLinked = false }: StudySummaryCardProps) {
   const [stats, setStats] = useState<StudyStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -66,7 +67,7 @@ export default function StudySummaryCard({ userId }: StudySummaryCardProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 h-full"> {/* Added h-full here */}
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -74,14 +75,16 @@ export default function StudySummaryCard({ userId }: StudySummaryCardProps) {
           </div>
           <h3 className="text-base sm:text-lg font-semibold text-gray-900">学習記録</h3>
         </div>
-        <Link
-          href="/dashboard/study"
-          className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1 flex-shrink-0"
-        >
-          <span className="hidden sm:inline">詳細を見る</span>
-          <span className="sm:hidden">詳細</span>
-          <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-        </Link>
+        {!isLinked && ( // Conditionally render "詳細を見る" link
+          <Link
+            href="/dashboard/study"
+            className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1 flex-shrink-0"
+          >
+            <span className="hidden sm:inline">詳細を見る</span>
+            <span className="sm:hidden">詳細</span>
+            <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+          </Link>
+        )}
       </div>
 
       {stats && stats.totalSessions > 0 ? (
@@ -166,12 +169,14 @@ export default function StudySummaryCard({ userId }: StudySummaryCardProps) {
 
           {/* アクションボタン */}
           <div className="pt-3 sm:pt-4 border-t border-gray-100">
-            <Link
-              href="/dashboard/study"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors text-center block text-sm sm:text-base"
-            >
-              学習記録を見る
-            </Link>
+            {!isLinked && ( // Conditionally render "学習記録を見る" button
+              <Link
+                href="/dashboard/study"
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors text-center block text-sm sm:text-base"
+              >
+                学習記録を見る
+              </Link>
+            )}
           </div>
         </div>
       ) : (
@@ -180,13 +185,15 @@ export default function StudySummaryCard({ userId }: StudySummaryCardProps) {
             <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
           </div>
           <p className="text-sm sm:text-base text-gray-500 mb-3 sm:mb-4">まだ学習記録がありません</p>
-          <Link
-            href="/dashboard/study"
-            className="inline-flex items-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
-          >
-            <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />
-            <span>記録を始める</span>
-          </Link>
+          {!isLinked && ( // Conditionally render "記録を始める" button
+            <Link
+              href="/dashboard/study"
+              className="inline-flex items-center space-x-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
+            >
+              <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span>記録を始める</span>
+            </Link>
+          )}
         </div>
       )}
     </div>
