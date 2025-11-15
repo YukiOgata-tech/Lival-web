@@ -22,6 +22,7 @@ export function useTutorChat(threadId: string) {
   const [messages, setMessages] = useState<TutorChatMessage[]>([])
   const [status, setStatus] = useState<ChatStatus>('loading')
   const [error, setError] = useState<string | null>(null)
+  const [quality, setQuality] = useState<'fast' | 'standard'>('fast')
 
   const persistMessages = useCallback((updatedMessages: TutorChatMessage[]) => {
     setMessages(updatedMessages)
@@ -132,7 +133,12 @@ export function useTutorChat(threadId: string) {
       persistMessages(currentMessages.map(m => m.id === userMessageId ? finalUserMessage : m));
 
       const historyForApi = messages.slice(-8).map(m => ({ role: m.role, content: m.content }));
-      const apiPayload = { threadId, messages: [...historyForApi, { role: 'user' as const, content: userMsg.content }], storageUrls: imageStorageUrls };
+      const apiPayload = {
+        threadId,
+        messages: [...historyForApi, { role: 'user' as const, content: userMsg.content }],
+        storageUrls: imageStorageUrls,
+        quality,
+      };
       const token = await user.getIdToken();
 
       const res = await fetch('/api/tutor/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(apiPayload) });
@@ -167,7 +173,7 @@ export function useTutorChat(threadId: string) {
     }));
 
     setStatus('idle');
-  }, [user, threadId, messages, persistMessages]);
+  }, [user, threadId, messages, persistMessages, quality]);
 
   const generateReport = useCallback(async (engine: 'gpt' | 'gemini' = 'gpt') => {
     if (!user || !threadId) return { error: 'ユーザー認証が必要です' };
@@ -201,5 +207,5 @@ export function useTutorChat(threadId: string) {
     return { error: success ? null : reportText };
   }, [user, threadId, messages, persistMessages]);
 
-  return { messages, status, error, sendMessage, generateReport, authLoading, user };
+  return { messages, status, error, sendMessage, generateReport, authLoading, user, quality, setQuality };
 }

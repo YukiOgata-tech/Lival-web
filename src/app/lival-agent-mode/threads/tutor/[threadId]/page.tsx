@@ -14,7 +14,7 @@ import { useTutorChat } from '@/hooks/useTutorChat'
 export default function TutorThreadPage() {
   const params = useParams<{ threadId: string }>()
   const threadId = params?.threadId || ''
-  const { messages, status, error, sendMessage, generateReport, authLoading, user } = useTutorChat(threadId)
+  const { messages, status, error, sendMessage, generateReport, authLoading, user, quality, setQuality } = useTutorChat(threadId)
 
   const [toast, setToast] = useState<string | null>(null)
   const [reportOpen, setReportOpen] = useState(false)
@@ -106,6 +106,48 @@ export default function TutorThreadPage() {
         )}
       </AnimatePresence>
 
+      {/* Model quality selector (web: fast/standard only) */}
+      <div className="mx-auto max-w-3xl px-4 pt-4">
+        <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-emerald-100 bg-white/80 px-3 py-2 shadow-sm">
+          <div className="text-xs sm:text-sm text-gray-700 font-medium flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-500" />
+            <span>回答スタイル</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+            <button
+              type="button"
+              onClick={() => setQuality('fast')}
+              className={`rounded-full px-3 py-1 font-medium transition-all border ${
+                quality === 'fast'
+                  ? 'border-emerald-500 bg-emerald-500 text-white shadow-sm'
+                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              高速
+            </button>
+            <button
+              type="button"
+              onClick={() => setQuality('standard')}
+              className={`rounded-full px-3 py-1 font-medium transition-all border ${
+                quality === 'standard'
+                  ? 'border-emerald-500 bg-emerald-500 text-white shadow-sm'
+                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              標準
+            </button>
+            <button
+              type="button"
+              disabled
+              className="hidden sm:inline-flex rounded-full px-3 py-1 text-[11px] font-medium border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+              title="思考モードはモバイルアプリ限定です"
+            >
+              thinking（アプリ限定）
+            </button>
+          </div>
+        </div>
+      </div>
+
       <AnimatePresence>
         {error && (
           <motion.div
@@ -119,7 +161,7 @@ export default function TutorThreadPage() {
         )}
       </AnimatePresence>
 
-      <div className="relative z-10 mx-auto max-w-3xl space-y-4 p-4 pb-32 sm:pb-40">
+      <div className="relative z-10 mx-auto max-w-3xl space-y-4 p-4 pb-24 sm:pb-32">
         {messages.map((m) => (
           <TutorChatMessageView
             key={m.id}

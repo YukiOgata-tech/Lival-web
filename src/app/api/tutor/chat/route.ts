@@ -23,11 +23,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 })
     }
 
-    const { threadId, messages, images, storageUrls } = (await req.json().catch(() => ({}))) as {
+    const { threadId, messages, images, storageUrls, quality } = (await req.json().catch(() => ({}))) as {
       threadId?: string
       messages?: ChatMessage[]
       images?: string[]
       storageUrls?: string[]
+      quality?: 'fast' | 'standard' | 'thinking'
     }
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: 'missing_api_base' }, { status: 500 })
     }
 
-    const url = `${base.replace(/\/$/, '')}/tutor/chat`
+    const url = `${base.replace(/\/$/, '')}/v1/tutor/chat`
     const ctrl = new AbortController()
     const timeout = setTimeout(() => ctrl.abort(), 25_000)
     const headers: Record<string, string> = {
@@ -47,8 +48,17 @@ export async function POST(req: Request) {
       'x-request-id': requestId,
     }
     if (process.env.TUTOR_API_KEY) headers['x-api-key'] = process.env.TUTOR_API_KEY!
+    // Forward Firebase ID token to Cloud Run (FastAPI) for verification
+    headers['authorization'] = authz
 
-    const body = JSON.stringify({ userId: uid, threadId, messages, images, storageUrls })
+    // New FastAPI backend expects ChatRequest shape
+    const body = JSON.stringify({
+      threadId: threadId || '',
+      messages: messages || [],
+      images: storageUrls || images || [],
+      quality: quality || undefined,
+      hasUsedImagesInThread: !!((storageUrls && storageUrls.length) || (images && images.length)),
+    })
 
     let resp: Response
     try {
