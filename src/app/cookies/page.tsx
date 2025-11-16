@@ -74,12 +74,6 @@ const cookieCategories = [
         provider: 'Google Analytics'
       },
       {
-        name: '__vercel_live_token',
-        purpose: 'Vercel Analyticsによるパフォーマンス分析',
-        duration: '1年間',
-        provider: 'Vercel'
-      },
-      {
         name: 'lival_usage_tracking',
         purpose: '学習機能の利用状況分析',
         duration: '6ヶ月間',
@@ -140,12 +134,6 @@ const cookieCategories = [
         purpose: 'Facebook広告の効果測定',
         duration: '3ヶ月間',
         provider: 'Meta (Facebook)'
-      },
-      {
-        name: '__utm_params',
-        purpose: '流入元の追跡（マーケティング効果測定）',
-        duration: '6ヶ月間',
-        provider: 'LIVAL AI'
       },
       {
         name: 'referral_source',
