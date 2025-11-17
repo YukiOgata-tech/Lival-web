@@ -64,10 +64,10 @@ export default function QuestionCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.5 }}
-      className={`bg-white rounded-xl shadow-lg border border-gray-200 p-8 ${className}`}
+      className={`bg-white rounded-xl shadow-lg border border-gray-200 p-4 md:p-8 ${className}`}
     >
       {/* 質問タイプ */}
-      <div className="flex items-center space-x-2 mb-6">
+      <div className="flex items-center space-x-2 mb-2 sm:mb-6">
         <div className={`p-2 rounded-lg ${typeInfo.bgColor}`}>
           <TypeIcon className={`w-5 h-5 ${typeInfo.color}`} />
         </div>
@@ -81,13 +81,13 @@ export default function QuestionCard({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="text-xl md:text-2xl font-bold text-gray-900 mb-8 leading-relaxed"
+        className="text-xl md:text-2xl font-bold text-gray-900 mb-2 md:mb-8 leading-relaxed"
       >
         {question.questionText}
       </motion.h2>
 
       {/* 選択肢 */}
-      <div className="space-y-4">
+      <div className="space-y-2 md:space-y-4">
         <AnimatePresence>
           {question.options.map((option, index) => {
             const isSelected = selectedAnswer === option.id
@@ -102,7 +102,7 @@ export default function QuestionCard({
                 onClick={() => handleAnswerSelect(option.id as 'A' | 'B' | 'C' | 'D')}
                 disabled={isLoading || isAnswered}
                 className={`
-                  w-full p-6 rounded-xl border-2 text-left transition-all duration-300 transform
+                  w-full p-1 sm:p-6 rounded-xl border-2 text-left transition-all duration-300 transform
                   ${isSelected
                     ? 'border-blue-500 bg-blue-50 shadow-lg scale-[1.02]'
                     : isAnswered
@@ -123,7 +123,7 @@ export default function QuestionCard({
                     {option.id}
                   </div>
                   <p className={`
-                    text-base md:text-lg leading-relaxed
+                    text-sm md:text-lg leading-relaxed
                     ${isSelected ? 'text-blue-900' : 'text-gray-700'}
                   `}>
                     {option.text}
@@ -140,7 +140,7 @@ export default function QuestionCard({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mt-8 flex items-center justify-center space-x-3"
+          className="mt-2 sm:mt-8 flex items-center justify-center space-x-3"
         >
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
           <span className="text-gray-600">次の質問を準備中...</span>
@@ -153,7 +153,7 @@ export default function QuestionCard({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200"
+          className="mt-8 p-4 bg-gray-200 rounded-lg border border-gray-200"
         >
           <p className="text-sm text-gray-600 text-center">
             💡 直感で答えてOK！正解・不正解はありません

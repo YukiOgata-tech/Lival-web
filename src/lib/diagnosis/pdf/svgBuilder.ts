@@ -63,13 +63,14 @@ export function buildDiagnosisSvg(result: DiagnosisResult, opts: SvgBuildOptions
       </linearGradient>
       <style>
         ${opts.fontCss || ''}
-        .title { font: 800 36px 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic Medium', 'Segoe UI', Arial, sans-serif; fill: #0f172a; letter-spacing: 0.3px; text-rendering: optimizeLegibility; }
-        .subtitle { font: 600 15px 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic Medium', 'Segoe UI', Arial, sans-serif; fill: #334155; letter-spacing: 0.2px; }
-        .body { font: 400 14px 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic Medium', 'Segoe UI', Arial, sans-serif; fill: #334155; letter-spacing: 0.2px; }
-        .small { font: 400 12px 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic Medium', 'Segoe UI', Arial, sans-serif; fill: #64748b; letter-spacing: 0.15px; }
-        .label { font: 600 12px 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic Medium', 'Segoe UI', Arial, sans-serif; fill: #475569; letter-spacing: 0.15px; }
-        .metric { font: 700 22px 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic Medium', 'Segoe UI', Arial, sans-serif; fill: #0f172a; letter-spacing: 0.2px; }
-        .cap { font: 700 18px 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic Medium', 'Segoe UI', Arial, sans-serif; fill: #0f172a; letter-spacing: 0.2px; }
+        text { font-synthesis: weight style; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+        .title { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif; font-size: 36px; font-weight: 700; fill: #0f172a; letter-spacing: 0.3px; }
+        .subtitle { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif; font-size: 15px; font-weight: 500; fill: #334155; letter-spacing: 0.2px; }
+        .body { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif; font-size: 14px; font-weight: 400; fill: #334155; letter-spacing: 0.2px; }
+        .small { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif; font-size: 12px; font-weight: 400; fill: #64748b; letter-spacing: 0.15px; }
+        .label { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif; font-size: 12px; font-weight: 500; fill: #475569; letter-spacing: 0.15px; }
+        .metric { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif; font-size: 22px; font-weight: 700; fill: #0f172a; letter-spacing: 0.2px; }
+        .cap { font-family: 'Noto Sans JP', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif; font-size: 18px; font-weight: 700; fill: #0f172a; letter-spacing: 0.2px; }
       </style>
     </defs>
 
