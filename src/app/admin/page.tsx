@@ -24,6 +24,7 @@ export const metadata: Metadata = {
   robots: 'noindex'
 }
 
+
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
