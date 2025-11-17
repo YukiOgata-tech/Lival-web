@@ -42,7 +42,7 @@ export default function HomeAIAgentsSection() {
   return (
     <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-br from-white to-blue-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8 sm:mb-12 md:mb-16">
+        <div className="text-center mb-4 sm:mb-8 md:mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

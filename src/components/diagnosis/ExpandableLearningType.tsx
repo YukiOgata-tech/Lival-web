@@ -3,12 +3,13 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Heart, 
-  CheckCircle, 
-  Rocket, 
-  Lightbulb, 
-  ChevronDown, 
+import Image from 'next/image'
+import {
+  Heart,
+  CheckCircle,
+  Rocket,
+  Lightbulb,
+  ChevronDown,
   ChevronUp,
   Sparkles,
   Target,
@@ -29,6 +30,11 @@ interface LearningType {
   name: string
   subtitle: string
   icon: string
+  image?: string
+  fullBodyImage?: string
+  characterName?: string
+  characterCode?: string
+  characterDescription?: string
   color: string
   bgColor: string
   description: string
@@ -61,10 +67,22 @@ export default function ExpandableLearningType({ type, index }: ExpandableLearni
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
       {/* ヘッダー（常に表示） */}
-      <div className={`bg-gradient-to-r ${type.color} p-4 sm:p-6 md:p-8 text-white`}>
-        <div className="flex items-center space-x-3 sm:space-x-4 mb-3 sm:mb-4">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-            <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" />
+      <div className={`bg-gradient-to-r ${type.color} p-3 sm:p-6 md:p-8 text-white`}>
+        <div className="flex items-center space-x-3 sm:space-x-4 mb-0.5 sm:mb-4">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 relative flex-shrink-0">
+            {type.image ? (
+              <Image
+                src={type.image}
+                alt={type.name}
+                fill
+                className="object-contain rounded-2xl"
+                sizes="(max-width: 640px) 48px, (max-width: 768px) 56px, 64px"
+              />
+            ) : (
+              <div className="w-full h-full bg-white/20 rounded-full flex items-center justify-center">
+                <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white" />
+              </div>
+            )}
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="text-2xl sm:text-3xl font-bold truncate">{type.name}</h2>
@@ -159,7 +177,7 @@ export default function ExpandableLearningType({ type, index }: ExpandableLearni
 // 詳細コンテンツコンポーネント（共通）
 function DetailContent({ type }: { type: LearningType }) {
   return (
-    <div className="p-4 sm:p-6 md:p-8">
+    <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         {/* 左側：詳細説明と特徴 */}
         <div className="space-y-4 sm:space-y-6">
@@ -238,6 +256,60 @@ function DetailContent({ type }: { type: LearningType }) {
           </div>
         </div>
       </div>
+
+      {/* キャラクター紹介セクション（ポケモン図鑑風） */}
+      {type.fullBodyImage && type.characterName && (
+        <div className={`bg-gradient-to-br from-${type.bgColor}-50 via-white to-${type.bgColor}-100 rounded-xl p-4 sm:p-6 md:p-8 border-2 border-${type.bgColor}-200 shadow-lg mt-6 sm:mt-8`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
+            {/* 左半分：全身キャラクター画像 */}
+            <div className="flex justify-center items-center">
+              <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-80 lg:h-80">
+                <Image
+                  src={type.fullBodyImage}
+                  alt={type.characterName}
+                  fill
+                  className="object-contain drop-shadow-2xl"
+                  sizes="(max-width: 640px) 192px, (max-width: 768px) 224px, (max-width: 1024px) 256px, 320px"
+                />
+              </div>
+            </div>
+
+            {/* 右半分：キャラクター情報 */}
+            <div className="space-y-4 sm:space-y-6">
+              <div>
+                <div className="flex items-baseline gap-3 mb-2">
+                  <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
+                    {type.characterName}
+                  </h3>
+                  <span className={`text-xl sm:text-2xl md:text-3xl font-bold text-${type.bgColor}-600 bg-${type.bgColor}-100 px-3 py-1 rounded-lg`}>
+                    {type.characterCode}
+                  </span>
+                </div>
+                <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed">
+                  {type.characterDescription}
+                </p>
+              </div>
+
+              {/* タイプ情報 */}
+              <div className={`bg-white/80 rounded-lg p-3 sm:p-4 border border-${type.bgColor}-200`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className={`w-3 h-3 rounded-full bg-${type.bgColor}-500`}></div>
+                  <span className="font-semibold text-gray-900 text-sm sm:text-base">学習タイプ</span>
+                </div>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{type.name}</p>
+                <p className="text-sm sm:text-base text-gray-600 mt-1">{type.subtitle}</p>
+              </div>
+
+              {/* デザイナークレジット */}
+              <div className="text-right">
+                <p className="text-xs sm:text-sm text-gray-500">
+                  Character Design by <span className="font-semibold text-gray-700">polipoli</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

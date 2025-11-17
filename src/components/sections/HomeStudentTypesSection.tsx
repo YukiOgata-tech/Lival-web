@@ -2,16 +2,17 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Lightbulb, ArrowRight } from 'lucide-react'
 
 // 学習者タイプ
 const studentTypes = [
-  { name: '戦略家', description: '論理的思考で効率を重視', icon: '🎯', color: 'from-blue-400 to-blue-600' },
-  { name: '探求家', description: '好奇心旺盛で発見を楽しむ', icon: '🔍', color: 'from-purple-400 to-purple-600' },
-  { name: '努力家', description: '継続的な努力で成果を積み上げ', icon: '💪', color: 'from-green-400 to-green-600' },
-  { name: '挑戦家', description: '競争を楽しみ限界に挑戦', icon: '⚡', color: 'from-red-400 to-red-600' },
-  { name: '伴走者', description: '協力と共感を大切にする', icon: '🤝', color: 'from-pink-400 to-pink-600' },
-  { name: '効率家', description: '最短ルートで結果を追求', icon: '🚀', color: 'from-orange-400 to-orange-600' }
+  { name: '戦略家', description: '論理的思考で効率を重視', icon: '🎯', image: '/images/li-kun_val-chan/val-chan-ST-1.png', color: 'from-blue-400 to-blue-600' },
+  { name: '探求家', description: '好奇心旺盛で発見を楽しむ', icon: '🔍', image: '/images/li-kun_val-chan/li-kun-EX-1.png', color: 'from-purple-400 to-purple-600' },
+  { name: '努力家', description: '継続的な努力で成果を積み上げ', icon: '💪', image: '/images/li-kun_val-chan/li-kun-AC-1.png', color: 'from-green-400 to-green-600' },
+  { name: '挑戦家', description: '競争を楽しみ限界に挑戦', icon: '⚡', image: '/images/li-kun_val-chan/li-kun-CH-1.png', color: 'from-red-400 to-red-600' },
+  { name: '伴走者', description: '協力と共感を大切にする', icon: '🤝', image: '/images/li-kun_val-chan/val-chan-SP-1.png', color: 'from-pink-400 to-pink-600' },
+  { name: '効率家', description: '最短ルートで結果を追求', icon: '🚀', image: '/images/li-kun_val-chan/li-kun-OP-1.jpg', color: 'from-orange-400 to-orange-600' }
 ]
 
 export default function HomeStudentTypesSection() {
@@ -45,8 +46,14 @@ export default function HomeStudentTypesSection() {
               whileHover={{ y: -5, scale: 1.02 }}
               className="bg-white/80 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
             >
-              <div className={`w-12 h-12 md:w-20 md:h-20 mx-auto mb-2 md:mb-4 bg-gradient-to-r ${type.color} rounded-full flex items-center justify-center text-xl md:text-3xl group-hover:scale-110 transition-transform duration-300`}>
-                {type.icon}
+              <div className="w-12 h-12 md:w-20 md:h-20 mx-auto mb-2 md:mb-4 relative group-hover:scale-110 transition-transform duration-300">
+                <Image
+                  src={type.image}
+                  alt={type.name}
+                  fill
+                  className="object-contain rounded-2xl"
+                  sizes="(max-width: 768px) 48px, 80px"
+                />
               </div>
               <h3 className="text-sm md:text-xl font-bold text-gray-900 mb-1 md:mb-2 text-center">{type.name}</h3>
               {/* スマホでは詳細テキストを非表示 */}

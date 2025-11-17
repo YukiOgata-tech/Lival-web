@@ -25,6 +25,11 @@ const learningTypes = [
     name: '探求家',
     subtitle: '内発的探求者',
     icon: 'explorer',
+    image: '/images/li-kun_val-chan/li-kun-EX-1.png',
+    fullBodyImage: '/images/li-kun_val-chan/li-kun-EX-0.png',
+    characterName: 'LI君',
+    characterCode: 'EX',
+    characterDescription: 'LI君（Explorer）は、新しい発見にワクワクする探求者タイプのキャラクターです。常に「なぜ？」「どうして？」と考え、知的好奇心に満ちた冒険を楽しみます。',
     color: 'from-purple-500 to-indigo-500',
     bgColor: 'purple',
     description: '純粋な知的好奇心によって学習が駆動されるタイプ',
@@ -60,6 +65,11 @@ const learningTypes = [
     name: '戦略家',
     subtitle: '目標志向戦略家',
     icon: 'strategist',
+    image: '/images/li-kun_val-chan/val-chan-ST-1.png',
+    fullBodyImage: '/images/li-kun_val-chan/val-chan-ST-0.png',
+    characterName: 'VALちゃん',
+    characterCode: 'ST',
+    characterDescription: 'VALちゃん（Strategist）は、計画的に物事を進める戦略家タイプのキャラクターです。目標を明確に設定し、論理的に考えながら最適なルートを見つけ出します。',
     color: 'from-blue-500 to-cyan-500',
     bgColor: 'blue',
     description: '明確な目標設定と計画的な学習進行を重視するタイプ',
@@ -95,6 +105,11 @@ const learningTypes = [
     name: '努力家',
     subtitle: '承認欲求努力家',
     icon: 'achiever',
+    image: '/images/li-kun_val-chan/li-kun-AC-1.png',
+    fullBodyImage: '/images/li-kun_val-chan/li-kun-AC-0.png',
+    characterName: 'LI君',
+    characterCode: 'AC',
+    characterDescription: 'LI君（Achiever）は、コツコツと努力を積み重ねる努力家タイプのキャラクターです。周りの期待に応え、成長する自分を大切にしながら前進し続けます。',
     color: 'from-green-500 to-emerald-500',
     bgColor: 'green',
     description: '他者からの承認と評価を重視し、努力を大切にするタイプ',
@@ -130,6 +145,11 @@ const learningTypes = [
     name: '挑戦家',
     subtitle: '競争志向挑戦家',
     icon: 'challenger',
+    image: '/images/li-kun_val-chan/li-kun-CH-1.png',
+    fullBodyImage: '/images/li-kun_val-chan/li-kun-CH-0.png',
+    characterName: 'LI君',
+    characterCode: 'CH',
+    characterDescription: 'LI君（Challenger）は、困難に立ち向かう挑戦家タイプのキャラクターです。競争を楽しみ、スピード感を持って次々と新しいチャレンジに挑みます。',
     color: 'from-red-500 to-orange-500',
     bgColor: 'red',
     description: '競争的な環境でのモチベーションとスピード感を重視するタイプ',
@@ -165,6 +185,11 @@ const learningTypes = [
     name: '伴走者',
     subtitle: '関係重視協調者',
     icon: 'companion',
+    image: '/images/li-kun_val-chan/val-chan-SP-1.png',
+    fullBodyImage: '/images/li-kun_val-chan/val-chan-SP-0.png',
+    characterName: 'VALちゃん',
+    characterCode: 'SP',
+    characterDescription: 'VALちゃん（Supporting Partner）は、みんなを支える伴走者タイプのキャラクターです。仲間との絆を大切にし、協力しながら共に成長することを喜びとします。',
     color: 'from-pink-500 to-rose-500',
     bgColor: 'pink',
     description: '他者とのつながりを重視し、協力的な学習環境を好むタイプ',
@@ -200,6 +225,11 @@ const learningTypes = [
     name: '効率家',
     subtitle: '効率重視実用家',
     icon: 'efficiency',
+    image: '/images/li-kun_val-chan/li-kun-OP-1.jpg',
+    fullBodyImage: '/images/li-kun_val-chan/li-kun-OP-0.png',
+    characterName: 'LI君',
+    characterCode: 'OP',
+    characterDescription: 'LI君（Optimizer/Pragmatist）は、無駄を省いて効率を追求する効率家タイプのキャラクターです。実用的で最短ルートを見つけ出し、結果にこだわります。',
     color: 'from-amber-500 to-yellow-500',
     bgColor: 'amber',
     description: '効率性と実用性を重視し、最短経路での成果達成を目指すタイプ',
@@ -246,14 +276,14 @@ export default function DiagnosisTypesPage() {
             診断画面に戻る
           </Link>
           
-          <div className="text-center mb-8 sm:mb-12">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+          <div className="text-center mb-4 sm:mb-12">
+            <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-1 sm:mb-6 leading-tight">
               <span className="block">Lival AIが識別する</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mt-1 sm:mt-2">
                 6つの学習タイプ
               </span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto px-2">
+            <p className="text-sm sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto px-2">
               自己決定理論（SDT）とBig Five性格理論に基づく科学的分類により、
               あなたの学習特性を6つのタイプに分けて詳細に分析します。
             </p>
@@ -262,7 +292,7 @@ export default function DiagnosisTypesPage() {
         </div>
 
         {/* タイプ一覧 */}
-        <div className="space-y-6 sm:space-y-8 md:space-y-12">
+        <div className="space-y-4 sm:space-y-8 md:space-y-12">
           {learningTypes.map((type, index) => (
             <ExpandableLearningType
               key={type.id}
@@ -275,10 +305,10 @@ export default function DiagnosisTypesPage() {
         {/* 診断への誘導 */}
         <div className="mt-12 sm:mt-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg sm:rounded-2xl p-6 sm:p-8 text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
-              あなたはどのタイプ？
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-4">
+              あなたはどのタイプ？？
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed px-2">
+            <p className="text-sm sm:text-lg text-gray-600 mb-2 sm:mb-8 leading-relaxed px-2">
               科学的診断で正確にあなたの学習タイプを判定し、
               最適なAIコーチング体験を提供します
             </p>
@@ -294,17 +324,17 @@ export default function DiagnosisTypesPage() {
               
               <div className="flex items-center text-xs sm:text-sm text-gray-600">
                 <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                所要時間: 約5-8分
+                所要時間: 約3-5分
               </div>
             </div>
           </div>
         </div>
 
         {/* 科学的根拠へのリンク */}
-        <div className="mt-8 sm:mt-12 text-center">
+        <div className="my-4 sm:mt-12 text-center">
           <Link 
             href="/about/science"
-            className="inline-flex items-center text-gray-600 hover:text-gray-800 transition-colors text-sm sm:text-base"
+            className="inline-flex items-center text-gray-700 hover:text-gray-800 transition-colors text-sm sm:text-base underline"
           >
             <span>この分類の科学的根拠について詳しく</span>
             <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 rotate-180" />
