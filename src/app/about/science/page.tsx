@@ -1,10 +1,13 @@
 // src/app/about/science/page.tsx
-import { Metadata } from 'next'
+'use client'
+
 import Link from 'next/link'
-import { 
-  ArrowLeft, 
-  Brain, 
-  Users, 
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  ArrowLeft,
+  Brain,
+  Users,
   BookOpen,
   CheckCircle,
   BarChart3,
@@ -20,26 +23,77 @@ import {
   Shield,
   Lightbulb,
   Zap,
-  Globe
+  Globe,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react'
 
-export const metadata: Metadata = {
-  title: 'LIVAL AI診断の科学的根拠 | パーソナルAIコーチング',
-  description: '自己決定理論（SDT）とBig Five性格理論に基づく科学的診断システムの理論的背景と実証研究について詳しく説明します。',
-  keywords: 'LIVAL,AI診断,科学的根拠,自己決定理論,SDT,Big Five,性格理論,教育心理学,学習スタイル',
-  openGraph: {
-    title: 'LIVAL AI診断の科学的根拠',
-    description: '自己決定理論とBig Five性格理論に基づく科学的診断システム',
-    type: 'website',
-  }
+// アコーディオンセクションコンポーネント
+interface AccordionSectionProps {
+  id: string
+  title: string
+  icon: React.ReactNode
+  iconColor: string
+  children: React.ReactNode
+  defaultOpen?: boolean
+}
+
+function AccordionSection({ id, title, icon, iconColor, children, defaultOpen = false }: AccordionSectionProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen)
+
+  return (
+    <section id={id} className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6 md:mb-12">
+      {/* ヘッダー：常に表示 */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-4 md:p-8 flex items-center justify-between hover:bg-gray-50 transition-colors lg:pointer-events-none"
+      >
+        <div className="flex items-center">
+          <div className={iconColor}>
+            {icon}
+          </div>
+          <h2 className="text-xl md:text-3xl font-bold text-gray-900 ml-3">{title}</h2>
+        </div>
+        <div className="lg:hidden">
+          {isOpen ? (
+            <ChevronUp className="w-6 h-6 text-gray-600" />
+          ) : (
+            <ChevronDown className="w-6 h-6 text-gray-600" />
+          )}
+        </div>
+      </button>
+
+      {/* コンテンツ：デスクトップは常に表示、モバイルはアコーディオン */}
+      <div className="hidden lg:block px-8 pb-8">
+        {children}
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="lg:hidden overflow-hidden"
+          >
+            <div className="px-4 pb-4">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  )
 }
 
 export default function SciencePage() {
+  const [tocOpen, setTocOpen] = useState(false)
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-6 md:py-12">
         {/* ヘッダー */}
-        <div className="mb-12">
+        <div className="mb-6 md:mb-12">
           <Link 
             href="/"
             className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors mb-6"
@@ -48,48 +102,88 @@ export default function SciencePage() {
             ホームに戻る
           </Link>
           
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6">
+          <div className="text-center mb-8 md:mb-12">
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-6 px-2">
               LIVAL AI診断の科学的根拠
             </h1>
-            <p className="text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto">
-              40年以上の心理学研究に基づく科学的診断システム<br />
+            <p className="text-sm md:text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto px-4">
+              40年以上の心理学研究に基づく科学的診断システム
+              <br className="hidden md:block" />
+              <span className="md:hidden"> </span>
               〜従来の学習スタイル診断を超える新しいアプローチ〜
             </p>
-            <div className="w-32 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-8 rounded"></div>
+            <div className="w-24 md:w-32 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-6 md:mt-8 rounded"></div>
           </div>
         </div>
 
-        {/* 目次 */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <div className="flex items-center mb-6">
-            <FileText className="w-8 h-8 text-blue-600 mr-3" />
-            <h2 className="text-2xl font-bold text-gray-900">目次</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* 目次：モバイルで折りたたみ可能 */}
+        <section className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6 md:mb-12">
+          <button
+            onClick={() => setTocOpen(!tocOpen)}
+            className="w-full p-4 md:p-8 flex items-center justify-between hover:bg-gray-50 transition-colors lg:pointer-events-none"
+          >
+            <div className="flex items-center">
+              <FileText className="w-6 h-6 md:w-8 md:h-8 text-blue-600 mr-3" />
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">目次</h2>
+            </div>
+            <div className="lg:hidden">
+              {tocOpen ? (
+                <ChevronUp className="w-5 h-5 text-gray-600" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-gray-600" />
+              )}
+            </div>
+          </button>
+
+          {/* デスクトップは常に表示 */}
+          <div className="hidden lg:grid grid-cols-1 md:grid-cols-2 gap-4 px-8 pb-8">
             <div className="space-y-2">
-              <Link href="#problems" className="block text-blue-600 hover:text-blue-800 transition-colors">1. 従来診断の問題点と課題認識</Link>
-              <Link href="#sdt" className="block text-blue-600 hover:text-blue-800 transition-colors">2. 自己決定理論（SDT）の理論的基盤</Link>
-              <Link href="#bigfive" className="block text-blue-600 hover:text-blue-800 transition-colors">3. Big Five性格理論との統合</Link>
-              <Link href="#comparison" className="block text-blue-600 hover:text-blue-800 transition-colors">4. 既存診断システムとの比較優位性</Link>
+              <Link href="#problems" className="block text-blue-600 hover:text-blue-800 transition-colors text-sm md:text-base">1. 従来診断の問題点と課題認識</Link>
+              <Link href="#sdt" className="block text-blue-600 hover:text-blue-800 transition-colors text-sm md:text-base">2. 自己決定理論（SDT）の理論的基盤</Link>
+              <Link href="#bigfive" className="block text-blue-600 hover:text-blue-800 transition-colors text-sm md:text-base">3. Big Five性格理論との統合</Link>
+              <Link href="#comparison" className="block text-blue-600 hover:text-blue-800 transition-colors text-sm md:text-base">4. 既存診断システムとの比較優位性</Link>
             </div>
             <div className="space-y-2">
-              <Link href="#design" className="block text-blue-600 hover:text-blue-800 transition-colors">5. 本システムの科学的設計</Link>
-              <Link href="#validation" className="block text-blue-600 hover:text-blue-800 transition-colors">6. パイロット検証結果</Link>
-              <Link href="#ethics" className="block text-blue-600 hover:text-blue-800 transition-colors">7. 研究倫理と責任ある開発</Link>
-              <Link href="#references" className="block text-blue-600 hover:text-blue-800 transition-colors">8. 参考文献</Link>
+              <Link href="#design" className="block text-blue-600 hover:text-blue-800 transition-colors text-sm md:text-base">5. 本システムの科学的設計</Link>
+              <Link href="#validation" className="block text-blue-600 hover:text-blue-800 transition-colors text-sm md:text-base">6. パイロット検証結果</Link>
+              <Link href="#ethics" className="block text-blue-600 hover:text-blue-800 transition-colors text-sm md:text-base">7. 研究倫理と責任ある開発</Link>
+              <Link href="#references" className="block text-blue-600 hover:text-blue-800 transition-colors text-sm md:text-base">8. 参考文献</Link>
             </div>
           </div>
+
+          {/* モバイルはアコーディオン */}
+          <AnimatePresence>
+            {tocOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="lg:hidden overflow-hidden"
+              >
+                <div className="px-4 pb-4 space-y-2">
+                  <Link href="#problems" onClick={() => setTocOpen(false)} className="block text-blue-600 hover:text-blue-800 transition-colors text-sm">1. 従来診断の問題点と課題認識</Link>
+                  <Link href="#sdt" onClick={() => setTocOpen(false)} className="block text-blue-600 hover:text-blue-800 transition-colors text-sm">2. 自己決定理論（SDT）の理論的基盤</Link>
+                  <Link href="#bigfive" onClick={() => setTocOpen(false)} className="block text-blue-600 hover:text-blue-800 transition-colors text-sm">3. Big Five性格理論との統合</Link>
+                  <Link href="#comparison" onClick={() => setTocOpen(false)} className="block text-blue-600 hover:text-blue-800 transition-colors text-sm">4. 既存診断システムとの比較優位性</Link>
+                  <Link href="#design" onClick={() => setTocOpen(false)} className="block text-blue-600 hover:text-blue-800 transition-colors text-sm">5. 本システムの科学的設計</Link>
+                  <Link href="#validation" onClick={() => setTocOpen(false)} className="block text-blue-600 hover:text-blue-800 transition-colors text-sm">6. パイロット検証結果</Link>
+                  <Link href="#ethics" onClick={() => setTocOpen(false)} className="block text-blue-600 hover:text-blue-800 transition-colors text-sm">7. 研究倫理と責任ある開発</Link>
+                  <Link href="#references" onClick={() => setTocOpen(false)} className="block text-blue-600 hover:text-blue-800 transition-colors text-sm">8. 参考文献</Link>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
 
         {/* 1. 従来診断の問題点 */}
-        <section id="problems" className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <div className="flex items-center mb-8">
-            <AlertTriangle className="w-8 h-8 text-red-600 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">1. 従来の学習スタイル診断の深刻な問題</h2>
-          </div>
-          
+        <AccordionSection
+          id="problems"
+          title="1. 従来の学習スタイル診断の深刻な問題"
+          icon={<AlertTriangle className="w-6 h-6 md:w-8 md:h-8" />}
+          iconColor="text-red-600"
+          defaultOpen={true}
+        >
           <div className="prose prose-lg max-w-none text-gray-700 mb-8">
             <p className="text-xl leading-relaxed mb-6">
               現在広く使われている学習スタイル診断（VARK、Kolb、Honey & Mumfordなど）には、
@@ -157,16 +251,16 @@ export default function SciencePage() {
               </div>
             </div>
           </div>
-        </section>
+        </AccordionSection>
 
         {/* 2. 自己決定理論 */}
-        <section id="sdt" className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <div className="flex items-center mb-8">
-            <Heart className="w-8 h-8 text-purple-600 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">2. 自己決定理論（Self-Determination Theory）</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <AccordionSection
+          id="sdt"
+          title="2. 自己決定理論（Self-Determination Theory）"
+          icon={<Heart className="w-6 h-6 md:w-8 md:h-8" />}
+          iconColor="text-purple-600"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
             <div className="lg:col-span-2">
               <h3 className="text-2xl font-semibold text-gray-900 mb-4">理論の概要と開発背景</h3>
               <div className="prose prose-lg text-gray-700 mb-6">
@@ -285,9 +379,11 @@ export default function SciencePage() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg p-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">動機の連続体理論</h4>
-              <div className="overflow-x-auto">
+            <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg p-4 md:p-6">
+              <h4 className="text-base md:text-lg font-semibold text-gray-900 mb-3 md:mb-4">動機の連続体理論</h4>
+
+              {/* デスクトップ：横スクロール */}
+              <div className="hidden md:block overflow-x-auto">
                 <div className="flex space-x-4 min-w-max py-4">
                   <div className="text-center">
                     <div className="w-24 h-16 bg-red-200 rounded-lg flex items-center justify-center mb-2">
@@ -332,18 +428,40 @@ export default function SciencePage() {
                   </div>
                 </div>
               </div>
+
+              {/* スマホ：縦配置 */}
+              <div className="md:hidden space-y-3">
+                {[
+                  { label: '無動機', desc: '動機なし', color: 'bg-red-200 text-red-800' },
+                  { label: '外的調整', desc: '報酬・罰', color: 'bg-orange-200 text-orange-800' },
+                  { label: '取り入れ調整', desc: '承認欲求', color: 'bg-yellow-200 text-yellow-800' },
+                  { label: '同一化調整', desc: '目標志向', color: 'bg-green-200 text-green-800' },
+                  { label: '統合調整', desc: '価値統合', color: 'bg-blue-200 text-blue-800' },
+                  { label: '内発的動機', desc: '内的満足', color: 'bg-purple-200 text-purple-800' }
+                ].map((item, idx) => (
+                  <div key={idx}>
+                    <div className={`${item.color} rounded-lg p-3 text-center`}>
+                      <div className="font-semibold text-sm mb-1">{item.label}</div>
+                      <div className="text-xs text-gray-700">{item.desc}</div>
+                    </div>
+                    {idx < 5 && (
+                      <div className="text-center text-gray-500 text-sm py-1">↓</div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </section>
+        </AccordionSection>
 
         {/* 3. Big Five性格理論 */}
-        <section id="bigfive" className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <div className="flex items-center mb-8">
-            <Brain className="w-8 h-8 text-blue-600 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">3. Big Five性格理論との統合</h2>
-          </div>
-          
-          <div className="mb-8">
+        <AccordionSection
+          id="bigfive"
+          title="3. Big Five性格理論との統合"
+          icon={<Brain className="w-6 h-6 md:w-8 md:h-8" />}
+          iconColor="text-blue-600"
+        >
+          <div className="mb-6 md:mb-8">
             <h3 className="text-2xl font-semibold text-gray-900 mb-4">Big Five理論の選択理由</h3>
             <p className="text-lg text-gray-700 mb-6">
               Big Five性格理論は、現代心理学で最も科学的に確立された性格モデルです。
@@ -463,16 +581,17 @@ export default function SciencePage() {
               </ul>
             </div>
           </div>
-        </section>
+        </AccordionSection>
 
         {/* 4. 比較優位性 */}
-        <section id="comparison" className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <div className="flex items-center mb-8">
-            <BarChart3 className="w-8 h-8 text-green-600 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">4. 既存診断システムとの比較優位性</h2>
-          </div>
-          
-          <div className="overflow-x-auto mb-8">
+        <AccordionSection
+          id="comparison"
+          title="4. 既存診断システムとの比較優位性"
+          icon={<BarChart3 className="w-6 h-6 md:w-8 md:h-8" />}
+          iconColor="text-green-600"
+        >
+          {/* デスクトップ：表形式 */}
+          <div className="hidden md:block overflow-x-auto mb-8">
             <table className="w-full border-collapse border border-gray-300 rounded-lg overflow-hidden">
               <thead className="bg-gray-100">
                 <tr>
@@ -509,6 +628,33 @@ export default function SciencePage() {
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          {/* スマホ：カード形式 */}
+          <div className="md:hidden space-y-4 mb-8">
+            {[
+              { title: '理論的基盤', conventional: '感覚モダリティ（視覚・聴覚等）', lival: 'SDT + Big Five' },
+              { title: '科学的証拠', conventional: '実証的支持なし（Pashler et al.）', lival: '豊富な研究蓄積で実証' },
+              { title: '予測精度', conventional: '学習成果との相関不明', lival: '学習成果予測に有効' },
+              { title: '対象年齢', conventional: '年齢考慮なし', lival: '中高生特化で最適化' },
+              { title: 'AI最適化', conventional: '表面的分類のみ', lival: '動機と性格の深層分析' }
+            ].map((item, idx) => (
+              <div key={idx} className="bg-white rounded-lg border-2 border-gray-200 overflow-hidden">
+                <div className="bg-gray-100 px-3 py-2">
+                  <h4 className="font-bold text-gray-900 text-sm">{item.title}</h4>
+                </div>
+                <div className="p-3 space-y-3">
+                  <div>
+                    <div className="text-xs font-semibold text-gray-600 mb-1">従来診断</div>
+                    <div className="text-sm text-red-700">{item.conventional}</div>
+                  </div>
+                  <div className="border-t border-gray-200 pt-2">
+                    <div className="text-xs font-semibold text-gray-600 mb-1">LIVAL</div>
+                    <div className="text-sm text-blue-700 font-medium">{item.lival}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -559,16 +705,16 @@ export default function SciencePage() {
               </div>
             </div>
           </div>
-        </section>
+        </AccordionSection>
 
         {/* 5. 科学的設計 */}
-        <section id="design" className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <div className="flex items-center mb-8">
-            <Calculator className="w-8 h-8 text-green-600 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">5. 本システムの科学的設計</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <AccordionSection
+          id="design"
+          title="5. 本システムの科学的設計"
+          icon={<Calculator className="w-6 h-6 md:w-8 md:h-8" />}
+          iconColor="text-green-600"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
             <div>
               <h3 className="text-2xl font-semibold text-gray-900 mb-6">質問設計の根拠</h3>
               
@@ -696,16 +842,16 @@ export default function SciencePage() {
               </div>
             </div>
           </div>
-        </section>
+        </AccordionSection>
 
         {/* 6. パイロット検証 */}
-        <section id="validation" className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <div className="flex items-center mb-8">
-            <CheckCircle className="w-8 h-8 text-green-600 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">6. パイロット検証結果</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <AccordionSection
+          id="validation"
+          title="6. パイロット検証結果"
+          icon={<CheckCircle className="w-6 h-6 md:w-8 md:h-8" />}
+          iconColor="text-green-600"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
             <div>
               <h3 className="text-2xl font-semibold text-gray-900 mb-6">検証概要</h3>
               <div className="bg-green-50 rounded-lg p-6">
@@ -819,16 +965,16 @@ export default function SciencePage() {
               </div>
             </div>
           </div>
-        </section>
+        </AccordionSection>
 
         {/* 7. 研究倫理 */}
-        <section id="ethics" className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <div className="flex items-center mb-8">
-            <Shield className="w-8 h-8 text-blue-600 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">7. 研究倫理と責任ある開発</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <AccordionSection
+          id="ethics"
+          title="7. 研究倫理と責任ある開発"
+          icon={<Shield className="w-6 h-6 md:w-8 md:h-8" />}
+          iconColor="text-blue-600"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             <div className="space-y-6">
               <div className="bg-blue-50 rounded-lg p-6">
                 <h3 className="text-xl font-bold text-blue-900 mb-4 flex items-center">
@@ -890,16 +1036,16 @@ export default function SciencePage() {
               </div>
             </div>
           </div>
-        </section>
+        </AccordionSection>
 
         {/* 8. 参考文献 */}
-        <section id="references" className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-          <div className="flex items-center mb-8">
-            <BookOpen className="w-8 h-8 text-gray-600 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">8. 参考文献</h2>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <AccordionSection
+          id="references"
+          title="8. 参考文献"
+          icon={<BookOpen className="w-6 h-6 md:w-8 md:h-8" />}
+          iconColor="text-gray-600"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 text-gray-800">
             <div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4 border-b-2 border-blue-200 pb-2">主要理論文献</h3>
               <div className="space-y-4">
@@ -958,45 +1104,45 @@ export default function SciencePage() {
               </div>
             </div>
           </div>
-        </section>
+        </AccordionSection>
 
         {/* 今後の展開 */}
-        <section className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl shadow-lg p-8 mb-12">
-          <div className="flex items-center mb-6">
-            <Globe className="w-8 h-8 text-purple-600 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">今後の展開と研究計画</h2>
+        <section className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl shadow-lg p-4 md:p-8 mb-6 md:mb-12">
+          <div className="flex items-center mb-4 md:mb-6">
+            <Globe className="w-6 h-6 md:w-8 md:h-8 text-purple-600 mr-3" />
+            <h2 className="text-xl md:text-3xl font-bold text-gray-900">今後の展開と研究計画</h2>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">短期計画（6ヶ月）</h3>
-              <ul className="space-y-3 text-gray-700">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+            <div className="bg-white rounded-lg p-4 md:p-6">
+              <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">短期計画（6ヶ月）</h3>
+              <ul className="space-y-2 md:space-y-3 text-gray-700">
                 <li className="flex items-start">
-                  <LineChart className="w-5 h-5 text-blue-600 mr-2 mt-1" />
-                  <span><strong>診断精度向上:</strong> より多くのデータによる検証</span>
+                  <LineChart className="w-4 h-4 md:w-5 md:h-5 text-blue-600 mr-2 mt-1 flex-shrink-0" />
+                  <span className="text-sm md:text-base"><strong>診断精度向上:</strong> より多くのデータによる検証</span>
                 </li>
                 <li className="flex items-start">
-                  <Globe className="w-5 h-5 text-green-600 mr-2 mt-1" />
-                  <span><strong>文化適応:</strong> 日本の教育文脈に特化した調整</span>
+                  <Globe className="w-4 h-4 md:w-5 md:h-5 text-green-600 mr-2 mt-1 flex-shrink-0" />
+                  <span className="text-sm md:text-base"><strong>文化適応:</strong> 日本の教育文脈に特化した調整</span>
                 </li>
                 <li className="flex items-start">
-                  <BarChart3 className="w-5 h-5 text-purple-600 mr-2 mt-1" />
-                  <span><strong>効果測定:</strong> 学習成果データとの相関分析</span>
+                  <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-purple-600 mr-2 mt-1 flex-shrink-0" />
+                  <span className="text-sm md:text-base"><strong>効果測定:</strong> 学習成果データとの相関分析</span>
                 </li>
               </ul>
             </div>
-            
-            <div className="bg-white rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">中期から実装に至るまで</h3>
+
+            <div className="bg-white rounded-lg p-4 md:p-6">
+              <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-3 md:mb-4">中期から実装に至るまで</h3>
               <div className="text-gray-700">
-                <p className="mb-4">
+                <p className="mb-3 md:mb-4 text-sm md:text-base">
                   実際に協力していただいた高等学校の高校生を中心に診断を体験していただき、
                   フィードバックとユーザー本人の評価意見をいただき、
                   さらに詳細な設計の見直しと整合性の向上を図りました。
                 </p>
-                <div className="bg-purple-50 rounded p-4">
-                  <div className="text-sm font-semibold text-purple-900">継続的改善プロセス</div>
-                  <div className="text-sm text-purple-800 mt-1">
+                <div className="bg-purple-50 rounded p-3 md:p-4">
+                  <div className="text-xs md:text-sm font-semibold text-purple-900">継続的改善プロセス</div>
+                  <div className="text-xs md:text-sm text-purple-800 mt-1">
                     ユーザーフィードバック → 診断精度向上 → 理論的妥当性検証 → システム改善
                   </div>
                 </div>
@@ -1006,20 +1152,20 @@ export default function SciencePage() {
         </section>
 
         {/* 結論 */}
-        <section className="bg-white rounded-2xl shadow-lg p-8 mb-12">
+        <section className="bg-white rounded-2xl shadow-lg p-4 md:p-8 mb-6 md:mb-12">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">結論</h2>
-            <div className="prose prose-lg max-w-none text-gray-700">
-              <p className="text-xl leading-relaxed mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6">結論</h2>
+            <div className="prose prose-lg max-w-none text-gray-700 px-2">
+              <p className="text-base md:text-xl leading-relaxed mb-4 md:mb-6">
                 本診断システムは、<strong className="text-blue-600">科学的根拠に基づく設計</strong>により、
                 従来の学習スタイル診断の限界を克服し、
                 <strong className="text-purple-600">真に学習成果向上に寄与する</strong>ことを目指しています。
               </p>
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
-                <p className="text-lg font-semibold text-gray-900 mb-3">
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 md:p-6">
+                <p className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-3">
                   40年以上の心理学研究 × 最新のAI技術 × 日本の教育文脈
                 </p>
-                <p className="text-gray-700">
+                <p className="text-sm md:text-base text-gray-700">
                   この融合により、中高生一人ひとりの学習特性を科学的に分析し、
                   真のパーソナライゼーション教育を実現します。
                 </p>
@@ -1029,15 +1175,15 @@ export default function SciencePage() {
         </section>
 
         {/* フッター */}
-        <div className="text-center mt-12 pt-8 border-t border-gray-200">
-          <Link 
+        <div className="text-center mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-200">
+          <Link
             href="/diagnosis"
-            className="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 text-lg font-semibold"
+            className="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 md:px-8 md:py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 text-base md:text-lg font-semibold"
           >
-            <Brain className="w-6 h-6 mr-3" />
+            <Brain className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3" />
             科学的診断を体験する
           </Link>
-          <p className="text-sm text-gray-500 mt-4">
+          <p className="text-xs md:text-sm text-gray-500 mt-3 md:mt-4 px-4">
             あなたの学習特性を40年以上の心理学研究に基づいて分析します
           </p>
         </div>

@@ -54,9 +54,10 @@ export default function DashboardPage() {
 
       alert(`✅ サブスクリプションを再開しました\n\n引き続きご利用いただけます。`)
       window.location.reload()
-    } catch (error: any) {
+    } catch (error) {
       console.error('Resume error:', error)
-      alert(`❌ 再開処理中にエラーが発生しました\n\n${error.message || '不明なエラー'}`)
+      const message = error instanceof Error ? error.message : '不明なエラー'
+      alert(`❌ 再開処理中にエラーが発生しました\n\n${message}`)
     } finally {
       setResuming(false)
     }

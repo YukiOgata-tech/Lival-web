@@ -3,16 +3,17 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { 
-  Brain, 
-  Sparkles, 
-  Zap, 
-  Target, 
-  Users, 
-  BookOpen, 
+import {
+  Brain,
+  Sparkles,
+  Zap,
+  Target,
+  Users,
+  BookOpen,
   Award,
   ArrowRight,
-  Play
+  Play,
+  Star
 } from 'lucide-react'
 
 // Lottie用のプレースホルダー
@@ -166,7 +167,15 @@ export default function HomeHeroSection() {
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </span>
             </Link>
-            
+
+            <Link
+              href="/daily-fortune"
+              className="group flex items-center justify-center px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-base md:text-lg font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 md:transform md:hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              <Star className="w-5 h-5 mr-2" />
+              今日の学習運は？
+            </Link>
+
             <button className="group flex items-center justify-center px-6 py-3 md:px-8 md:py-4 border-2 border-gray-300 text-gray-700 text-base md:text-lg font-semibold rounded-full hover:border-gray-400 transition-all duration-300 text-accent">
               <Play className="w-5 h-5 mr-2" />
               デモ動画を見る

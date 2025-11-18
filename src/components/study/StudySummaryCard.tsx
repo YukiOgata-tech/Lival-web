@@ -1,7 +1,7 @@
 // src/components/study/StudySummaryCard.tsx
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react'; // Import useCallback
 import Link from 'next/link';
 import { StudyStats } from '../../types/study';
 import { getStudyStats } from '../../lib/api/studyLogService';
@@ -16,11 +16,8 @@ export default function StudySummaryCard({ userId, isLinked = false }: StudySumm
   const [stats, setStats] = useState<StudyStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadStats();
-  }, [userId]);
-
-  const loadStats = async () => {
+  // Wrap loadStats in useCallback
+  const loadStats = useCallback(async () => {
     try {
       const studyStats = await getStudyStats(userId);
       setStats(studyStats);
@@ -28,7 +25,12 @@ export default function StudySummaryCard({ userId, isLinked = false }: StudySumm
       console.error('Error loading study stats:', error);
     }
     setIsLoading(false);
-  };
+  }, [userId]);
+
+  // Update useEffect dependency array
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   const formatTime = (minutes: number) => {
     if (minutes < 60) {
@@ -67,7 +69,7 @@ export default function StudySummaryCard({ userId, isLinked = false }: StudySumm
   }
 
   return (
-    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 h-full"> {/* Added h-full here */}
+    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
