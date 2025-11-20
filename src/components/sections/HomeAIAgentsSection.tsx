@@ -20,21 +20,21 @@ export default function HomeAIAgentsSection() {
       description: 'あなた専用の学習計画を立案',
       icon: Calendar,
       color: 'from-blue-500 to-cyan-500',
-      features: ['対話型相談', 'プラン作成', 'PDF出力']
+      features: ['対話型相談', 'プラン作成', 'PDF・画像出力']
     },
     {
       name: '家庭教師AI',
-      description: '24時間質問対応',
+      description: '24時間質問対応、全科目対応の講師',
       icon: BookOpen,
       color: 'from-green-500 to-emerald-500',
-      features: ['個別指導', '解説付き', '弱点分析']
+      features: ['個別指導', '解説付き', '自動復習コンテンツ配信', 'チャット内レポート']
     },
     {
       name: '進路カウンセラーAI',
-      description: '将来の目標設定をサポート（モバイルアプリ限定）',
+      description: '大学情報のリサーチ、進路サポート（モバイルアプリ限定）',
       icon: Users,
       color: 'from-purple-500 to-indigo-500',
-      features: ['適性分析', '進路提案', 'キャリア相談'],
+      features: ['適性分析', '進路提案', 'キャリア相談', '学校調査モード'],
       mobileOnly: true
     }
   ]
@@ -167,11 +167,11 @@ export default function HomeAIAgentsSection() {
         >
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 sm:px-0">
             <Link
-              href="/lival-agent-mode/threads/planner"
+              href="/lival-agent-mode/threads"
               className="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg text-base sm:text-lg font-semibold w-full sm:w-auto text-center justify-center"
             >
               <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" />
-              プランナーAIを体験
+              AIを体験
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 sm:ml-3" />
             </Link>
             
@@ -185,8 +185,8 @@ export default function HomeAIAgentsSection() {
             </Link>
           </div>
           
-          <p className="text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4 px-4 sm:px-0">
-            ※ 進路カウンセラーAIはモバイルアプリ限定です
+          <p className="text-xs sm:text-sm text-gray-600 mt-3 sm:mt-4 px-4 sm:px-0">
+            ※ 進路カウンセラーAIはモバイルアプリ限定です。
           </p>
         </motion.div>
       </div>

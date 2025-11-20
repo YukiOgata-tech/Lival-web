@@ -1,10 +1,12 @@
 // src/components/study/StudyLogModal.tsx
 'use client'
 import { useState, useEffect } from 'react'
-import { StudyLogInput, BookSearchResult } from '../../types/study'
+import { StudyLogInput, BookSearchResult, VideoSearchResult } from '../../types/study'
 import { searchBookByISBN, searchBookByTitle } from '../../lib/api/bookService'
+import { searchVideoByUrl, searchVideos } from '../../lib/api/youtubeService'
 import { BookSearchLoading } from '../ui/LoadingAnimation'
 import BarcodeScanner from './BarcodeScanner'
+import { Youtube, BookOpen, X } from 'lucide-react'
 
 interface StudyLogModalProps {
   isOpen: boolean
@@ -13,13 +15,11 @@ interface StudyLogModalProps {
   initialData?: StudyLogInput
   mode: 'create' | 'edit'
 }
-/**
- * 4モード:
- * - 'isbn'   : ISBN検索 → 選択で book_id を確定
- * - 'title'  : 書籍名検索 → 選択で book_id を確定
- * - 'manual' : 手入力タイトルで登録（book_id は null）
- * - 'none'   : 書籍なし（free_mode = true、book_id も手入力タイトルも無しでOK）
- */
+
+type ContentType = 'book' | 'video' | 'none'
+type BookSearchMode = 'isbn' | 'title' | 'manual'
+type VideoSearchMode = 'url' | 'search' | 'manual'
+
 export default function StudyLogModal({
   isOpen,
   onClose,
@@ -30,21 +30,28 @@ export default function StudyLogModal({
   const [formData, setFormData] = useState<StudyLogInput>({
     book_id: null,
     manual_book_title: '',
+    video_id: null,
+    manual_video_title: '',
     duration_minutes: 30,
     memo: '',
     studied_at: new Date().toISOString().slice(0, 16),
     free_mode: false,
   })
 
-  const [bookSearchType, setBookSearchType] = useState<'isbn' | 'title' | 'manual' | 'none'>('none')
+  const [contentType, setContentType] = useState<ContentType>('none')
+  const [bookSearchMode, setBookSearchMode] = useState<BookSearchMode>('isbn')
+  const [videoSearchMode, setVideoSearchMode] = useState<VideoSearchMode>('url')
+
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<BookSearchResult[]>([])
+  const [bookSearchResults, setBookSearchResults] = useState<BookSearchResult[]>([])
+  const [videoSearchResults, setVideoSearchResults] = useState<VideoSearchResult[]>([])
   const [selectedBook, setSelectedBook] = useState<BookSearchResult | null>(null)
+  const [selectedVideo, setSelectedVideo] = useState<VideoSearchResult | null>(null)
+
   const [isSearching, setIsSearching] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false)
 
-  // 空文字/空白のみを null に変換（DB制約/RLSに優しい形へ）
   const sanitizeNullable = (s?: string | null) => {
     const t = (s ?? '').trim()
     return t.length ? t : null
@@ -56,89 +63,142 @@ export default function StudyLogModal({
 
     if (initialData) {
       const hasBook = Boolean(initialData.book_id)
-      const hasManual = Boolean(sanitizeNullable(initialData.manual_book_title))
+      const hasManualBook = Boolean(sanitizeNullable(initialData.manual_book_title))
+      const hasVideo = Boolean(initialData.video_id)
+      const hasManualVideo = Boolean(sanitizeNullable(initialData.manual_video_title))
       const isFree = Boolean(initialData.free_mode)
 
       setFormData({
         book_id: hasBook ? initialData.book_id! : null,
-        manual_book_title: hasManual ? initialData.manual_book_title! : '',
+        manual_book_title: hasManualBook ? initialData.manual_book_title! : '',
+        video_id: hasVideo ? initialData.video_id! : null,
+        manual_video_title: hasManualVideo ? initialData.manual_video_title! : '',
         duration_minutes: initialData.duration_minutes,
         memo: initialData.memo ?? '',
         studied_at: initialData.studied_at,
         free_mode: isFree,
       })
 
-      // 既存データからモード推定
-      if (hasBook) setBookSearchType('isbn')
-      else if (hasManual) setBookSearchType('manual')
-      else if (isFree) setBookSearchType('none')
-      else setBookSearchType('none')
+      // 既存データからコンテンツタイプとモードを推定
+      if (hasBook || hasManualBook) {
+        setContentType('book')
+        if (hasBook) setBookSearchMode('isbn')
+        else if (hasManualBook) setBookSearchMode('manual')
+      } else if (hasVideo || hasManualVideo) {
+        setContentType('video')
+        if (hasVideo) setVideoSearchMode('url')
+        else if (hasManualVideo) setVideoSearchMode('manual')
+      } else if (isFree) {
+        setContentType('none')
+      }
     } else {
       setFormData({
         book_id: null,
         manual_book_title: '',
+        video_id: null,
+        manual_video_title: '',
         duration_minutes: 30,
         memo: '',
         studied_at: new Date().toISOString().slice(0, 16),
         free_mode: false,
       })
-      setBookSearchType('none')
+      setContentType('none')
     }
 
     setSearchQuery('')
-    setSearchResults([])
+    setBookSearchResults([])
+    setVideoSearchResults([])
     setSelectedBook(null)
+    setSelectedVideo(null)
   }, [isOpen, initialData])
 
-  // モード切替時の副作用：各モードに不要な値をクリア
+  // コンテンツタイプ切替時のクリーンアップ
   useEffect(() => {
     if (!isOpen) return
-    if (bookSearchType === 'isbn' || bookSearchType === 'title') {
-      setFormData(prev => ({ ...prev, free_mode: false, manual_book_title: '' }))
-    } else if (bookSearchType === 'manual') {
-      setFormData(prev => ({ ...prev, free_mode: false, book_id: null }))
-      setSelectedBook(null)
-    } else if (bookSearchType === 'none') {
-      setFormData(prev => ({ ...prev, free_mode: true, book_id: null, manual_book_title: '' }))
-      setSelectedBook(null)
-      setSearchQuery('')
-      setSearchResults([])
-    }
-  }, [bookSearchType, isOpen])
 
-  // 検索
-  const handleSearch = async () => {
+    if (contentType === 'book') {
+      setFormData(prev => ({
+        ...prev,
+        video_id: null,
+        manual_video_title: '',
+        free_mode: false
+      }))
+      setSelectedVideo(null)
+      setVideoSearchResults([])
+    } else if (contentType === 'video') {
+      setFormData(prev => ({
+        ...prev,
+        book_id: null,
+        manual_book_title: '',
+        free_mode: false
+      }))
+      setSelectedBook(null)
+      setBookSearchResults([])
+    } else if (contentType === 'none') {
+      setFormData(prev => ({
+        ...prev,
+        book_id: null,
+        manual_book_title: '',
+        video_id: null,
+        manual_video_title: '',
+        free_mode: true
+      }))
+      setSelectedBook(null)
+      setSelectedVideo(null)
+      setBookSearchResults([])
+      setVideoSearchResults([])
+    }
+    setSearchQuery('')
+  }, [contentType, isOpen])
+
+  // 書籍検索
+  const handleBookSearch = async () => {
     if (!searchQuery.trim()) return
     setIsSearching(true)
     try {
-      if (bookSearchType === 'isbn') {
+      if (bookSearchMode === 'isbn') {
         const r = await searchBookByISBN(searchQuery.trim())
-        setSearchResults(r ? [r] : [])
-      } else if (bookSearchType === 'title') {
+        setBookSearchResults(r ? [r] : [])
+      } else if (bookSearchMode === 'title') {
         const rs = await searchBookByTitle(searchQuery.trim())
-        setSearchResults(rs)
+        setBookSearchResults(rs)
       }
     } finally {
       setIsSearching(false)
     }
   }
 
-  // バーコード読み取り完了処理
+  // 動画検索
+  const handleVideoSearch = async () => {
+    if (!searchQuery.trim()) return
+    setIsSearching(true)
+    try {
+      if (videoSearchMode === 'url') {
+        const r = await searchVideoByUrl(searchQuery.trim())
+        setVideoSearchResults(r ? [r] : [])
+        // URL検索で1件見つかった場合は自動選択
+        if (r) handleVideoSelect(r)
+      } else if (videoSearchMode === 'search') {
+        const rs = await searchVideos(searchQuery.trim(), 10)
+        setVideoSearchResults(rs)
+      }
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
+  // バーコード読み取り完了
   const handleBarcodeScanComplete = async (isbn: string) => {
     setIsBarcodeScannerOpen(false)
-    setBookSearchType('isbn')
+    setContentType('book')
+    setBookSearchMode('isbn')
     setSearchQuery(isbn)
-    
-    // 自動的にISBN検索を実行
+
     setIsSearching(true)
     try {
       const result = await searchBookByISBN(isbn)
-      setSearchResults(result ? [result] : [])
-      
-      // 結果が1つだけの場合は自動選択
-      if (result) {
-        handleBookSelect(result)
-      }
+      setBookSearchResults(result ? [result] : [])
+      if (result) handleBookSelect(result)
     } catch (error) {
       console.error('Barcode search error:', error)
     } finally {
@@ -146,12 +206,27 @@ export default function StudyLogModal({
     }
   }
 
-  // 書籍選択：book_id を確定、手入力/フリーモードは解除
+  // 書籍選択
   const handleBookSelect = (book: BookSearchResult) => {
     setSelectedBook(book)
     setFormData(prev => ({
       ...prev,
-      book_id: book.id ?? null, // ← books.id(UUID) を格納
+      book_id: book.id ?? null,
+      manual_book_title: '',
+      video_id: null,
+      manual_video_title: '',
+      free_mode: false,
+    }))
+  }
+
+  // 動画選択
+  const handleVideoSelect = (video: VideoSearchResult) => {
+    setSelectedVideo(video)
+    setFormData(prev => ({
+      ...prev,
+      video_id: video.id ?? null,
+      manual_video_title: '',
+      book_id: null,
       manual_book_title: '',
       free_mode: false,
     }))
@@ -162,53 +237,67 @@ export default function StudyLogModal({
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      const resolvedBookId = formData.book_id ?? selectedBook?.id ?? null
-      const resolvedManual = sanitizeNullable(formData.manual_book_title)
-      const isFree = !!formData.free_mode || bookSearchType === 'none'
-
-      // モード別の最小要件を満たす payload を組み立て
       let payload: StudyLogInput
-      if (bookSearchType === 'isbn' || bookSearchType === 'title') {
-        payload = {
-          book_id: resolvedBookId,       // 選書時は book_id 必須
-          manual_book_title: '',
-          duration_minutes: formData.duration_minutes,
-          memo: sanitizeNullable(formData.memo) ?? '',
-          studied_at: formData.studied_at,
-          free_mode: false,
+
+      if (contentType === 'book') {
+        if (bookSearchMode === 'manual') {
+          payload = {
+            book_id: null,
+            manual_book_title: sanitizeNullable(formData.manual_book_title) ?? '',
+            video_id: null,
+            manual_video_title: '',
+            duration_minutes: formData.duration_minutes,
+            memo: sanitizeNullable(formData.memo) ?? '',
+            studied_at: formData.studied_at,
+            free_mode: false,
+          }
+        } else {
+          payload = {
+            book_id: formData.book_id ?? selectedBook?.id ?? null,
+            manual_book_title: '',
+            video_id: null,
+            manual_video_title: '',
+            duration_minutes: formData.duration_minutes,
+            memo: sanitizeNullable(formData.memo) ?? '',
+            studied_at: formData.studied_at,
+            free_mode: false,
+          }
         }
-      } else if (bookSearchType === 'manual') {
-        payload = {
-          book_id: null,
-          manual_book_title: resolvedManual ?? '', // 空白は直前でnull→''に戻す
-          duration_minutes: formData.duration_minutes,
-          memo: sanitizeNullable(formData.memo) ?? '',
-          studied_at: formData.studied_at,
-          free_mode: false,
+      } else if (contentType === 'video') {
+        if (videoSearchMode === 'manual') {
+          payload = {
+            book_id: null,
+            manual_book_title: '',
+            video_id: null,
+            manual_video_title: sanitizeNullable(formData.manual_video_title) ?? '',
+            duration_minutes: formData.duration_minutes,
+            memo: sanitizeNullable(formData.memo) ?? '',
+            studied_at: formData.studied_at,
+            free_mode: false,
+          }
+        } else {
+          payload = {
+            book_id: null,
+            manual_book_title: '',
+            video_id: formData.video_id ?? selectedVideo?.id ?? null,
+            manual_video_title: '',
+            duration_minutes: formData.duration_minutes,
+            memo: sanitizeNullable(formData.memo) ?? '',
+            studied_at: formData.studied_at,
+            free_mode: false,
+          }
         }
       } else {
-        // 書籍なし（フリーモード）: book_id も manual_book_title も不要
+        // なし（フリーモード）
         payload = {
           book_id: null,
           manual_book_title: '',
+          video_id: null,
+          manual_video_title: '',
           duration_minutes: formData.duration_minutes,
           memo: sanitizeNullable(formData.memo) ?? '',
           studied_at: formData.studied_at,
           free_mode: true,
-        }
-      }
-
-      // 事前ガード（UX向上）：none 以外で最低条件を満たさなければ警告
-      if (!isFree) {
-        const ok =
-          (bookSearchType === 'isbn' || bookSearchType === 'title')
-            ? !!payload.book_id
-            : (bookSearchType === 'manual')
-              ? !!sanitizeNullable(payload.manual_book_title)
-              : true
-        if (!ok) {
-          console.warn('入力が不足しています。書籍を選ぶか、タイトルを入力してください。')
-          return
         }
       }
 
@@ -233,152 +322,292 @@ export default function StudyLogModal({
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="w-6 h-6" />
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* 記録モード選択 */}
+            {/* コンテンツタイプ選択 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">書籍の記録方法</label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {(['isbn','title','manual','none'] as const).map(k => (
-                  <button
-                    key={k}
-                    type="button"
-                    onClick={() => setBookSearchType(k)}
-                    className={`p-3 text-sm rounded-lg border transition-colors ${
-                      bookSearchType === k
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    {k === 'isbn' ? 'ISBN検索'
-                      : k === 'title' ? '書籍名検索'
-                      : k === 'manual' ? '手入力'
-                      : '書籍なし'}
-                  </button>
-                ))}
+              <label className="block text-sm font-medium text-gray-700 mb-3">学習内容</label>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setContentType('book')}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                    contentType === 'book'
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <BookOpen className={`w-6 h-6 ${contentType === 'book' ? 'text-blue-600' : 'text-gray-400'}`} />
+                  <span className={`text-sm font-medium ${contentType === 'book' ? 'text-blue-700' : 'text-gray-700'}`}>
+                    書籍
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setContentType('video')}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                    contentType === 'video'
+                      ? 'border-red-500 bg-red-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <Youtube className={`w-6 h-6 ${contentType === 'video' ? 'text-red-600' : 'text-gray-400'}`} />
+                  <span className={`text-sm font-medium ${contentType === 'video' ? 'text-red-700' : 'text-gray-700'}`}>
+                    動画
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setContentType('none')}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                    contentType === 'none'
+                      ? 'border-gray-500 bg-gray-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <X className={`w-6 h-6 ${contentType === 'none' ? 'text-gray-600' : 'text-gray-400'}`} />
+                  <span className={`text-sm font-medium ${contentType === 'none' ? 'text-gray-700' : 'text-gray-700'}`}>
+                    なし
+                  </span>
+                </button>
               </div>
             </div>
 
-            {/* 検索UI（ISBN/タイトル） */}
-            {(bookSearchType === 'isbn' || bookSearchType === 'title') && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {bookSearchType === 'isbn' ? 'ISBN' : '書籍名'}
-                </label>
-                <div className="space-y-3">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder={bookSearchType === 'isbn' ? 'ISBNを入力' : '書籍名を入力'}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleSearch}
-                      disabled={isSearching || !searchQuery.trim()}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isSearching ? '検索中...' : '検索'}
-                    </button>
-                  </div>
-                  
-                  {bookSearchType === 'isbn' && (
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 h-px bg-gray-300"></div>
-                      <span className="text-sm text-gray-500">または</span>
-                      <div className="flex-1 h-px bg-gray-300"></div>
-                    </div>
-                  )}
-                  
-                  {bookSearchType === 'isbn' && (
-                    <button
-                      type="button"
-                      onClick={() => setIsBarcodeScannerOpen(true)}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-md hover:border-gray-400 hover:bg-gray-50 transition-colors"
-                    >
-                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span className="text-gray-700">バーコードをスキャン</span>
-                    </button>
-                  )}
-                </div>
-
-                {/* 検索中のローディングアニメーション */}
-                {isSearching && (
-                  <div className="mt-4 py-8">
-                    <BookSearchLoading 
-                      message={
-                        bookSearchType === 'isbn' 
-                          ? 'ISBNから書籍を検索しています...'
-                          : 'タイトルから書籍を検索しています...'
-                      }
-                      size="md"
-                    />
-                  </div>
-                )}
-
-                {/* 検索結果 */}
-                {!isSearching && searchResults.length > 0 && (
-                  <div className="mt-3 space-y-2 max-h-60 overflow-y-auto border rounded-md">
-                    {searchResults.map((book) => (
-                      <div
-                        key={book.id ?? book.isbn ?? `${book.title}-${book.author}`}
-                        onClick={() => handleBookSelect(book)}
-                        className={`p-3 cursor-pointer border-b last:border-b-0 hover:bg-gray-50 ${
-                          selectedBook?.id && book.id
-                            ? selectedBook.id === book.id
-                              ? 'bg-blue-50 border-blue-200'
-                              : ''
-                            : selectedBook?.isbn && book.isbn && selectedBook.isbn === book.isbn
-                              ? 'bg-blue-50 border-blue-200'
-                              : ''
+            {/* 書籍検索UI */}
+            {contentType === 'book' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">検索方法</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['isbn', 'title', 'manual'] as const).map(mode => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setBookSearchMode(mode)}
+                        className={`p-3 text-sm rounded-lg border transition-colors ${
+                          bookSearchMode === mode
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
-                        <div className="flex items-start gap-3">
-                          {book.coverImageUrl && (
-                            <img
-                              src={book.coverImageUrl}
-                              alt={book.title}
-                              className="w-12 h-16 object-cover rounded"
-                            />
-                          )}
-                          <div>
-                            <h4 className="font-medium text-gray-900">{book.title}</h4>
-                            <p className="text-sm text-gray-600">{book.author}</p>
-                            <p className="text-xs text-gray-500">{book.publisher} • {book.source}</p>
-                          </div>
-                        </div>
-                      </div>
+                        {mode === 'isbn' ? 'ISBN' : mode === 'title' ? '書籍名' : '手入力'}
+                      </button>
                     ))}
                   </div>
+                </div>
+
+                {(bookSearchMode === 'isbn' || bookSearchMode === 'title') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {bookSearchMode === 'isbn' ? 'ISBN' : '書籍名'}
+                    </label>
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleBookSearch())}
+                          placeholder={bookSearchMode === 'isbn' ? 'ISBNを入力' : '書籍名を入力'}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleBookSearch}
+                          disabled={isSearching || !searchQuery.trim()}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                        >
+                          {isSearching ? '検索中...' : '検索'}
+                        </button>
+                      </div>
+
+                      {bookSearchMode === 'isbn' && (
+                        <>
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 h-px bg-gray-300"></div>
+                            <span className="text-sm text-gray-500">または</span>
+                            <div className="flex-1 h-px bg-gray-300"></div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setIsBarcodeScannerOpen(true)}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-md hover:border-gray-400 hover:bg-gray-50"
+                          >
+                            <span className="text-gray-700">バーコードをスキャン</span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+
+                    {isSearching && (
+                      <div className="mt-4 py-8">
+                        <BookSearchLoading message="書籍を検索しています..." size="md" />
+                      </div>
+                    )}
+
+                    {!isSearching && bookSearchResults.length > 0 && (
+                      <div className="mt-3 space-y-2 max-h-60 overflow-y-auto border rounded-md">
+                        {bookSearchResults.map((book) => (
+                          <div
+                            key={book.id ?? book.isbn}
+                            onClick={() => handleBookSelect(book)}
+                            className={`p-3 cursor-pointer border-b last:border-b-0 hover:bg-gray-50 ${
+                              selectedBook?.id === book.id ? 'bg-blue-50 border-blue-200' : ''
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              {book.coverImageUrl && (
+                                <img
+                                  src={book.coverImageUrl}
+                                  alt={book.title}
+                                  className="w-12 h-16 object-cover rounded"
+                                />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-gray-900 truncate">{book.title}</h4>
+                                <p className="text-sm text-gray-600 truncate">{book.author}</p>
+                                <p className="text-xs text-gray-500">{book.publisher}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
-              </div>
+
+                {bookSearchMode === 'manual' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">書籍名</label>
+                    <input
+                      type="text"
+                      value={formData.manual_book_title ?? ''}
+                      onChange={(e) =>
+                        setFormData(prev => ({ ...prev, manual_book_title: e.target.value }))
+                      }
+                      placeholder="書籍名を入力してください"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
+                      required
+                    />
+                  </div>
+                )}
+              </>
             )}
 
-            {/* 手入力タイトル */}
-            {bookSearchType === 'manual' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">書籍名</label>
-                <input
-                  type="text"
-                  value={formData.manual_book_title ?? ''}
-                  onChange={(e) =>
-                    setFormData(prev => ({ ...prev, manual_book_title: e.target.value }))
-                  }
-                  placeholder="書籍名を入力してください"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
-                  required={bookSearchType === 'manual'}
-                />
-              </div>
+            {/* 動画検索UI */}
+            {contentType === 'video' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">検索方法</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['url', 'search', 'manual'] as const).map(mode => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setVideoSearchMode(mode)}
+                        className={`p-3 text-sm rounded-lg border transition-colors ${
+                          videoSearchMode === mode
+                            ? 'border-red-500 bg-red-50 text-red-700'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        {mode === 'url' ? 'URL' : mode === 'search' ? 'キーワード' : '手入力'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {(videoSearchMode === 'url' || videoSearchMode === 'search') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {videoSearchMode === 'url' ? 'YouTube URL' : 'キーワード'}
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleVideoSearch())}
+                        placeholder={
+                          videoSearchMode === 'url'
+                            ? 'https://www.youtube.com/watch?v=...'
+                            : '動画を検索'
+                        }
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleVideoSearch}
+                        disabled={isSearching || !searchQuery.trim()}
+                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+                      >
+                        {isSearching ? '検索中...' : '検索'}
+                      </button>
+                    </div>
+
+                    {isSearching && (
+                      <div className="mt-4 py-8 text-center">
+                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+                        <p className="mt-2 text-sm text-gray-600">動画を検索しています...</p>
+                      </div>
+                    )}
+
+                    {!isSearching && videoSearchResults.length > 0 && (
+                      <div className="mt-3 space-y-2 max-h-80 overflow-y-auto border rounded-md">
+                        {videoSearchResults.map((video) => (
+                          <div
+                            key={video.id ?? video.videoId}
+                            onClick={() => handleVideoSelect(video)}
+                            className={`p-3 cursor-pointer border-b last:border-b-0 hover:bg-gray-50 ${
+                              selectedVideo?.videoId === video.videoId ? 'bg-red-50 border-red-200' : ''
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              {video.thumbnailUrl && (
+                                <img
+                                  src={video.thumbnailUrl}
+                                  alt={video.title}
+                                  className="w-32 h-18 object-cover rounded"
+                                />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-gray-900 line-clamp-2">{video.title}</h4>
+                                <p className="text-sm text-gray-600">{video.channelTitle}</p>
+                                {video.durationSeconds && (
+                                  <p className="text-xs text-gray-500">
+                                    {Math.floor(video.durationSeconds / 60)}:{String(video.durationSeconds % 60).padStart(2, '0')}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {videoSearchMode === 'manual' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">動画タイトル</label>
+                    <input
+                      type="text"
+                      value={formData.manual_video_title ?? ''}
+                      onChange={(e) =>
+                        setFormData(prev => ({ ...prev, manual_video_title: e.target.value }))
+                      }
+                      placeholder="動画タイトルを入力してください"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-900"
+                      required
+                    />
+                  </div>
+                )}
+              </>
             )}
 
             {/* 学習時間 */}
@@ -420,7 +649,7 @@ export default function StudyLogModal({
                 onChange={(e) => setFormData(prev => ({ ...prev, memo: e.target.value }))}
                 placeholder="学習内容や感想を記録してください"
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder:text-gray-400"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900"
               />
             </div>
 
@@ -436,7 +665,7 @@ export default function StudyLogModal({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
               >
                 {isSubmitting ? '保存中...' : (mode === 'create' ? '記録する' : '更新する')}
               </button>

@@ -5,10 +5,10 @@ import { Users, Clock, TrendingUp, Star } from 'lucide-react'
 
 // 統計数値
 const stats = [
-  { label: '利用学生数', value: '1,000+', icon: Users },
-  { label: '学習時間', value: '500,000+', suffix: '時間', icon: Clock },
-  { label: '成績向上率', value: '95%', icon: TrendingUp },
-  { label: '満足度', value: '4.9', suffix: '/5.0', icon: Star },
+  { label: '利用数者数(2025/10時点)', value: '500+', icon: Users },
+  { label: '総学習時間', value: '500,000+', suffix: '時間', icon: Clock },
+  { label: '成績向上率', value: '85%', icon: TrendingUp },
+  { label: '満足度', value: '4.78', suffix: '/5.0', icon: Star },
 ]
 
 export default function HomeStatsSection() {

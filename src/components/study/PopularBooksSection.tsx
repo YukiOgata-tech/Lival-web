@@ -48,10 +48,19 @@ export default function PopularBooksSection({ className = '' }: PopularBooksSect
 
   const getRankColor = (rank: number) => {
     switch (rank) {
-      case 1: return 'text-yellow-600 bg-yellow-50';
-      case 2: return 'text-gray-600 bg-gray-50'; 
-      case 3: return 'text-orange-600 bg-orange-50';
-      default: return 'text-blue-600 bg-blue-50';
+      case 1: return 'bg-gradient-to-br from-yellow-400 to-yellow-500 text-white shadow-lg';
+      case 2: return 'bg-gradient-to-br from-gray-300 to-gray-400 text-white shadow-lg';
+      case 3: return 'bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-lg';
+      default: return 'bg-gradient-to-br from-blue-400 to-blue-500 text-white shadow-md';
+    }
+  };
+
+  const getCardGradient = (rank: number) => {
+    switch (rank) {
+      case 1: return 'from-yellow-50 via-white to-amber-50 border-yellow-200';
+      case 2: return 'from-gray-50 via-white to-slate-50 border-gray-200';
+      case 3: return 'from-orange-50 via-white to-red-50 border-orange-200';
+      default: return 'from-blue-50 via-white to-cyan-50 border-blue-200';
     }
   };
 
@@ -82,17 +91,22 @@ export default function PopularBooksSection({ className = '' }: PopularBooksSect
   }
 
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 p-4 sm:p-6 ${className}`}>
+    <div className={`bg-gradient-to-br from-blue-50 via-white to-green-50 rounded-xl border border-blue-100 p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow ${className}`}>
       <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-          🔥 人気参考書ランキング TOP5
-        </h3>
-        <div className="flex items-center text-xs sm:text-sm text-gray-500">
-          <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center shadow-md">
+            <span className="text-base sm:text-xl">🔥</span>
+          </div>
+          <h3 className="text-base sm:text-lg font-bold text-gray-900">
+            人気参考書ランキング
+          </h3>
+        </div>
+        <div className="flex items-center gap-1 px-2 sm:px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-xs font-semibold shadow-md">
+          <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
           </svg>
-          <span className="hidden sm:inline">グローバル統計</span>
-          <span className="sm:hidden">全体</span>
+          <span className="hidden sm:inline">全体統計</span>
+          <span className="sm:hidden">TOP5</span>
         </div>
       </div>
 
@@ -117,30 +131,34 @@ export default function PopularBooksSection({ className = '' }: PopularBooksSect
       ) : (
         <div className="space-y-2 sm:space-y-3">
           {popularBooks.map((book) => (
-            <div key={book.id} className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center mr-3 text-sm font-bold ${getRankColor(book.rank)}`}>
-                <span className="hidden sm:inline">{getRankIcon(book.rank)}</span>
-                <span className="sm:hidden">{book.rank}</span>
+            <div
+              key={book.id}
+              className={`flex items-center p-3 sm:p-4 bg-gradient-to-r ${getCardGradient(book.rank)} border rounded-xl hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer`}
+            >
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mr-3 text-base sm:text-xl font-bold ${getRankColor(book.rank)} relative overflow-hidden`}>
+                <div className="absolute inset-0 bg-white opacity-10"></div>
+                <span className="hidden sm:inline relative z-10">{getRankIcon(book.rank)}</span>
+                <span className="sm:hidden relative z-10 text-sm">{book.rank}</span>
               </div>
-              
+
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm sm:text-base text-gray-900 truncate">
+                <div className="font-semibold text-sm sm:text-base text-gray-900 truncate">
                   {book.title}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-500 truncate">
+                <div className="text-xs sm:text-sm text-gray-600 truncate mt-0.5">
                   {book.author} | {book.company}
                 </div>
               </div>
-              
+
               <div className="text-right ml-3">
-                <div className="text-xs sm:text-sm font-semibold text-gray-900">
+                <div className="text-xs sm:text-sm font-bold text-blue-600">
                   {formatUsageCount(book.usage_count_global)}回
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-gray-600">
                   総{formatTime(book.total_minutes_global)}
                 </div>
-                <div className="text-xs text-blue-600">
-                  平均{book.avg_minutes_per_session.toFixed(0)}分/回
+                <div className="text-xs font-semibold text-green-600">
+                  平均{book.avg_minutes_per_session.toFixed(0)}分
                 </div>
               </div>
             </div>
@@ -157,9 +175,10 @@ export default function PopularBooksSection({ className = '' }: PopularBooksSect
         </div>
       )}
 
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="text-xs text-gray-500 text-center">
-          ⚡ 全ユーザーの学習データから算出
+      <div className="mt-4 pt-4 border-t border-blue-100">
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-600 font-medium">
+          <span className="text-sm">⚡</span>
+          <span>全ユーザーの学習データから算出</span>
         </div>
       </div>
     </div>

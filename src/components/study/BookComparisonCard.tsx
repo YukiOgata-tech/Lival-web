@@ -99,13 +99,13 @@ export default function BookComparisonCard({ userId, className = '' }: BookCompa
   const getRankDisplay = (rank: string) => {
     switch (rank) {
       case 'above_average':
-        return { icon: '🔥', text: '平均以上', color: 'text-green-600 bg-green-50' };
+        return { icon: '🔥', text: '平均以上', color: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md' };
       case 'average':
-        return { icon: '📊', text: '平均的', color: 'text-blue-600 bg-blue-50' };
+        return { icon: '📊', text: '平均的', color: 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md' };
       case 'below_average':
-        return { icon: '💪', text: 'がんばろう', color: 'text-orange-600 bg-orange-50' };
+        return { icon: '💪', text: 'がんばろう', color: 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md' };
       default:
-        return { icon: '📚', text: '-', color: 'text-gray-600 bg-gray-50' };
+        return { icon: '📚', text: '-', color: 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-md' };
     }
   };
 
@@ -164,55 +164,60 @@ export default function BookComparisonCard({ userId, className = '' }: BookCompa
   const rankInfo = getRankDisplay(comparison.userRank);
 
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 p-4 sm:p-6 ${className}`}>
+    <div className={`bg-gradient-to-br from-purple-50 via-white to-pink-50 rounded-xl border border-purple-100 p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow ${className}`}>
       <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-          📈 みんなとの比較
-        </h3>
-        <div className={`px-2 py-1 rounded-full text-xs font-medium ${rankInfo.color}`}>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center shadow-md">
+            <span className="text-base sm:text-xl">📈</span>
+          </div>
+          <h3 className="text-base sm:text-lg font-bold text-gray-900">
+            みんなとの比較
+          </h3>
+        </div>
+        <div className={`px-3 py-1.5 rounded-full text-xs font-bold ${rankInfo.color}`}>
           {rankInfo.icon} {rankInfo.text}
         </div>
       </div>
 
       {/* 対象書籍 */}
-      <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-        <div className="text-sm font-medium text-gray-900 text-center">
+      <div className="mb-6 p-3 sm:p-4 bg-gradient-to-r from-indigo-50 via-white to-purple-50 border border-indigo-200 rounded-xl shadow-sm">
+        <div className="text-sm font-semibold text-gray-900 text-center">
           📚 {comparison.bookTitle}
         </div>
       </div>
 
       {/* 使用回数比較 */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700">使用回数</span>
-          <span className={`text-xs font-medium ${usageDiff >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-800">使用回数</span>
+          <span className={`px-2 py-1 rounded-full text-xs font-bold ${usageDiff >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
             {usageDiff >= 0 ? '+' : ''}{usageDiff}%
           </span>
         </div>
-        
-        <div className="space-y-2">
+
+        <div className="space-y-3">
           {/* ユーザー */}
           <div className="flex items-center">
-            <div className="w-12 text-xs text-gray-600 mr-2">あなた</div>
-            <div className="flex-1 bg-gray-200 rounded-full h-4 relative">
-              <div 
-                className="bg-blue-500 h-4 rounded-full flex items-center justify-end pr-2"
+            <div className="w-12 text-xs font-semibold text-blue-600 mr-2">あなた</div>
+            <div className="flex-1 bg-gray-200 rounded-full h-5 relative overflow-hidden shadow-sm">
+              <div
+                className="bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 h-5 rounded-full flex items-center justify-end pr-2 transition-all duration-500"
                 style={{ width: `${usageProgress.user}%` }}
               >
-                <span className="text-xs text-white font-medium">{comparison.userUsage}</span>
+                <span className="text-xs text-white font-bold drop-shadow">{comparison.userUsage}回</span>
               </div>
             </div>
           </div>
-          
+
           {/* 全体平均 */}
           <div className="flex items-center">
-            <div className="w-12 text-xs text-gray-600 mr-2">平均</div>
-            <div className="flex-1 bg-gray-200 rounded-full h-4 relative">
-              <div 
-                className="bg-gray-400 h-4 rounded-full flex items-center justify-end pr-2"
+            <div className="w-12 text-xs font-semibold text-gray-600 mr-2">平均</div>
+            <div className="flex-1 bg-gray-200 rounded-full h-5 relative overflow-hidden shadow-sm">
+              <div
+                className="bg-gradient-to-r from-gray-400 to-gray-500 h-5 rounded-full flex items-center justify-end pr-2 transition-all duration-500"
                 style={{ width: `${usageProgress.global}%` }}
               >
-                <span className="text-xs text-white font-medium">{comparison.globalUsage}</span>
+                <span className="text-xs text-white font-bold drop-shadow">{comparison.globalUsage}回</span>
               </div>
             </div>
           </div>
@@ -221,38 +226,38 @@ export default function BookComparisonCard({ userId, className = '' }: BookCompa
 
       {/* 学習時間比較 */}
       <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700">総学習時間</span>
-          <span className={`text-xs font-medium ${timeDiff >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-semibold text-gray-800">総学習時間</span>
+          <span className={`px-2 py-1 rounded-full text-xs font-bold ${timeDiff >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
             {timeDiff >= 0 ? '+' : ''}{timeDiff}%
           </span>
         </div>
-        
-        <div className="space-y-2">
+
+        <div className="space-y-3">
           {/* ユーザー */}
           <div className="flex items-center">
-            <div className="w-12 text-xs text-gray-600 mr-2">あなた</div>
-            <div className="flex-1 bg-gray-200 rounded-full h-4 relative">
-              <div 
-                className="bg-purple-500 h-4 rounded-full flex items-center justify-end pr-2"
+            <div className="w-12 text-xs font-semibold text-purple-600 mr-2">あなた</div>
+            <div className="flex-1 bg-gray-200 rounded-full h-5 relative overflow-hidden shadow-sm">
+              <div
+                className="bg-gradient-to-r from-purple-500 via-purple-600 to-pink-500 h-5 rounded-full flex items-center justify-end pr-2 transition-all duration-500"
                 style={{ width: `${timeProgress.user}%` }}
               >
-                <span className="text-xs text-white font-medium">
+                <span className="text-xs text-white font-bold drop-shadow">
                   {formatTime(comparison.userTime)}
                 </span>
               </div>
             </div>
           </div>
-          
+
           {/* 全体平均 */}
           <div className="flex items-center">
-            <div className="w-12 text-xs text-gray-600 mr-2">平均</div>
-            <div className="flex-1 bg-gray-200 rounded-full h-4 relative">
-              <div 
-                className="bg-gray-400 h-4 rounded-full flex items-center justify-end pr-2"
+            <div className="w-12 text-xs font-semibold text-gray-600 mr-2">平均</div>
+            <div className="flex-1 bg-gray-200 rounded-full h-5 relative overflow-hidden shadow-sm">
+              <div
+                className="bg-gradient-to-r from-gray-400 to-gray-500 h-5 rounded-full flex items-center justify-end pr-2 transition-all duration-500"
                 style={{ width: `${timeProgress.global}%` }}
               >
-                <span className="text-xs text-white font-medium">
+                <span className="text-xs text-white font-bold drop-shadow">
                   {formatTime(comparison.globalTime)}
                 </span>
               </div>
@@ -262,8 +267,8 @@ export default function BookComparisonCard({ userId, className = '' }: BookCompa
       </div>
 
       {/* 分析コメント */}
-      <div className="mt-6 pt-4 border-t border-gray-100">
-        <div className="text-xs text-gray-600 bg-blue-50 p-3 rounded-lg">
+      <div className="mt-6 pt-4 border-t border-purple-100">
+        <div className="text-xs font-medium text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 p-3 sm:p-4 rounded-xl shadow-md">
           {usageDiff >= 20 && timeDiff >= 20 ? (
             <span>🎉 素晴らしい！平均をかなり上回る学習量です。この調子で継続しましょう！</span>
           ) : usageDiff >= 0 && timeDiff >= 0 ? (

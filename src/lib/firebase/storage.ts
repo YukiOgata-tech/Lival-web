@@ -4,9 +4,6 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase'
 
-// Development flag
-const isDevelopment = process.env.NODE_ENV === 'development'
-
 export interface ImageUploadResult {
   id: string
   url: string
@@ -114,25 +111,6 @@ class StorageService {
       // Validate file
       this.validateFile(file)
 
-      if (isDevelopment) {
-        // Mock implementation for development
-        const { blob, width, height } = await this.optimizeImage(file, options)
-        
-        const mockResult: ImageUploadResult = {
-          id: `mock_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          url: URL.createObjectURL(blob),
-          originalName: file.name,
-          size: blob.size,
-          width,
-          height,
-          uploaderId,
-          uploadedAt: new Date()
-        }
-        
-        console.log('Mock image upload:', mockResult)
-        return mockResult
-      }
-
       // Optimize image
       const { blob, width, height } = await this.optimizeImage(file, options)
 
@@ -184,12 +162,6 @@ class StorageService {
   // Delete image from Storage and Firestore
   async deleteImage(imageId: string, uploaderId: string): Promise<void> {
     try {
-      if (isDevelopment) {
-        // Mock implementation for development
-        console.log(`Mock: Deleting image ${imageId} for user ${uploaderId}`)
-        return
-      }
-
       // Get image metadata from Firestore
       const imageDoc = await doc(db, 'imageUploads', imageId)
       
@@ -213,12 +185,11 @@ class StorageService {
     onProgress?: (progress: number, currentFile: number, totalFiles: number) => void
   ): Promise<ImageUploadResult[]> {
     const results: ImageUploadResult[] = []
-    
+
     for (let i = 0; i < files.length; i++) {
       try {
         onProgress?.(0, i + 1, files.length)
-        
-        // This will use the mock implementation in development via uploadImage method
+
         const result = await this.uploadImage(files[i], uploaderId)
         results.push(result)
         
@@ -241,7 +212,6 @@ class StorageService {
     medium: ImageUploadResult
     original: ImageUploadResult
   }> {
-    // This will use the mock implementation in development via uploadImage method
     const [thumbnail, medium, original] = await Promise.all([
       this.uploadImage(file, uploaderId, 'blog-images/thumbnails', {
         maxWidth: 300,

@@ -1,6 +1,6 @@
 // src/lib/api/studyLogService.ts
 import { supabase } from '../supabase/supabaseClient';
-import { StudyLog, StudyLogInput, StudyStats, PopularBook, UserBookStat, BookUsageStats } from '../../types/study';
+import { StudyLog, StudyLogInput, StudyStats, PopularBook, UserBookStat, BookUsageStats, VideoUsageStats } from '../../types/study';
 
 const sanitizeNullable = (s?: string | null) => {
   const t = (s ?? '').trim()
@@ -69,30 +69,50 @@ export async function createStudyLog(
     // 事前バリデーション
     const hasBook = Boolean(input.book_id)
     const manualTitle = sanitizeNullable(input.manual_book_title)
+    const hasVideo = Boolean(input.video_id)
+    const manualVideoTitle = sanitizeNullable(input.manual_video_title)
     const isFree = Boolean(input.free_mode)
-    if (!isFree && !hasBook && !manualTitle) {
-      console.error('Validation failed: either book_id or manual_book_title or free_mode is required.')
+
+    if (!isFree && !hasBook && !manualTitle && !hasVideo && !manualVideoTitle) {
+      console.error('Validation failed: either book_id, manual_book_title, video_id, manual_video_title, or free_mode is required.')
       return null
     }
+
+    // 学習記録を作成
     const { data, error } = await supabase
       .from('study_logs')
       .insert({
-        // user_id は送らない（RLS/trigger想定）
+        user_id: userId,
         book_id: hasBook ? input.book_id! : null,
         manual_book_title: manualTitle,
+        video_id: hasVideo ? input.video_id! : null,
+        manual_video_title: manualVideoTitle,
         duration_minutes: input.duration_minutes,
         memo: sanitizeNullable(input.memo),
         studied_at: input.studied_at,
-        free_mode: isFree,  
+        free_mode: isFree,
         created_at: new Date().toISOString(),
       })
-      .select(`*, book:books(*)`)
+      .select(`*, book:books(*), video:videos(*)`)
       .single();
 
     if (error) {
       console.error('Error creating study log:', error);
       return null;
     }
+
+    // 書籍利用統計を更新（book_idがある場合）
+    if (hasBook && input.book_id) {
+      await updateBookUsageStats(userId, input.book_id, input.duration_minutes, input.studied_at);
+      await updateBookGlobalStats(input.book_id, input.duration_minutes);
+    }
+
+    // 動画利用統計を更新（video_idがある場合）
+    if (hasVideo && input.video_id) {
+      await updateVideoUsageStats(userId, input.video_id, input.duration_minutes, input.studied_at);
+      await updateVideoGlobalStats(input.video_id, input.duration_minutes);
+    }
+
     return data as StudyLog;
   } catch (e) {
     console.error('Error creating study log:', e);
@@ -108,7 +128,7 @@ export async function getStudyLogs(
   try {
     const { data, error } = await supabase
       .from('study_logs')
-      .select(`*, book:books(*)`)
+      .select(`*, book:books(*), video:videos(*)`)
       .eq('user_id', userId)
       .order('studied_at', { ascending: false })
       .range(offset, offset + limit - 1);
@@ -132,7 +152,7 @@ export async function getStudyLog(
   try {
     const { data, error } = await supabase
       .from('study_logs')
-      .select(`*, book:books(*)`)
+      .select(`*, book:books(*), video:videos(*)`)
       .eq('user_id', userId)
       .eq('id', logId)
       .single();
@@ -157,16 +177,22 @@ export async function updateStudyLog(
   try {
     const hasBook = Boolean(input.book_id)
     const manualTitle = sanitizeNullable(input.manual_book_title)
+    const hasVideo = Boolean(input.video_id)
+    const manualVideoTitle = sanitizeNullable(input.manual_video_title)
     const isFree = Boolean(input.free_mode)
-    if (!isFree && !hasBook && !manualTitle) {
-      console.error('Validation failed: either book_id or manual_book_title or free_mode is required.')
+
+    if (!isFree && !hasBook && !manualTitle && !hasVideo && !manualVideoTitle) {
+      console.error('Validation failed: either book_id, manual_book_title, video_id, manual_video_title, or free_mode is required.')
       return null
     }
+
     const { data, error } = await supabase
       .from('study_logs')
       .update({
         book_id: hasBook ? input.book_id! : null,
         manual_book_title: manualTitle,
+        video_id: hasVideo ? input.video_id! : null,
+        manual_video_title: manualVideoTitle,
         duration_minutes: input.duration_minutes,
         memo: sanitizeNullable(input.memo),
         free_mode: isFree,
@@ -174,7 +200,7 @@ export async function updateStudyLog(
       })
       .eq('user_id', userId)
       .eq('id', logId)
-      .select(`*, book:books(*)`)
+      .select(`*, book:books(*), video:videos(*)`)
       .single();
 
     if (error) {
@@ -319,7 +345,8 @@ export async function getStudyStats(userId: string): Promise<StudyStats> {
       .from('study_logs')
       .select(`
         *,
-        book:books(*)
+        book:books(*),
+        video:videos(*)
       `)
       .eq('user_id', userId)
       .order('studied_at', { ascending: false })
@@ -350,8 +377,8 @@ export async function getStudyStats(userId: string): Promise<StudyStats> {
 
 /** 日別の学習記録を取得 */
 export async function getDailyStudyLogs(
-  userId: string, 
-  startDate: string, 
+  userId: string,
+  startDate: string,
   endDate: string
 ): Promise<StudyLog[]> {
   try {
@@ -359,7 +386,8 @@ export async function getDailyStudyLogs(
       .from('study_logs')
       .select(`
         *,
-        book:books(*)
+        book:books(*),
+        video:videos(*)
       `)
       .eq('user_id', userId)
       .gte('studied_at', startDate)
@@ -515,7 +543,7 @@ export async function getBookGlobalStats(bookId: string): Promise<{usage_count_g
 
 /** ユーザーの特定書籍使用統計と全体平均の比較データを取得 */
 export async function getBookComparisonData(
-  userId: string, 
+  userId: string,
   bookId: string
 ): Promise<{
   bookTitle: string;
@@ -529,7 +557,7 @@ export async function getBookComparisonData(
     // ユーザーの統計を取得
     const userStats = await getUserBookStats(userId);
     const userBookStat = userStats.find(stat => stat.book.id === bookId);
-    
+
     if (!userBookStat) {
       console.log('User has no stats for this book');
       return null;
@@ -572,5 +600,181 @@ export async function getBookComparisonData(
   } catch (error) {
     console.error('Error fetching book comparison data:', error);
     return null;
+  }
+}
+
+/** ユーザーの書籍利用統計を更新 */
+async function updateBookUsageStats(
+  userId: string,
+  bookId: string,
+  durationMinutes: number,
+  studiedAt: string
+): Promise<void> {
+  try {
+    // 現在の統計を取得
+    const { data: profileData, error: fetchError } = await supabase
+      .from('user_profiles')
+      .select('book_usage_stats')
+      .eq('uid', userId)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching user profile for stats update:', fetchError);
+      return;
+    }
+
+    // 既存の統計を取得（なければ空オブジェクト）
+    const currentStats = (profileData?.book_usage_stats as BookUsageStats) || {};
+
+    // 該当書籍の統計を更新
+    const bookStats = currentStats[bookId] || {
+      used_times: 0,
+      total_minutes: 0,
+      last_used_at: studiedAt
+    };
+
+    bookStats.used_times += 1;
+    bookStats.total_minutes += durationMinutes;
+    bookStats.last_used_at = studiedAt;
+
+    currentStats[bookId] = bookStats;
+
+    // 統計を保存
+    const { error: updateError } = await supabase
+      .from('user_profiles')
+      .update({ book_usage_stats: currentStats })
+      .eq('uid', userId);
+
+    if (updateError) {
+      console.error('Error updating book usage stats:', updateError);
+    }
+  } catch (error) {
+    console.error('Error in updateBookUsageStats:', error);
+  }
+}
+
+/** 書籍のグローバル統計を更新 */
+async function updateBookGlobalStats(
+  bookId: string,
+  durationMinutes: number
+): Promise<void> {
+  try {
+    // 現在の統計を取得
+    const { data: bookData, error: fetchError } = await supabase
+      .from('books')
+      .select('usage_count_global, total_minutes_global')
+      .eq('id', bookId)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching book for global stats update:', fetchError);
+      return;
+    }
+
+    const currentUsageCount = bookData?.usage_count_global || 0;
+    const currentTotalMinutes = bookData?.total_minutes_global || 0;
+
+    // 統計を更新
+    const { error: updateError } = await supabase
+      .from('books')
+      .update({
+        usage_count_global: currentUsageCount + 1,
+        total_minutes_global: currentTotalMinutes + durationMinutes
+      })
+      .eq('id', bookId);
+
+    if (updateError) {
+      console.error('Error updating book global stats:', updateError);
+    }
+  } catch (error) {
+    console.error('Error in updateBookGlobalStats:', error);
+  }
+}
+
+/** ユーザーの動画利用統計を更新 */
+async function updateVideoUsageStats(
+  userId: string,
+  videoId: string,
+  durationMinutes: number,
+  studiedAt: string
+): Promise<void> {
+  try {
+    // 現在の統計を取得
+    const { data: profileData, error: fetchError } = await supabase
+      .from('user_profiles')
+      .select('video_usage_stats')
+      .eq('uid', userId)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching user profile for video stats update:', fetchError);
+      return;
+    }
+
+    // 既存の統計を取得（なければ空オブジェクト）
+    const currentStats = (profileData?.video_usage_stats as VideoUsageStats) || {};
+
+    // 該当動画の統計を更新
+    const videoStats = currentStats[videoId] || {
+      used_times: 0,
+      total_minutes: 0,
+      last_used_at: studiedAt
+    };
+
+    videoStats.used_times += 1;
+    videoStats.total_minutes += durationMinutes;
+    videoStats.last_used_at = studiedAt;
+
+    currentStats[videoId] = videoStats;
+
+    // 統計を保存
+    const { error: updateError } = await supabase
+      .from('user_profiles')
+      .update({ video_usage_stats: currentStats })
+      .eq('uid', userId);
+
+    if (updateError) {
+      console.error('Error updating video usage stats:', updateError);
+    }
+  } catch (error) {
+    console.error('Error in updateVideoUsageStats:', error);
+  }
+}
+
+/** 動画のグローバル統計を更新 */
+async function updateVideoGlobalStats(
+  videoId: string,
+  durationMinutes: number
+): Promise<void> {
+  try {
+    // 現在の統計を取得
+    const { data: videoData, error: fetchError } = await supabase
+      .from('videos')
+      .select('usage_count_global, total_minutes_global')
+      .eq('id', videoId)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching video for global stats update:', fetchError);
+      return;
+    }
+
+    const currentUsageCount = videoData?.usage_count_global || 0;
+    const currentTotalMinutes = videoData?.total_minutes_global || 0;
+
+    // 統計を更新
+    const { error: updateError } = await supabase
+      .from('videos')
+      .update({
+        usage_count_global: currentUsageCount + 1,
+        total_minutes_global: currentTotalMinutes + durationMinutes
+      })
+      .eq('id', videoId);
+
+    if (updateError) {
+      console.error('Error updating video global stats:', updateError);
+    }
+  } catch (error) {
+    console.error('Error in updateVideoGlobalStats:', error);
   }
 }

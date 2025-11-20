@@ -7,24 +7,24 @@ import { Star } from 'lucide-react'
 const testimonials = [
   {
     name: '田中 さくら',
-    grade: '高校2年生',
-    comment: 'AIコーチのおかげで数学が20点もアップ！私の性格に合わせた勉強法が見つかりました。',
-    initial: 'さ',
+    grade: '高2',
+    comment: 'AIコーチのおかげなのか模試数学が20点も上がりました。これからも頑張ります。',
+    initial: 'T',
     bgColor: 'bg-pink-500',
     rating: 5
   },
   {
-    name: '山田 健太',
-    grade: '中学3年生', 
-    comment: '24時間いつでも質問できるのが最高。夜遅くでもすぐに答えてくれるから助かってます。',
-    initial: '健',
+    name: '山田です',
+    grade: '中学3', 
+    comment: '24時間質問できるの最高です。遅くでもすぐに答えてくれるから助かってます。',
+    initial: '山',
     bgColor: 'bg-blue-500',
     rating: 5
   },
   {
-    name: '佐藤 美咲',
+    name: '美咲',
     grade: '高校1年生',
-    comment: '不登校でしたが、AIコーチと一緒なら勉強が楽しい。自分のペースで進められるのが嬉しいです。',
+    comment: '不登校でしたが、勉強が家でも出来てきました。自分のペースで進められるのが嬉しいです。',
     initial: '美',
     bgColor: 'bg-green-500',
     rating: 5

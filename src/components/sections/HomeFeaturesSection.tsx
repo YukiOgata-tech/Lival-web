@@ -15,22 +15,22 @@ const features = [
   {
     icon: Brain,
     title: 'パーソナルAIコーチ',
-    description: '6つの学習タイプに基づいた、あなただけのAI専門チーム',
+    description: '6つの学習タイプに基づいた、あなただけのAI',
     shortDescription: 'あなた専用のAIチーム',
     color: 'from-blue-500 to-purple-600'
   },
   {
     icon: Target,
-    title: '個別最適化学習',
-    description: '性格診断と学習履歴から、最適な学習プランを自動生成',
-    shortDescription: '最適な学習プランを自動生成',
+    title: 'AIと人間によるダブルサポート環境',
+    description: 'AIで質問、解決できない場合はLINEで質問が可能',
+    shortDescription: '完璧なマルチ環境の提供',
     color: 'from-purple-500 to-pink-600'
   },
   {
     icon: MessageCircle,
     title: '24時間サポート',
     description: 'いつでもどこでも、専門AIがあなたの質問に即座に回答',
-    shortDescription: 'いつでも質問に即座回答',
+    shortDescription: '24時間365日、質問に即座回答',
     color: 'from-green-500 to-blue-600'
   },
   {
@@ -70,9 +70,13 @@ export default function HomeFeaturesSection() {
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-6">
             選ばれる理由
           </h2>
-          <p className="text-sm md:text-xl text-gray-600 max-w-3xl mx-auto px-4">
-            最新のAI技術と教育専門家の知見を組み合わせた、
+          <p className="text-sm md:text-xl text-gray-700 max-w-3xl mx-auto px-4">
+            最新の<span className='underline' >AI技術</span>と<span className='underline' >教育専門家</span>の知見を組み合わせた、
             <span className="block md:inline">革新的な学習プラットフォーム</span>
+          </p>
+          <p className="text-sm md:text-xl text-gray-700 max-w-3xl mx-auto px-4">
+            どこよりも<span className='underline'>安く</span>、<span className='underline'>地域に関係ない</span>サポートが可能な
+            <span className="block md:inline">塾に代わる教育システム</span>
           </p>
         </motion.div>
 

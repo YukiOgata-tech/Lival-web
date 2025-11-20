@@ -33,21 +33,39 @@ export default function StudyLogCard({
 
   const timeAgo = formatDistanceToNow(studiedDate, { addSuffix: true, locale: ja });
 
-  const getBookTitle = () => {
+  const getContentTitle = () => {
     if (log.book?.title) {
       return log.book.title;
     }
     if (log.manual_book_title) {
       return log.manual_book_title;
     }
-    return '書籍なし';
+    if (log.video?.title) {
+      return log.video.title;
+    }
+    if (log.manual_video_title) {
+      return log.manual_video_title;
+    }
+    if (log.free_mode) {
+      return '学習記録';
+    }
+    return '学習記録';
   };
 
-  const getBookAuthor = () => {
+  const getContentSubtitle = () => {
     if (log.book?.author) {
       return log.book.author;
     }
+    if (log.video?.channel_title) {
+      return log.video.channel_title;
+    }
     return null;
+  };
+
+  const getContentType = () => {
+    if (log.book || log.manual_book_title) return 'book';
+    if (log.video || log.manual_video_title) return 'video';
+    return 'free';
   };
 
   const formatDuration = (minutes: number) => {
@@ -63,26 +81,58 @@ export default function StudyLogCard({
     return `${hours}時間${remainingMinutes}分`;
   };
 
+  const contentType = getContentType();
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          {/* 書籍情報 */}
+          {/* コンテンツ情報 */}
           <div className="flex items-start gap-2 sm:gap-3 mb-3">
-            {log.book?.cover_image_url && (
+            {/* 書籍の表紙画像 */}
+            {contentType === 'book' && log.book?.cover_image_url && (
               <img
                 src={log.book.cover_image_url}
-                alt={getBookTitle()}
+                alt={getContentTitle()}
                 className="w-10 h-12 sm:w-12 sm:h-16 object-cover rounded shadow-sm flex-shrink-0"
               />
             )}
+
+            {/* 動画のサムネイル */}
+            {contentType === 'video' && log.video?.thumbnail_url && (
+              <img
+                src={log.video.thumbnail_url}
+                alt={getContentTitle()}
+                className="w-16 h-10 sm:w-20 sm:h-12 object-cover rounded shadow-sm flex-shrink-0"
+              />
+            )}
+
             <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                {/* コンテンツタイプバッジ */}
+                {contentType === 'book' && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                    📚 書籍
+                  </span>
+                )}
+                {contentType === 'video' && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                    🎥 動画
+                  </span>
+                )}
+                {contentType === 'free' && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                    ✏️ その他
+                  </span>
+                )}
+              </div>
+
               <h3 className="font-medium text-gray-900 line-clamp-2 text-sm sm:text-base">
-                {getBookTitle()}
+                {getContentTitle()}
               </h3>
-              {getBookAuthor() && (
+              {getContentSubtitle() && (
                 <p className="text-xs sm:text-sm text-gray-600 mt-1 truncate">
-                  {getBookAuthor()}
+                  {getContentSubtitle()}
                 </p>
               )}
               {log.book?.company && (

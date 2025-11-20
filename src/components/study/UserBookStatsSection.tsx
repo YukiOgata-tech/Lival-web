@@ -93,18 +93,23 @@ export default function UserBookStatsSection({ userId, className = '' }: UserBoo
   }
 
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 p-4 sm:p-6 ${className}`}>
+    <div className={`bg-gradient-to-br from-green-50 via-white to-blue-50 rounded-xl border border-green-100 p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow ${className}`}>
       <div className="flex items-center justify-between mb-4 sm:mb-6">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
-          📖 あなたの参考書統計 TOP5
-        </h3>
-        
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-md">
+            <span className="text-base sm:text-xl">📖</span>
+          </div>
+          <h3 className="text-base sm:text-lg font-bold text-gray-900">
+            あなたの参考書統計
+          </h3>
+        </div>
+
         {/* ソート選択 */}
         <div className="flex items-center space-x-1 sm:space-x-2">
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'usage' | 'time' | 'recent')}
-            className="text-xs sm:text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
+            className="text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-cyan-500 border-none rounded-lg px-2 sm:px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md hover:shadow-lg transition-all cursor-pointer"
           >
             <option value="usage">使用回数順</option>
             <option value="time">学習時間順</option>
@@ -130,55 +135,69 @@ export default function UserBookStatsSection({ userId, className = '' }: UserBoo
         </div>
       ) : (
         <div className="space-y-2 sm:space-y-3">
-          {sortedStats.slice(0, 5).map((stat, index) => (
-            <div key={stat.book.id} className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              {/* 書籍カバー */}
-              <div className="w-10 h-12 sm:w-12 sm:h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded flex items-center justify-center mr-3 flex-shrink-0">
-                {stat.book.cover_image_url && !failedImages.has(stat.book.id) ? (
-                  <Image
-                    src={stat.book.cover_image_url}
-                    alt={stat.book.title}
-                    width={48}
-                    height={64}
-                    className="w-full h-full object-cover rounded"
-                    onError={() => {
-                      console.log('Image load failed:', stat.book.cover_image_url);
-                      setFailedImages(prev => new Set(prev).add(stat.book.id));
-                    }}
-                    unoptimized={stat.book.cover_image_url.includes('books.google.com')}
-                  />
-                ) : (
-                  <div className="text-blue-600 text-lg sm:text-xl">📚</div>
-                )}
+          {sortedStats.slice(0, 5).map((stat, index) => {
+            const gradientColors = [
+              'from-blue-50 via-white to-cyan-50 border-blue-200',
+              'from-green-50 via-white to-emerald-50 border-green-200',
+              'from-purple-50 via-white to-pink-50 border-purple-200',
+              'from-amber-50 via-white to-orange-50 border-amber-200',
+              'from-teal-50 via-white to-cyan-50 border-teal-200',
+            ];
+            const cardGradient = gradientColors[index % gradientColors.length];
+
+            return (
+              <div
+                key={stat.book.id}
+                className={`flex items-center p-3 sm:p-4 bg-gradient-to-r ${cardGradient} border rounded-xl hover:shadow-lg transition-all hover:scale-[1.02] cursor-pointer`}
+              >
+                {/* 書籍カバー */}
+                <div className="w-10 h-12 sm:w-12 sm:h-16 bg-gradient-to-br from-blue-200 to-purple-300 rounded-lg shadow-md flex items-center justify-center mr-3 flex-shrink-0 overflow-hidden">
+                  {stat.book.cover_image_url && !failedImages.has(stat.book.id) ? (
+                    <Image
+                      src={stat.book.cover_image_url}
+                      alt={stat.book.title}
+                      width={48}
+                      height={64}
+                      className="w-full h-full object-cover"
+                      onError={() => {
+                        console.log('Image load failed:', stat.book.cover_image_url);
+                        setFailedImages(prev => new Set(prev).add(stat.book.id));
+                      }}
+                      unoptimized={stat.book.cover_image_url.includes('books.google.com')}
+                    />
+                  ) : (
+                    <div className="text-white text-lg sm:text-2xl">📚</div>
+                  )}
+                </div>
+
+                {/* 書籍情報 */}
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm sm:text-base text-gray-900 truncate">
+                    {stat.book.title}
+                  </div>
+                  <div className="text-xs sm:text-sm text-gray-600 truncate mb-1">
+                    {stat.book.author} | {stat.book.company}
+                  </div>
+                  <div className="text-xs font-medium text-gray-500">
+                    最終学習: {formatLastUsed(stat.last_used_at)}
+                  </div>
+                </div>
+
+                {/* 統計情報 */}
+                <div className="text-right ml-3">
+                  <div className="text-sm sm:text-base font-bold text-blue-600">
+                    {stat.used_times}回
+                  </div>
+                  <div className="text-xs sm:text-sm font-semibold text-green-600">
+                    {formatTime(stat.total_minutes)}
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    平均{stat.avg_minutes_per_session.toFixed(0)}分
+                  </div>
+                </div>
               </div>
-              
-              {/* 書籍情報 */}
-              <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm sm:text-base text-gray-900 truncate">
-                  {stat.book.title}
-                </div>
-                <div className="text-xs sm:text-sm text-gray-500 truncate mb-1">
-                  {stat.book.author} | {stat.book.company}
-                </div>
-                <div className="text-xs text-gray-600">
-                  最終学習: {formatLastUsed(stat.last_used_at)}
-                </div>
-              </div>
-              
-              {/* 統計情報 */}
-              <div className="text-right ml-3">
-                <div className="text-sm sm:text-base font-semibold text-gray-900">
-                  {stat.used_times}回
-                </div>
-                <div className="text-xs sm:text-sm text-blue-600">
-                  {formatTime(stat.total_minutes)}
-                </div>
-                <div className="text-xs text-gray-500">
-                  平均{stat.avg_minutes_per_session.toFixed(0)}分/回
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -194,9 +213,10 @@ export default function UserBookStatsSection({ userId, className = '' }: UserBoo
         </div>
       )}
 
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <div className="text-xs text-gray-500 text-center">
-          📊 あなた専用の学習統計
+      <div className="mt-4 pt-4 border-t border-green-100">
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-600 font-medium">
+          <span className="text-sm">📊</span>
+          <span>あなた専用の学習統計</span>
         </div>
       </div>
     </div>

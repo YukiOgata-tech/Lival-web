@@ -8,7 +8,7 @@ import { Lightbulb, ArrowRight } from 'lucide-react'
 // 学習者タイプ
 const studentTypes = [
   { name: '戦略家', description: '論理的思考で効率を重視', icon: '🎯', image: '/images/li-kun_val-chan/val-chan-ST-1.png', color: 'from-blue-400 to-blue-600' },
-  { name: '探求家', description: '好奇心旺盛で発見を楽しむ', icon: '🔍', image: '/images/li-kun_val-chan/li-kun-EX-1.png', color: 'from-purple-400 to-purple-600' },
+  { name: '探求家', description: '興味と好奇心で発見を楽しむ', icon: '🔍', image: '/images/li-kun_val-chan/li-kun-EX-1.png', color: 'from-purple-400 to-purple-600' },
   { name: '努力家', description: '継続的な努力で成果を積み上げ', icon: '💪', image: '/images/li-kun_val-chan/li-kun-AC-1.png', color: 'from-green-400 to-green-600' },
   { name: '挑戦家', description: '競争を楽しみ限界に挑戦', icon: '⚡', image: '/images/li-kun_val-chan/li-kun-CH-1.png', color: 'from-red-400 to-red-600' },
   { name: '伴走者', description: '協力と共感を大切にする', icon: '🤝', image: '/images/li-kun_val-chan/val-chan-SP-1.png', color: 'from-pink-400 to-pink-600' },

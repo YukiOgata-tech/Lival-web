@@ -23,9 +23,8 @@ const footerSections = [
     links: [
       { name: 'パーソナルAIコーチング', href: '/features' },
       { name: '性格診断', href: '/diagnosis' },
-      { name: '学習プランニング', href: '/planning' },
-      { name: '進路相談', href: '/counseling' },
-      { name: '家庭教師AI', href: '/tutor' },
+      { name: '学習占い', href: '/daily-fortune' },
+      { name: '学習記録', href: '/dashboard/study' },
     ]
   },
   {

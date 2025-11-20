@@ -162,31 +162,36 @@ export default function StudyTimeChart({ logs, userId }: StudyTimeChartProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+    <div className="bg-gradient-to-br from-blue-50 via-white to-green-50 rounded-xl border border-blue-100 p-4 sm:p-6 shadow-lg hover:shadow-xl transition-shadow">
       {/* ヘッダー */}
       <div className="flex items-center justify-between mb-4 sm:mb-6">
         <div className="flex-1">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900">週間学習時間</h3>
-          <p className="text-xs sm:text-sm text-gray-600 mt-1">
-            {currentWeek.weekLabel} • 合計 {formatTime(currentWeek.totalMinutes)}
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
+              <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            </div>
+            <h3 className="text-base sm:text-lg font-bold text-gray-900">週間学習時間</h3>
+          </div>
+          <p className="text-xs sm:text-sm text-gray-700 font-medium">
+            {currentWeek.weekLabel} • 合計 <span className="text-blue-600 font-bold">{formatTime(currentWeek.totalMinutes)}</span>
           </p>
         </div>
-        
+
         {/* 週ナビゲーション */}
         <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={() => navigateWeek('prev')}
             disabled={!canGoBack}
-            className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
+            className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-semibold shadow-sm hover:shadow-md"
           >
             <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline">前</span>
           </button>
-          
+
           <button
             onClick={() => navigateWeek('next')}
             disabled={!canGoForward}
-            className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm"
+            className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-semibold shadow-sm hover:shadow-md"
           >
             <span className="hidden sm:inline">次</span>
             <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -195,14 +200,14 @@ export default function StudyTimeChart({ logs, userId }: StudyTimeChartProps) {
       </div>
 
       {/* 詳細チャート */}
-      <div className="bg-gray-50 rounded-lg p-3 sm:p-6 mb-6">
+      <div className="bg-gradient-to-br from-white to-blue-50/50 rounded-xl p-3 sm:p-6 mb-6 border border-blue-100 shadow-sm">
         <div className="grid grid-cols-7 gap-1 sm:gap-4 mb-3 sm:mb-4">
           {currentWeek.days.map((day) => (
             <div key={day.date.toISOString()} className="text-center">
-              <div className="text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+              <div className="text-xs sm:text-sm font-semibold text-gray-800 mb-1 sm:mb-2">
                 {day.dayName}
               </div>
-              <div className="text-xs text-gray-500 mb-2 sm:mb-4">
+              <div className="text-xs text-gray-600 mb-2 sm:mb-4">
                 {day.date.getDate()}日
               </div>
             </div>
@@ -210,59 +215,79 @@ export default function StudyTimeChart({ logs, userId }: StudyTimeChartProps) {
         </div>
 
         <div className="grid grid-cols-7 gap-1 sm:gap-4 items-end" style={{ height: '120px' }}>
-          {currentWeek.days.map((day, index) => (
-            <motion.div
-              key={day.date.toISOString()}
-              initial={{ height: 0 }}
-              animate={{ height: `${(day.minutes / maxMinutes) * 100}px` }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              className="bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg relative group cursor-pointer hover:from-blue-600 hover:to-blue-500 transition-colors"
-              style={{ minHeight: day.minutes > 0 ? '6px' : '2px' }}
-            >
-              {day.minutes > 0 && (
-                <div className="absolute -top-6 sm:-top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="bg-gray-900 text-white text-xs px-1 sm:px-2 py-1 rounded whitespace-nowrap">
-                    {formatTime(day.minutes)}
-                    {day.sessions > 0 && ` (${day.sessions}回)`}
+          {currentWeek.days.map((day, index) => {
+            const intensity = day.minutes / maxMinutes
+            const gradientClass = intensity > 0.7
+              ? 'from-green-400 via-green-500 to-green-600'
+              : intensity > 0.4
+                ? 'from-blue-400 via-blue-500 to-blue-600'
+                : 'from-blue-300 via-blue-400 to-blue-500'
+
+            return (
+              <motion.div
+                key={day.date.toISOString()}
+                initial={{ height: 0 }}
+                animate={{ height: `${(day.minutes / maxMinutes) * 100}px` }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                className={`bg-gradient-to-t ${gradientClass} rounded-t-lg relative group cursor-pointer hover:scale-105 transition-all shadow-md hover:shadow-lg`}
+                style={{ minHeight: day.minutes > 0 ? '6px' : '2px' }}
+              >
+                {day.minutes > 0 && (
+                  <div className="absolute -top-6 sm:-top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white text-xs px-1 sm:px-2 py-1 rounded-lg whitespace-nowrap shadow-lg font-semibold">
+                      {formatTime(day.minutes)}
+                      {day.sessions > 0 && ` (${day.sessions}回)`}
+                    </div>
                   </div>
-                </div>
-              )}
-            </motion.div>
-          ))}
+                )}
+              </motion.div>
+            )
+          })}
         </div>
       </div>
 
       {/* 統計サマリー */}
       <div className="grid grid-cols-3 gap-2 sm:gap-4">
-        <div className="text-center p-3 bg-blue-50 rounded-lg">
-          <div className="flex items-center justify-center mb-1 sm:mb-2">
-            <Clock className="w-3 h-3 sm:w-5 sm:h-5 text-blue-500 mr-1 sm:mr-2" />
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-3 sm:p-4 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-white opacity-10 rounded-full -mr-8 -mt-8"></div>
+          <div className="relative z-10 text-center">
+            <div className="flex items-center justify-center mb-1 sm:mb-2">
+              <Clock className="w-4 h-4 sm:w-6 sm:h-6 text-white/90" />
+            </div>
+            <div className="text-sm sm:text-xl font-bold text-white mb-1">
+              {formatTime(currentWeek.totalMinutes)}
+            </div>
+            <div className="text-xs sm:text-sm text-white/90 font-medium">合計時間</div>
           </div>
-          <div className="text-sm sm:text-lg font-bold text-gray-900">
-            {formatTime(currentWeek.totalMinutes)}
-          </div>
-          <div className="text-xs sm:text-sm text-gray-600">合計時間</div>
         </div>
-        <div className="text-center p-3 bg-green-50 rounded-lg">
-          <div className="flex items-center justify-center mb-1 sm:mb-2">
-            <Calendar className="w-3 h-3 sm:w-5 sm:h-5 text-green-500 mr-1 sm:mr-2" />
+
+        <div className="relative overflow-hidden bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-3 sm:p-4 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-white opacity-10 rounded-full -mr-8 -mt-8"></div>
+          <div className="relative z-10 text-center">
+            <div className="flex items-center justify-center mb-1 sm:mb-2">
+              <Calendar className="w-4 h-4 sm:w-6 sm:h-6 text-white/90" />
+            </div>
+            <div className="text-sm sm:text-xl font-bold text-white mb-1">
+              {currentWeek.days.filter(d => d.minutes > 0).length}日
+            </div>
+            <div className="text-xs sm:text-sm text-white/90 font-medium">学習日数</div>
           </div>
-          <div className="text-sm sm:text-lg font-bold text-gray-900">
-            {currentWeek.days.filter(d => d.minutes > 0).length}
-          </div>
-          <div className="text-xs sm:text-sm text-gray-600">学習日数</div>
         </div>
-        <div className="text-center p-3 bg-purple-50 rounded-lg">
-          <div className="flex items-center justify-center mb-1 sm:mb-2">
-            <TrendingUp className="w-3 h-3 sm:w-5 sm:h-5 text-purple-500 mr-1 sm:mr-2" />
+
+        <div className="relative overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-3 sm:p-4 shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-white opacity-10 rounded-full -mr-8 -mt-8"></div>
+          <div className="relative z-10 text-center">
+            <div className="flex items-center justify-center mb-1 sm:mb-2">
+              <TrendingUp className="w-4 h-4 sm:w-6 sm:h-6 text-white/90" />
+            </div>
+            <div className="text-sm sm:text-xl font-bold text-white mb-1">
+              {currentWeek.totalMinutes > 0
+                ? Math.round(currentWeek.totalMinutes / Math.max(currentWeek.days.filter(d => d.minutes > 0).length, 1))
+                : 0
+              }分
+            </div>
+            <div className="text-xs sm:text-sm text-white/90 font-medium">1日平均</div>
           </div>
-          <div className="text-sm sm:text-lg font-bold text-gray-900">
-            {currentWeek.totalMinutes > 0 
-              ? Math.round(currentWeek.totalMinutes / Math.max(currentWeek.days.filter(d => d.minutes > 0).length, 1))
-              : 0
-            }
-          </div>
-          <div className="text-xs sm:text-sm text-gray-600">分/日平均</div>
         </div>
       </div>
     </div>
