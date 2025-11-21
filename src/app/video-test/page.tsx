@@ -1,13 +1,88 @@
 // src/app/video-test/page.tsx
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { ChevronDown } from 'lucide-react';
 
 interface VideoFile {
   name: string;
   size: string;
   sizeBytes: number;
   type: 'webm' | 'mov';
+}
+
+// カスタムドロップダウンコンポーネント
+interface CustomSelectProps {
+  options: VideoFile[];
+  value: string;
+  onChange: (value: string) => void;
+  className?: string;
+  accentColor?: 'pink' | 'blue';
+}
+
+function CustomSelect({ options, value, onChange, className = '', accentColor = 'pink' }: CustomSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const selectedOption = options.find(opt => opt.name === value);
+  const accentColorClass = accentColor === 'pink' ? 'focus:ring-pink-500' : 'focus:ring-blue-500';
+  const hoverColorClass = accentColor === 'pink' ? 'hover:bg-pink-50' : 'hover:bg-blue-50';
+  const selectedColorClass = accentColor === 'pink' ? 'bg-pink-100' : 'bg-blue-100';
+
+  // 外側クリックで閉じる
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelect = (optionName: string) => {
+    onChange(optionName);
+    setIsOpen(false);
+  };
+
+  return (
+    <div ref={dropdownRef} className={`relative ${className}`}>
+      {/* セレクトボタン */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg font-medium text-xs sm:text-sm text-gray-700 focus:outline-none focus:ring-2 ${accentColorClass} text-left flex items-center justify-between`}
+      >
+        <span className="truncate">
+          {selectedOption ? `${selectedOption.name} (${selectedOption.size}) - ${selectedOption.type.toUpperCase()}` : '選択してください'}
+        </span>
+        <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {/* ドロップダウンリスト */}
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-[400px] overflow-hidden">
+          <div className="overflow-y-auto max-h-[400px]" style={{ maxHeight: `${Math.min(options.length, 10) * 40}px` }}>
+            {options.map((option) => (
+              <button
+                key={option.name}
+                type="button"
+                onClick={() => handleSelect(option.name)}
+                className={`w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm text-gray-700 ${
+                  option.name === value
+                    ? `${selectedColorClass} font-semibold`
+                    : `${hoverColorClass} hover:font-medium`
+                } transition-colors`}
+              >
+                {option.name} ({option.size}) - {option.type.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function VideoTestPage() {
@@ -72,12 +147,12 @@ export default function VideoTestPage() {
 
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-xl md:rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 mb-4 md:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">WebMアニメーション テスト 🎬</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Animation test 🎬</h1>
           <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">動画ファイルを選択して表示テスト</p>
 
           {/* 背景切り替えボタン */}
           <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg sm:rounded-xl border border-blue-200">
-            <p className="text-xs sm:text-sm font-semibold text-gray-800 mb-2 sm:mb-3">🎨 背景タイプを選択:</p>
+            <p className="text-xs sm:text-sm font-semibold text-gray-800 mb-2 sm:mb-3">🎨 BG type:</p>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               <button
                 onClick={() => setBgType('checker')}
@@ -136,11 +211,11 @@ export default function VideoTestPage() {
           {isLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">動画ファイルを読み込んでいます...</p>
+              <p className="text-gray-600">loading video file...</p>
             </div>
           ) : videoFiles.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">動画ファイルが見つかりませんでした</p>
+              <p className="text-gray-600 text-lg">video file was not found</p>
               <p className="text-gray-500 text-sm mt-2">public/webm フォルダに .webm ファイルを追加してください</p>
             </div>
           ) : (
@@ -149,28 +224,20 @@ export default function VideoTestPage() {
               <div className="bg-gradient-to-br from-pink-50 to-orange-50 rounded-xl p-4 sm:p-6 border border-pink-200">
                 <div className="mb-3 sm:mb-4">
                   <label className="block text-xs sm:text-sm font-semibold text-gray-800 mb-2">
-                    🎬 動画を選択: ({videoFiles.length}件)
+                    🎬 Select an animation: ({videoFiles.length})
                   </label>
-                  <select
+                  <CustomSelect
+                    options={videoFiles}
                     value={selectedVideo1}
-                    onChange={(e) => setSelectedVideo1(e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg font-medium text-xs sm:text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
-                  >
-                    {videoFiles.map((video) => (
-                      <option key={video.name} value={video.name}>
-                        {video.name} ({video.size}) - {video.type.toUpperCase()}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={setSelectedVideo1}
+                    accentColor="pink"
+                  />
                 </div>
                 <div className={`${getBackgroundClass()} rounded-lg p-4 sm:p-6 flex items-center justify-center min-h-[250px] sm:min-h-[400px]`}>
                   {selectedVideo1 && (
                     <video
                       key={selectedVideo1}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
+                      autoPlay loop muted playsInline disablePictureInPicture
                       className="max-w-full max-h-[300px] sm:max-h-[500px] rounded-lg shadow-lg"
                     >
                       <source
@@ -182,9 +249,9 @@ export default function VideoTestPage() {
                   )}
                 </div>
                 <div className="mt-3 sm:mt-4 text-xs sm:text-sm text-gray-600 bg-white p-2.5 sm:p-3 rounded-lg">
-                  <p><strong>ファイル:</strong> {selectedVideo1}</p>
-                  <p><strong>タイプ:</strong> {getVideoInfo(selectedVideo1).type.toUpperCase()}</p>
-                  <p><strong>サイズ:</strong> {getVideoInfo(selectedVideo1).size}</p>
+                  <p><strong>File:</strong> {selectedVideo1}</p>
+                  <p><strong>Type:</strong> {getVideoInfo(selectedVideo1).type.toUpperCase()}</p>
+                  <p><strong>Size:</strong> {getVideoInfo(selectedVideo1).size}</p>
                 </div>
               </div>
 
@@ -192,28 +259,20 @@ export default function VideoTestPage() {
               <div className="hidden lg:block bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-800 mb-2">
-                    🎬 動画を選択: ({videoFiles.length}件)
+                    🎬 Select an animation: ({videoFiles.length})
                   </label>
-                  <select
+                  <CustomSelect
+                    options={videoFiles}
                     value={selectedVideo2}
-                    onChange={(e) => setSelectedVideo2(e.target.value)}
-                    className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    {videoFiles.map((video) => (
-                      <option key={video.name} value={video.name}>
-                        {video.name} ({video.size}) - {video.type.toUpperCase()}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={setSelectedVideo2}
+                    accentColor="blue"
+                  />
                 </div>
                 <div className={`${getBackgroundClass()} rounded-lg p-6 flex items-center justify-center min-h-[400px]`}>
                   {selectedVideo2 && (
                     <video
                       key={selectedVideo2}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
+                      autoPlay loop muted playsInline disablePictureInPicture
                       className="max-w-full max-h-[500px] rounded-lg shadow-lg"
                     >
                       <source
@@ -225,9 +284,9 @@ export default function VideoTestPage() {
                   )}
                 </div>
                 <div className="mt-4 text-sm text-gray-600 bg-white p-3 rounded-lg">
-                  <p><strong>ファイル:</strong> {selectedVideo2}</p>
-                  <p><strong>タイプ:</strong> {getVideoInfo(selectedVideo2).type.toUpperCase()}</p>
-                  <p><strong>サイズ:</strong> {getVideoInfo(selectedVideo2).size}</p>
+                  <p><strong>File:</strong> {selectedVideo1}</p>
+                  <p><strong>Type:</strong> {getVideoInfo(selectedVideo1).type.toUpperCase()}</p>
+                  <p><strong>Size:</strong> {getVideoInfo(selectedVideo1).size}</p>
                 </div>
               </div>
             </div>
@@ -307,7 +366,7 @@ export default function VideoTestPage() {
               MOV → HEVC (iOS Safari用)
             </h3>
             <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">
-              iOSデバイスで背景透過を表示するにはHEVC形式が必要です:
+              iOSデバイスで背景透過を表示するにはHEVC形式が必要:
             </p>
 
             <div className="bg-gray-900 text-green-400 p-2 sm:p-3 rounded-lg font-mono text-xs overflow-x-auto mb-3 sm:mb-4">
@@ -329,7 +388,7 @@ export default function VideoTestPage() {
           {/* ブラウザ互換性情報 */}
           <div className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
             <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">🌍 ブラウザ互換性</h4>
-            <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+            <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-800">
               <div className="flex items-start">
                 <span className="mr-2 flex-shrink-0">✅</span>
                 <div>

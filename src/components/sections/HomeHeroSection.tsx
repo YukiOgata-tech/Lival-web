@@ -143,7 +143,7 @@ export default function HomeHeroSection() {
               </div>
             </h1>
             
-            <p className="text-base sm:text-lg md:text-2xl text-gray-600 mb-6 md:mb-8 leading-relaxed font-soft">
+            <p className="text-base sm:text-lg md:text-2xl text-gray-600 mb-6 md:mb-8 leading-relaxed font-soft z-3">
               <span className="font-playful text-blue-700">6つの学習タイプ別</span>に最適化された
               <span className="block md:inline"><br className="md:hidden" /></span>
               <span className="font-accent text-purple-700">教育特化AIコーチング</span>で、学習効果を最大化
@@ -155,20 +155,15 @@ export default function HomeHeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-1 md:mb-2 pt-0"
+            className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-1 md:mb-2 pt-0 z-2"
           >
              <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-32 h-32 md:w-64 md:h-64 object-contain absolute top-25 right-10 md:top-17.5 md:left-98 "
+              autoPlay loop muted playsInline disablePictureInPicture
+              className="w-24 h-24 md:w-48 md:h-48 object-contain absolute top-31 right-6 md:top-28.5 md:left-98"
             >
                {/* iOS Safari用 - HEVCアルファ */}
                <source src="/webm/wall-1-ios.mov" type='video/quicktime; codecs="hvc1"' />
                {/* Chrome/Edge用 - WebM透過 */}
-               <source src="/webm/wall-1.webm" type="video/webm" />
-               {/* フォールバック */}
                <source src="/webm/wall-1.webm" type="video/webm" />
             </video>
             <Link

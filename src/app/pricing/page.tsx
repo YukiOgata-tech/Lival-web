@@ -69,7 +69,16 @@ export default function PricingPage() {
         )}
 
         {/* プランカード */}
-        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 max-w-5xl mx-auto">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 max-w-5xl mx-auto relative">
+          <video
+              autoPlay loop muted playsInline disablePictureInPicture
+              className="w-23 h-23 md:w-48 md:h-48 object-contain absolute -top-15.5 left-4 sm:-top-32.5 sm:left-6"
+            >
+               {/* iOS Safari用 - HEVCアルファ */}
+               <source src="/webm/wall-3-ios.mov" type='video/quicktime; codecs="hvc1"' />
+               {/* Chrome/Edge用 - WebM透過 */}
+               <source src="/webm/wall-3.webm" type="video/webm" />
+            </video>
           {/* ベーシックプラン */}
           <PlanCard
             plan={SUBSCRIPTION_PLANS.basic}
@@ -108,7 +117,7 @@ export default function PricingPage() {
         </div>
 
         {/* FAQ */}
-        <div className="mt-12 sm:mt-16 max-w-3xl mx-auto">
+        <div className="mt-12 sm:mt-16 max-w-3xl mx-auto rounded-xl border border-blue-800 pb-2">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 text-center">
             よくある質問
           </h2>
@@ -250,7 +259,7 @@ function FAQItem({ question, answer }: FAQItemProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:bg-gray-600/30">
       <button
         className="w-full flex justify-between items-center text-left p-4 sm:p-5"
         onClick={() => setIsOpen(!isOpen)}
