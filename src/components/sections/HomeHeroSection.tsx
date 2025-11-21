@@ -164,6 +164,11 @@ export default function HomeHeroSection() {
               playsInline
               className="w-32 h-32 md:w-64 md:h-64 object-contain absolute top-25 right-10 md:top-17.5 md:left-98 "
             >
+               {/* iOS Safari用 - HEVCアルファ */}
+               <source src="/webm/wall-1-ios.mov" type='video/quicktime; codecs="hvc1"' />
+               {/* Chrome/Edge用 - WebM透過 */}
+               <source src="/webm/wall-1-alpha.webm" type="video/webm" />
+               {/* フォールバック */}
                <source src="/webm/wall-1.webm" type="video/webm" />
             </video>
             <Link
