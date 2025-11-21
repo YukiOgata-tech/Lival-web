@@ -275,10 +275,7 @@ export default function DailyFortunePage() {
                 <div className="mb-8 relative">
                   {selectedVideo && (
                     <video
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
+                      autoPlay loop muted playsInline disablePictureInPicture
                       className="w-64 h-64 md:w-80 md:h-80 mx-auto rounded-lg"
                       style={{
                         background: 'transparent',

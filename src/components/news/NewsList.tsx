@@ -106,7 +106,7 @@ export default function NewsList() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* ヘッダー */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -152,7 +152,7 @@ export default function NewsList() {
       </motion.div>
 
       {/* モバイル: スティッキーフィルターバー */}
-      <div className="sm:hidden sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-100">
+      <div className="sm:hidden sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-400">
         <div className="px-4 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar">
           <button
             aria-label="検索"
@@ -194,13 +194,13 @@ export default function NewsList() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="hidden sm:block bg-white rounded-xl shadow-md border border-gray-100 p-4 sm:p-6 backdrop-blur-sm"
+        className="hidden sm:block bg-white rounded-xl shadow-md border border-gray-400 p-4 sm:p-6 backdrop-blur-sm"
       >
         <div className="flex flex-col sm:flex-row gap-4">
           {/* 検索 */}
           <div className="flex-1">
-            <div className="relative group">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
+            <div className="relative group border border-gray-500 rounded-xl">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-700 group-hover:text-blue-500 transition-colors" />
               <input
                 type="text"
                 placeholder="お知らせを検索..."
