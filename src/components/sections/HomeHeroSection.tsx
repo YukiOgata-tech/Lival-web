@@ -155,8 +155,17 @@ export default function HomeHeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-1 md:mb-2"
+            className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-1 md:mb-2 pt-0"
           >
+             <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-32 h-32 md:w-64 md:h-64 object-contain absolute top-25 right-10 md:top-17.5 md:left-98 "
+            >
+               <source src="/webm/wall-1.webm" type="video/webm" />
+            </video>
             <Link
               href="/diagnosis"
               className="group relative px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base md:text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 md:transform md:hover:scale-105 shadow-lg hover:shadow-xl text-cta"

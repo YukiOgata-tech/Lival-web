@@ -5,7 +5,7 @@ import { ArrowRight, Download } from 'lucide-react'
 
 export default function AboutContactSection() {
   return (
-    <section className="py-16 sm:py-20 bg-gray-900">
+    <section className="py-4 sm:py-12 bg-gray-700">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -14,10 +14,10 @@ export default function AboutContactSection() {
           viewport={{ once: true }}
           className="bg-gradient-to-br from-gray-800 to-slate-800/80 rounded-2xl p-6 sm:p-10 text-center border border-gray-700"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">
+          <h2 className="text-2xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">
             未来の教育を、共に。
           </h2>
-          <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto mb-6 sm:mb-8">
+          <p className="text-sm sm:text-lg text-gray-300 max-w-2xl mx-auto mb-6 sm:mb-8">
             私たちのビジョンに共感いただけましたか？<br />
             ご質問、協業のご提案、メディア取材など、お気軽にご連絡ください。
           </p>

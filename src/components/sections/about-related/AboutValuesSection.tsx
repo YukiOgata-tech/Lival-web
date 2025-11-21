@@ -11,8 +11,8 @@ const coreValues = [
     color: 'from-red-500 to-pink-600',
     examples: [
       '24時間365日のサポート体制',
-      '個人情報の厳格な保護',
-      '継続的なフィードバック収集'
+      '個人情報の保護',
+      '人間講師による二次サポートの提供'
     ]
   },
   {
@@ -22,7 +22,7 @@ const coreValues = [
     color: 'from-blue-500 to-purple-600',
     examples: [
       '大学生と現役教師の協働',
-      '文理融合チーム編成',
+      '文理融合チーム編成 + 英語指導対応',
       'インクルーシブなデザイン'
     ]
   },
@@ -32,15 +32,15 @@ const coreValues = [
     description: '現状に満足せず、常に学び、改善し続けます。失敗を恐れず、挑戦することで教育の未来を切り開きます。',
     color: 'from-yellow-500 to-orange-600',
     examples: [
-      '週次の技術勉強会',
+      '週次の講師勉強会',
       'ユーザーフィードバック即座反映',
-      '最新研究成果の積極導入'
+      '最新成果の共有と積極導入'
     ]
   },
   {
     icon: Shield,
     title: '信頼と透明性',
-    description: '教育という重要な分野に携わる責任を深く理解し、透明性のあるコミュニケーションと確実な成果でユーザーの信頼に応えます。',
+    description: '教育という重要な分野に携わる責任を理解し、透明性のあるコミュニケーションと確実な成果でユーザーの信頼に応えます。',
     color: 'from-green-500 to-teal-600',
     examples: [
       'オープンソースでの開発',
@@ -51,34 +51,25 @@ const coreValues = [
   {
     icon: Globe,
     title: '社会への貢献',
-    description: '教育格差の解消、不登校支援、地域振興など、テクノロジーの力で社会課題の解決に取り組みます。',
+    description: '教育格差の解消、不登校支援など、テクノロジーの力で社会課題の解決に取り組みます。',
     color: 'from-indigo-500 to-blue-600',
     examples: [
-      '過疎地域での無償提供',
-      '不登校児童へのサポート',
-      'NPOとの協力プログラム'
+      '地方教育格差を削減できるサービス運営へ',
+      '不登校児童等へのサポート',
+      'ボランティアと連携した安価でサービスの提供を行う'
     ]
   },
   {
     icon: Zap,
     title: 'スピードと品質',
-    description: '若いチームの機動力を活かし、高品質なサービスを迅速に提供します。ユーザーの「今」のニーズに応えます。',
+    description: '若いチームの機動力を活かし、高品質なサービスを迅速に提供します。「今」のニーズに応えます。',
     color: 'from-purple-500 to-violet-600',
     examples: [
-      '2週間スプリント開発',
+      '迅速なお問い合わせ対応',
       '48時間以内のサポート対応',
       '月次機能アップデート'
     ]
   }
-]
-
-const impactMetrics = [
-  { number: '1,000+', label: '支援した学習者', description: '全国の中高生が利用' },
-  { number: '95%', label: '満足度', description: 'ユーザー評価平均' },
-  { number: '20点', label: '平均成績向上', description: '3ヶ月利用での効果' },
-  { number: '24時間', label: '平均応答時間', description: 'AI応答時間' },
-  { number: '15+', label: 'チームメンバー', description: '多世代・多分野' },
-  { number: '100%', label: 'セキュリティ', description: 'データ保護レベル' }
 ]
 
 function ValueCard({ value, index }: { value: typeof coreValues[0], index: number }) {
@@ -134,7 +125,7 @@ function ValueCard({ value, index }: { value: typeof coreValues[0], index: numbe
 
 export default function AboutValuesSection() {
   return (
-    <section className="py-16 sm:py-20 bg-slate-800/30">
+    <section className="py-10 sm:py-20 bg-slate-800/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -145,7 +136,7 @@ export default function AboutValuesSection() {
           viewport={{ once: true }}
           className="text-center mb-8 sm:mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">
+          <h2 className="text-2xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">
             私たちの価値観
           </h2>
           <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto">
@@ -155,41 +146,11 @@ export default function AboutValuesSection() {
         </motion.div>
 
         {/* Core Values Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-16">
           {coreValues.map((value, index) => (
             <ValueCard key={value.title} value={value} index={index} />
           ))}
         </div>
-
-        {/* Impact Metrics */}
-        {/*
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="bg-gradient-to-r from-gray-800/50 to-slate-800/50 rounded-2xl p-6 sm:p-8 border border-gray-700/50"
-        >
-          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8 text-center">私たちの実績</h3>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-            {impactMetrics.map((metric, index) => (
-              <motion.div
-                key={metric.label}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="text-center"
-              >
-                <div className="text-2xl sm:text-3xl font-bold text-white mb-1">{metric.number}</div>
-                <div className="text-blue-400 font-semibold mb-1 text-sm">{metric.label}</div>
-                <div className="text-gray-400 text-xs leading-tight">{metric.description}</div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-        */}
 
         {/* Call to Action */}
         <motion.div
@@ -199,7 +160,7 @@ export default function AboutValuesSection() {
           viewport={{ once: true }}
           className="text-center mt-12 sm:mt-16"
         >
-          <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">一緒に教育の未来を創りませんか？</h3>
+          <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-4">一緒に教育の未来を創りませんか？</h3>
           <p className="text-sm sm:text-base text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto">
             私たちの価値観に共感し、教育の革新に貢献したい方を募集しています。
           </p>

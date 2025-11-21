@@ -88,10 +88,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             <div className="mt-4 sm:mt-8">
               <Link
                 href="/blog/about"
-                className="inline-flex items-center text-blue-200 hover:text-white transition-colors"
+                className="inline-flex items-center text-blue-200 hover:text-white transition-colors text-sm sm:text-base"
               >
                 ブログの仕組みについて詳しく見る
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
               </Link>
             </div>
           </div>
@@ -165,8 +165,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
       {/* CTA Section */}
       <div className="bg-gradient-to-r from-purple-50 to-blue-50 py-8 sm:py-16">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center rounded-2xl bg-white/70 backdrop-blur-sm border border-gray-200/70 shadow-sm p-5 sm:p-8">
+        <div className="max-w-4xl mx-auto px-4 relative">
+           <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-32 h-32 md:w-48 md:h-48 object-contain absolute -top-17.5 right-10 md:top-17.5 md:left-98 z-10"
+            >
+               <source src="/webm/wall-2.webm" type="video/webm" />
+            </video>
+          <div className="text-center rounded-2xl bg-white/70 backdrop-blur-sm border border-gray-600/70 shadow-sm p-5 sm:p-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
               全ての記事を読むには
             </h2>

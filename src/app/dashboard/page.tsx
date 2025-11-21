@@ -123,7 +123,7 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <div className="flex-1">
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-                おかえりなさい、{userData.displayName}さん！
+                おかえりなさい、<span className="underline">{userData.displayName}</span>さん！
               </h1>
               <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">今日も一緒に学習を進めましょう</p>
             </div>

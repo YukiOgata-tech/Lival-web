@@ -5,27 +5,27 @@ import { motion } from 'framer-motion'
 const testimonials = [
   {
     name: '中原 先生',
-    role: '私立高校 国語教師（指導歴15年）',
-    comment: '生徒一人ひとりの特性を理解し、最適化された指導ができる。これまでの経験とAIの力が組み合わさることで、教育の可能性が大きく広がります。',
+    role: '私立高校 国語教師（指導歴15年+）',
+    comment: '学校外での学習効果が受験や成績向上に大きく影響します。経験とAIの力が組み合わさることで、教育の可能性が大きく広がることを証明したいと感じてきました。',
     avatar: '👨‍🏫'
   },
   {
     name: '山田 塾長',
-    role: '個人塾経営（生徒数120名）',
-    comment: 'この新しい競合が生まれることにより、私たち側のサービス向上に繋がる。いいライバル(LIVAL)ですね（笑）',
+    role: '個人塾経営（生徒数60名+）',
+    comment: '本来は強豪であるこのサービスの考案に私も一部協力させていただきました。新しい競合が生まれることで、塾側のサービス向上に繋がる。いいライバル(LIVAL)ですね（笑）',
     avatar: '👩‍💼'
   },
   {
-    name: '佐藤 教授',
-    role: '情報学（大学教授）',
-    comment: '学習者の心理特性を科学的に分析し、個別最適化を実現するアプローチは画期的。若いチームの技術力と教育への情熱に期待しています。',
+    name: 'S 教授(非公開)',
+    role: '情報学（准教授）',
+    comment: '学習者の心理特性を科学的に分析し、個別最適化を実現するアプローチを考案しました。若いチームの教育への情熱にすごく期待しています。',
     avatar: '👨‍🎓'
   }
 ]
 
 export default function AboutPartnersSection() {
   return (
-    <section className="py-16 sm:py-20 bg-slate-800/30">
+    <section className="py-8 sm:py-16 bg-slate-800/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -34,13 +34,13 @@ export default function AboutPartnersSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-8 sm:mb-12"
+          className="text-center mb-4 sm:mb-10"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">
+          <h2 className="text-2xl sm:text-4xl font-bold text-white mb-2 sm:mb-4">
             パートナーの声
           </h2>
           <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto">
-            現場を知る教育者、技術専門家、研究者の方々から
+            現場を知る教育者、技術者、研究者の方々から
             いただいた貴重なご意見とメッセージです。
           </p>
         </motion.div>

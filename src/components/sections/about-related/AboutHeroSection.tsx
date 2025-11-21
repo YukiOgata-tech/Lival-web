@@ -28,7 +28,7 @@ export default function AboutHeroSection() {
   }, [])
 
   return (
-    <section className="relative flex items-center justify-center overflow-hidden px-4 py-20 sm:py-28">
+    <section className="relative flex items-center justify-center overflow-hidden px-4 py-8 sm:py-24">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-gray-900/40" />
       
@@ -98,33 +98,33 @@ export default function AboutHeroSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <h1 className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4 text-white leading-tight">
-              <span className="font-bold block">若い力で</span>
+              <span className="text-2xl sm:taxt-base font-bold block">若い力で</span>
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent block text-hero mt-1">
                 教育を革新
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed max-w-3xl mx-auto">
-              <span className="font-playful text-blue-200">大学生を中心とした若いチーム</span>と、<span className="font-accent text-purple-200">現場を知る教育者たち</span>が手を取り合い、
+            <p className="text-sm sm:text-lg md:text-xl text-gray-300 mb-4 sm:mb-8 leading-relaxed max-w-3xl mx-auto">
+              <span className="font-playful text-blue-200">若者を中心としたチーム</span>と、<span className="font-accent text-purple-200">現場の教育者たち</span>が手を取り合い、
               次世代の学習体験を創造しています。
             </p>
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mt-8 sm:mt-10">
               {[
-                { icon: Users, label: 'チームメンバー', value: '15+' },
-                { icon: GraduationCap, label: '大学生開発者', value: '8' },
-                { icon: Brain, label: '教育専門家', value: '5' },
-                { icon: Sparkles, label: '協力機関', value: '12' },
+                { icon: Users, label: 'チームメンバー', value: '10+' },
+                { icon: GraduationCap, label: '大学生開発者', value: '3' },
+                { icon: Brain, label: '教育専門家', value: '4' },
+                { icon: Sparkles, label: '協力機関', value: '10+' },
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
-                  className="bg-white/5 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/10"
+                  className="bg-white/10 backdrop-blur-sm rounded-xl p-2 sm:p-4 border border-white/10"
                 >
-                  <stat.icon className="w-5 h-5 sm:w-6 text-blue-400 mx-auto mb-1.5" />
+                  <stat.icon className="w-5 h-5 sm:w-6 text-blue-400 mx-auto mb-1 sm:mb-1.5" />
                   <div className="text-base sm:text-xl font-bold text-white">{stat.value}</div>
                   <div className="text-xs text-gray-400 leading-tight">{stat.label}</div>
                 </motion.div>

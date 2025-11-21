@@ -2,14 +2,22 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Lottie from 'lottie-react'
 import { Sparkles, Share2, Twitter } from 'lucide-react'
 import { onAuthStateChanged } from 'firebase/auth'
 import { doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 import { generateDailyFortune, getTodayDate, formatDateJapanese } from '@/lib/dailyFortuneLogic'
 import { FortuneResult } from '@/types/dailyFortune'
-import broomAnimation from '@/../../public/lotties/broom-sweeping.json'
+
+// character 1 webmファイルのリスト
+const LOADING_VIDEOS = [
+  'li-kun-AC-1.webm',
+  'li-kun-CH-1.webm',
+  'li-kun-EX-1.webm',
+  'li-kun-OP-1.webm',
+  'val-chan-SP-1.webm',
+  'val-chan-ST-1.webm',
+]
 
 export default function DailyFortunePage() {
   const [step, setStep] = useState<'input' | 'loading' | 'result'>('input')
@@ -19,6 +27,7 @@ export default function DailyFortunePage() {
   const [fortuneResult, setFortuneResult] = useState<FortuneResult | null>(null)
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [selectedVideo, setSelectedVideo] = useState('')
 
   // ログインユーザーのデータを取得
   useEffect(() => {
@@ -65,8 +74,12 @@ export default function DailyFortunePage() {
   // ローディング処理
   useEffect(() => {
     if (step === 'loading') {
+      // ランダムに動画を選択
+      const randomVideo = LOADING_VIDEOS[Math.floor(Math.random() * LOADING_VIDEOS.length)]
+      setSelectedVideo(randomVideo)
+
       const startTime = Date.now()
-      const minLoadingTime = 2000 // 最短2秒
+      const minLoadingTime = 3000 // 最短3秒
 
       const interval = setInterval(() => {
         const elapsed = Date.now() - startTime
@@ -260,20 +273,22 @@ export default function DailyFortunePage() {
             >
               <div className="bg-slate-800/80 backdrop-blur-lg rounded-2xl p-10 md:p-16 shadow-2xl border border-purple-500/30">
                 <div className="mb-8 relative">
-                  <Lottie
-                    animationData={broomAnimation}
-                    loop={true}
-                    className="w-64 h-64 md:w-80 md:h-80 mx-auto"
-                    style={{
-                      background: 'transparent',
-                      filter: 'drop-shadow(0 0 20px rgba(139, 92, 246, 0.3))'
-                    }}
-                    rendererSettings={{
-                      preserveAspectRatio: 'xMidYMid slice',
-                      clearCanvas: true,
-                      progressiveLoad: true,
-                    }}
-                  />
+                  {selectedVideo && (
+                    <video
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="w-64 h-64 md:w-80 md:h-80 mx-auto rounded-lg"
+                      style={{
+                        background: 'transparent',
+                        filter: 'drop-shadow(0 0 20px rgba(139, 92, 246, 0.3))',
+                        objectFit: 'contain'
+                      }}
+                    >
+                      <source src={`/webm/${selectedVideo}`} type="video/webm" />
+                    </video>
+                  )}
                 </div>
 
                 <h2 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-pink-400 mb-6" style={{ fontFamily: 'var(--font-yusei-magic)' }}>

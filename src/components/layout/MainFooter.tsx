@@ -75,15 +75,6 @@ export default function MainFooter() {
 
   return (
     <footer className="relative bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 text-white">
-      {/* <video
-        src="/webm/lai-V.webm"
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute bottom-0 right-4 w-40 h-auto pointer-events-none transform -translate-y-4 hidden md:block"
-        aria-hidden="true"
-      /> */}
       {/* メインフッター */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 md:gap-8 lg:gap-12">

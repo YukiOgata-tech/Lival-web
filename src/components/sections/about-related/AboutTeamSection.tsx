@@ -7,26 +7,14 @@ const teamRoles = [
   {
     icon: Code,
     title: 'エンジニア',
-    description: '最新技術を活用し、スケーラブルで安全なプラットフォームを構築。フロントエンドからバックエンド、AIインフラまで幅広い技術領域をカバーしています。',
+    description: '最新技術を活用し、スケーラブルで安全なプラットフォームを構築。AIインフラまで幅広い技術領域をカバーしています。',
     color: 'from-blue-500 to-indigo-600'
-  },
-  {
-    icon: Brain,
-    title: 'AI研究',
-    description: '機械学習と自然言語処理のスペシャリストが、教育に特化したAIシステムを研究開発。学習者一人ひとりに最適化されたパーソナライズを実現しています。',
-    color: 'from-purple-500 to-violet-600'
   },
   {
     icon: BookOpen,
     title: '教育専門',
-    description: '現場での豊富な指導経験を持つ教育者たちが、学習理論とテクノロジーを融合。効果的な学習体験をデザインしています。',
+    description: '現場での豊富な指導経験を持つ教育者たちが、学習理論とテクノロジーを融合。効果的な学習体験をデザインし、テストしています。',
     color: 'from-green-500 to-emerald-600'
-  },
-  {
-    icon: Palette,
-    title: 'デザイン',
-    description: '直感的で使いやすいユーザーインターフェースを設計。学習者が集中できる環境と、魅力的な学習体験を創造しています。',
-    color: 'from-pink-500 to-rose-600'
   },
   {
     icon: BarChart3,
@@ -37,7 +25,7 @@ const teamRoles = [
   {
     icon: Users,
     title: 'コミュニティ',
-    description: '全国の学習者やベータテスターと連携し、リアルなフィードバックを収集。ユーザー目線でのプロダクト改善を推進しています。',
+    description: '全国の学習者やベータテスターと連携し、フィードバックを収集。ユーザー目線でのプロダクト改善を推進しています。',
     color: 'from-teal-500 to-cyan-600'
   }
 ]
@@ -139,7 +127,7 @@ export default function AboutTeamSection() {
           viewport={{ once: true }}
           className="bg-gradient-to-r from-gray-800/50 to-slate-800/50 rounded-2xl p-6 sm:p-8 border border-gray-700/50"
         >
-          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8 text-center">チームの価値観</h3>
+          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-8 text-center">チームの価値観</h3>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {teamValues.map((value, index) => (
@@ -151,7 +139,7 @@ export default function AboutTeamSection() {
                 viewport={{ once: true }}
                 className="text-center"
               >
-                <h4 className="text-base sm:text-lg font-semibold text-white mb-2">{value.title}</h4>
+                <h4 className="text-base sm:text-lg sm:font-semibold text-white mb-0.5 sm:mb-2">{value.title}</h4>
                 <p className="text-gray-400 text-sm leading-relaxed">{value.description}</p>
               </motion.div>
             ))}

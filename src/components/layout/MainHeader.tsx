@@ -14,7 +14,7 @@ const navigationItems = [
   { name: '料金', href: '/pricing' },
   { name: 'ブログ', href: '/blog' },
   { name: 'お知らせ', href: '/news' },
-  { name: '会社概要', href: '/about' },
+  { name: 'About US', href: '/about' },
 ]
 
 const ctaButtons = [
@@ -230,7 +230,7 @@ export default function MainHeader() {
               transition={{ duration: 0.2 }}
               className="lg:hidden border-t border-gray-700 bg-gray-900/95 backdrop-blur-md"
             >
-              <div className="py-4 space-y-1">
+              <div className="py-2 space-y-1">
                 {navigationItems.map((item, index) => (
                   <motion.div
                     key={item.name}
@@ -241,7 +241,7 @@ export default function MainHeader() {
                     <Link
                       href={item.href}
                       onClick={() => setIsMenuOpen(false)}
-                      className="block px-4 py-3 text-gray-300 hover:text-blue-400 hover:bg-gray-800 rounded-lg font-medium transition-colors duration-200"
+                      className="block px-4 py-2 text-gray-300 hover:text-blue-400 hover:bg-gray-800 rounded-lg font-medium transition-colors duration-200"
                     >
                       {item.name}
                     </Link>
@@ -249,7 +249,7 @@ export default function MainHeader() {
                 ))}
                 
                 {/* モバイル CTA ボタン */}
-                <div className="pt-4 space-y-2 border-t border-gray-700">
+                <div className="pt-3 pb-2 space-y-2 border-t border-gray-700">
                   {!loading && (
                     user ? (
                       <>
@@ -292,7 +292,7 @@ export default function MainHeader() {
                               handleSignOut()
                               setIsMenuOpen(false)
                             }}
-                            className="block w-full text-left mx-4 px-4 py-3 text-gray-300 hover:text-red-400 hover:bg-gray-800 rounded-lg font-medium transition-colors duration-200"
+                            className="block w-full text-left mx-4 px-4 py-3 text-red-300 hover:text-red-600 hover:bg-gray-800 rounded-lg font-medium transition-colors duration-200"
                           >
                             ログアウト
                           </button>

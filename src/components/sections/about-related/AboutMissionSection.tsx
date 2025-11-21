@@ -54,7 +54,7 @@ function MissionCard({ mission, index }: { mission: typeof missions[0], index: n
             </div>
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-white">{mission.title}</h3>
-              <h4 className="text-sm sm:text-base font-semibold text-gray-300">{mission.subtitle}</h4>
+              <h4 className="text-sm sm:text-base sm:font-semibold text-gray-300">{mission.subtitle}</h4>
             </div>
           </div>
           <ChevronDown
@@ -65,7 +65,7 @@ function MissionCard({ mission, index }: { mission: typeof missions[0], index: n
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0, marginTop: 0 }}
-              animate={{ opacity: 1, height: 'auto', marginTop: '16px' }}
+              animate={{ opacity: 1, height: 'auto', marginTop: '14px' }}
               exit={{ opacity: 0, height: 0, marginTop: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
@@ -80,7 +80,7 @@ function MissionCard({ mission, index }: { mission: typeof missions[0], index: n
 
 export default function AboutMissionSection() {
   return (
-    <section className="py-16 sm:py-20 bg-slate-900/50">
+    <section className="py-10 sm:py16 bg-slate-900/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -89,11 +89,11 @@ export default function AboutMissionSection() {
           viewport={{ once: true }}
           className="text-center mb-8 sm:mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">
+          <h2 className="text-2xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">
             私たちの使命
           </h2>
-          <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto">
-            教育の力で世界を変える。それが私たちLIVAL AIの使命です。
+          <p className="text-sm sm:text-lg text-gray-300 max-w-3xl mx-auto">
+            技術とAI教育の力でを変える。それが私たちLIVAL AIの使命です。
           </p>
         </motion.div>
 
