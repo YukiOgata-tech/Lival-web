@@ -171,9 +171,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
               loop
               muted
               playsInline
-              className="w-32 h-32 md:w-48 md:h-48 object-contain absolute -top-17.5 right-10 md:top-17.5 md:left-98 z-10"
+              className="w-32 h-32 md:w-48 md:h-48 object-contain absolute -top-17.5 right-10 md:-top-26 md:left-88 z-10"
             >
-               <source src="/webm/wall-2.webm" type="video/webm" />
+              <source src="/webm/wall-2-ios.mov" type='video/quicktime; codecs="hvc1"' />
+              <source src="/webm/wall-2.webm" type="video/webm" />
             </video>
           <div className="text-center rounded-2xl bg-white/70 backdrop-blur-sm border border-gray-600/70 shadow-sm p-5 sm:p-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">

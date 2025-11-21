@@ -10,9 +10,9 @@ export async function GET() {
     // ディレクトリ内のファイルを読み込む
     const files = fs.readdirSync(webmDirectory);
 
-    // .webmファイルのみフィルタリング
-    const webmFiles = files
-      .filter(file => file.endsWith('.webm'))
+    // .webmと.movファイルをフィルタリング
+    const videoFiles = files
+      .filter(file => file.endsWith('.webm') || file.endsWith('.mov'))
       .map(file => {
         const filePath = path.join(webmDirectory, file);
         const stats = fs.statSync(filePath);
@@ -22,12 +22,13 @@ export async function GET() {
         return {
           name: file,
           size: sizeInKB < 1024 ? `${sizeInKB}KB` : `${sizeInMB}MB`,
-          sizeBytes: stats.size
+          sizeBytes: stats.size,
+          type: file.endsWith('.webm') ? 'webm' : 'mov'
         };
       })
       .sort((a, b) => a.name.localeCompare(b.name)); // ファイル名でソート
 
-    return NextResponse.json({ files: webmFiles });
+    return NextResponse.json({ files: videoFiles });
   } catch (error) {
     console.error('Error reading webm directory:', error);
     return NextResponse.json(

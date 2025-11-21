@@ -167,7 +167,7 @@ export default function HomeHeroSection() {
                {/* iOS Safari用 - HEVCアルファ */}
                <source src="/webm/wall-1-ios.mov" type='video/quicktime; codecs="hvc1"' />
                {/* Chrome/Edge用 - WebM透過 */}
-               <source src="/webm/wall-1-alpha.webm" type="video/webm" />
+               <source src="/webm/wall-1.webm" type="video/webm" />
                {/* フォールバック */}
                <source src="/webm/wall-1.webm" type="video/webm" />
             </video>
