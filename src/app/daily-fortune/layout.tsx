@@ -4,7 +4,7 @@ import { Yusei_Magic, Mochiy_Pop_One, Shippori_Mincho, RocknRoll_One } from 'nex
 export const metadata: Metadata = {
   title: '学習デイリー占い | LIVAL AI',
   description: '毎日の学習運をチェック！あなた専用の学習アドバイスとラッキーアイテムをお届けします。',
-  keywords: ['LIVAL','学習占い','デイリー占い','学習運','受験','勉強','モチベーション','AI','占い','宿題'],
+  keywords: ['LIVAL','学習占い','デイリー占い','学習運','受験','勉強','モチベーション','AI','占い','宿題','study','homework','fortune'],
   openGraph: {
     title: '学習デイリー占い | LIVAL AI',
     description: '毎日の学習運をチェック！あなた専用の学習アドバイスとラッキーアイテムをお届けします。',

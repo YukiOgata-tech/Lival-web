@@ -275,29 +275,12 @@ function MessageContent({ msg }: { msg: TutorChatMessage }) {
 }
 
 function AssistantContentWithTyping({ text, animate }: { text: string; animate: boolean }) {
-  const [done, setDone] = useState(!animate)
-  const [shown, setShown] = useState(animate ? '' : text)
-
-  useEffect(() => {
-    if (!animate) return
-    let i = 0
-    const step = Math.max(1, Math.floor(text.length / 90))
-    const timer = setInterval(() => {
-      i = Math.min(text.length, i + step)
-      setShown(text.slice(0, i))
-      if (i >= text.length) {
-        clearInterval(timer)
-        setTimeout(() => setDone(true), 120)
-      }
-    }, 24)
-    return () => clearInterval(timer)
-  }, [animate, text])
-
-  if (!done) {
+  // ストリーミング中（animate=true）はプレーンテキスト表示、完了後（animate=false）はMarkdown表示
+  if (animate) {
     return (
       <div className="whitespace-pre-wrap leading-relaxed break-words text-gray-900">
-        {shown}
-        <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-gray-400 align-middle" />
+        {text}
+        <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-gray-900 align-middle" />
       </div>
     )
   }

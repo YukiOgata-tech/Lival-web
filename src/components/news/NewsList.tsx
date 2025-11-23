@@ -123,7 +123,7 @@ export default function NewsList() {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="flex items-center justify-center mb-4 sm:mb-6"
+          className="flex items-center justify-center mb-3 sm:mb-6"
         >
           <div className="relative">
             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -137,7 +137,7 @@ export default function NewsList() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2 sm:mb-3"
+          className="text-xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-0.5 sm:mb-3"
         >
           お知らせ
         </motion.h1>
@@ -145,15 +145,24 @@ export default function NewsList() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto px-4 sm:px-0"
+          className="hidden sm:block text-gray-600 sm:text-lg max-w-2xl mx-auto px-4 sm:px-0 sm:h-auto"
         >
           最新のお知らせやシステム情報をご確認いただけます
         </motion.p>
-      </motion.div>
+      </motion.div>h
 
       {/* モバイル: スティッキーフィルターバー */}
-      <div className="sm:hidden sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-400">
-        <div className="px-4 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar">
+      <div className="sm:hidden sticky top-0 z-20 bg-white/90 backdrop-blur border-y border-gray-600">
+        <video
+              autoPlay loop muted playsInline disablePictureInPicture
+              className="w-20 h-20 object-contain absolute -top-16.5 right-4 sm:hidden"
+            >
+               {/* iOS Safari用 - HEVCアルファ */}
+               <source src="/webm/wall-5-ios.mov" type='video/quicktime; codecs="hvc1"' />
+               {/* Chrome/Edge用 - WebM透過 */}
+               <source src="/webm/wall-5.webm" type="video/webm" />
+        </video>
+        <div className="px-4 py-2 flex items-center gap-3 overflow-x-auto no-scrollbar">
           <button
             aria-label="検索"
             onClick={() => setShowSearch(v => !v)}
@@ -196,7 +205,17 @@ export default function NewsList() {
         transition={{ delay: 0.4 }}
         className="hidden sm:block bg-white rounded-xl shadow-md border border-gray-400 p-4 sm:p-6 backdrop-blur-sm"
       >
-        <div className="flex flex-col sm:flex-row gap-4">
+        
+        <div className="flex flex-col sm:flex-row gap-4 relative">
+          <video
+              autoPlay loop muted playsInline disablePictureInPicture
+              className="w-24 h-24 sm:w-48 sm:h-48 object-contain absolute hidden sm:block sm:-top-45.5 sm:right-4"
+            >
+               {/* iOS Safari用 - HEVCアルファ */}
+               <source src="/webm/wall-5-ios.mov" type='video/quicktime; codecs="hvc1"' />
+               {/* Chrome/Edge用 - WebM透過 */}
+               <source src="/webm/wall-5.webm" type="video/webm" />
+        </video>
           {/* 検索 */}
           <div className="flex-1">
             <div className="relative group border border-gray-500 rounded-xl">

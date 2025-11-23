@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import html2canvas from 'html2canvas'
+import MarkdownMessage from '@/components/agent/common/MarkdownMessage'
 
 export default function PlanDetailModal({
   open,
@@ -183,7 +184,9 @@ export default function PlanDetailModal({
               {data.versionLabel && (
                 <div className="mb-2 text-xs text-blue-700">{data.versionLabel}</div>
               )}
-              <div className="whitespace-pre-wrap text-sm leading-6 text-gray-900">{data.text}</div>
+              <div className="text-sm leading-6 text-gray-900">
+                <MarkdownMessage text={data.text || ''} />
+              </div>
               {data.plan && (
                 <div className="mt-3 rounded-md bg-gray-50 p-3 text-xs text-gray-700">
                   <div className="mb-1 font-medium">構造化プラン（概要）</div>

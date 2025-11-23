@@ -66,7 +66,7 @@ export default function PlannerChatMessage({
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-[85%] rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm shadow-lg ring-1 ring-gray-50"
+          className="max-w-[85%] rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm text-gray-900 shadow-lg ring-1 ring-gray-50"
         >
           <TypeReveal text={msg.content} />
         </motion.div>
@@ -93,7 +93,7 @@ export default function PlannerChatMessage({
         </motion.div>
         <motion.div
           whileHover={{ scale: 1.01 }}
-          className="max-w-[85%] rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm shadow-lg ring-1 ring-gray-50"
+          className="max-w-[85%] rounded-2xl border border-gray-100 bg-white px-4 py-3 text-sm text-gray-900 shadow-lg ring-1 ring-gray-50"
         >
           <MarkdownMessage text={msg.content} />
         </motion.div>
@@ -129,20 +129,31 @@ export default function PlannerChatMessage({
 
 function TypeReveal({ text }: { text: string }) {
   const [shown, setShown] = React.useState('')
+  const [isComplete, setIsComplete] = React.useState(false)
+
   React.useEffect(() => {
     let i = 0
     const step = Math.max(1, Math.floor(text.length / 60))
     const timer = setInterval(() => {
       i = Math.min(text.length, i + step)
       setShown(text.slice(0, i))
-      if (i >= text.length) clearInterval(timer)
+      if (i >= text.length) {
+        clearInterval(timer)
+        setIsComplete(true)
+      }
     }, 20)
     return () => clearInterval(timer)
   }, [text])
+
+  // アニメーション完了後はMarkdownでレンダリング
+  if (isComplete) {
+    return <MarkdownMessage text={text} />
+  }
+
   return (
-    <span>
+    <span className="text-gray-900">
       {shown}
-      <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-gray-500 align-middle" />
+      <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-gray-900 align-middle" />
     </span>
   )
 }

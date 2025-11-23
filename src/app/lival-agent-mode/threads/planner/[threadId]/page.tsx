@@ -10,9 +10,10 @@ import PlannerInputBar, { type Mode } from '@/components/agent/planner/PlannerIn
 import PlannerChatMessage, { type ChatMessage } from '@/components/agent/planner/PlannerChatMessage'
 import PlanDetailModal from '@/components/agent/planner/PlanDetailModal'
 import LottieLoader from '@/components/agent/common/LottieLoader'
-import { httpsCallable } from 'firebase/functions'
-import { db, functions } from '@/lib/firebase'
+import { db } from '@/lib/firebase'
 import { addDoc, collection, doc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+
+const PLANNER_API_BASE = process.env.NEXT_PUBLIC_PLANNER_API_BASE || 'https://planner-api-455840687099.asia-northeast1.run.app'
 
 type UiHints = { cta?: 'ask'|'plan'; asks?: string[]; missing?: string[]; ready?: boolean; quickPicks?: { horizon?: string[]; priorities?: string[] } }
 
@@ -72,16 +73,35 @@ export default function PlannerThreadPage() {
     localStorage.setItem(messagesKey(user?.uid ?? null, threadId), JSON.stringify(sanitized))
   }
 
-  const appendMessage = (msg: ChatMessage, kindOverride?: 'ask'|'chitchat'|'plan_text'|'plan_json', saveRemote = true) => {
+  const appendMessage = (msg: ChatMessage, kindOverride?: 'ask'|'chitchat'|'plan_text'|'plan_json', saveRemote = true, extraData?: { plan?: any; versionLabel?: string }) => {
     if (!threadId) return
-    const raw = localStorage.getItem(messagesKey(user?.uid ?? null, threadId))
-    const base: ChatMessage[] = raw ? JSON.parse(raw) : []
-    const next = [...base, msg]
-    persistMessages(threadId, next)
+
+    // Reactステートをベースに追加（localStorageではなく現在のステートを使用）
+    setMessages(prev => {
+      const next = [...prev, msg]
+      // localStorageに保存
+      const sanitized = next.map(({ animate, ...rest }) => rest)
+      localStorage.setItem(messagesKey(user?.uid ?? null, threadId), JSON.stringify(sanitized))
+      return next
+    })
+
+    // Firestoreに保存
     if (user && saveRemote) {
       const threadRef = doc(db, 'users', user.uid, 'eduAI_threads', threadId)
       const col = collection(threadRef, 'messages')
-      addDoc(col, { role: msg.role, agent: 'planner', content: msg.content, kind: kindOverride || (msg.role === 'user' ? 'ask' : (msg.content.startsWith('__PLAN_CARD__') ? 'plan_json' : 'chitchat')), createdAt: serverTimestamp() })
+      const docData: any = {
+        role: msg.role,
+        agent: 'planner',
+        content: msg.content,
+        kind: kindOverride || (msg.role === 'user' ? 'ask' : (msg.content.startsWith('__PLAN_CARD__') ? 'plan_json' : 'chitchat')),
+        createdAt: serverTimestamp()
+      }
+      // ローカルのみで保存するため、詳細データはFirestoreに保存しない
+      // if (kindOverride === 'plan_json' && extraData) {
+      //   if (extraData.plan) docData.plan = extraData.plan
+      //   if (extraData.versionLabel) docData.versionLabel = extraData.versionLabel
+      // }
+      addDoc(col, docData)
       updateDoc(threadRef, { updatedAt: serverTimestamp() })
     }
   }
@@ -94,12 +114,35 @@ export default function PlannerThreadPage() {
     appendMessage({ id: crypto.randomUUID(), role: 'user', content: text, createdAt: Date.now() }, 'ask')
     requestAnimationFrame(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }))
     try {
-      const fn = httpsCallable(functions, 'plannerChat')
-      const res = await fn({ uid: user.uid, threadId, lastUserText: text, recentMessages: recentMessagesForFn() })
-      const data = res.data as { text: string; uiHints?: UiHints }
-      appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: data.text, createdAt: Date.now(), animate: true }, 'chitchat')
-      setUiHints(data.uiHints || null)
+      const idToken = await user.getIdToken()
+      const windowMessages = recentMessagesForFn()
+
+      const res = await fetch(`${PLANNER_API_BASE}/v1/planner/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          question: text,
+          windowMessages,
+          usePlanContext: true
+        })
+      })
+
+      if (!res.ok) {
+        throw new Error(`API Error: ${res.status}`)
+      }
+
+      const data = await res.json() as { answer: string; suggestions?: Array<{ label: string; payload?: any }> }
+      appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: data.answer, createdAt: Date.now(), animate: true }, 'chitchat')
+
+      // suggestions から uiHints を構築（必要に応じて）
+      if (data.suggestions && data.suggestions.length > 0) {
+        setUiHints({ cta: 'ask' })
+      }
     } catch (e) {
+      console.error('Planner chat error:', e)
       appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: 'エラーが発生しました。時間を置いて再試行してください。', createdAt: Date.now() })
     } finally { setBusy(false) }
   }
@@ -108,15 +151,35 @@ export default function PlannerThreadPage() {
     if (!user || !threadId) return
     setBusy(true)
     try {
-      const fn = httpsCallable(functions, 'plannerGenerate')
-      const res = await fn({ uid: user.uid, threadId, session, recentMessages: recentMessagesForFn() })
-      const data = res.data as { text: string; plan?: any; sessionEcho?: any; versionLabel?: string }
-      appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: data.text, createdAt: Date.now(), animate: true }, 'plan_text', false)
-      const payload = encodeURIComponent(JSON.stringify({ text: data.text, plan: data.plan, versionLabel: data.versionLabel }))
-      appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: `__PLAN_CARD__:${payload}`, createdAt: Date.now() }, 'plan_json', false)
+      const idToken = await user.getIdToken()
+      const recentMessages = recentMessagesForFn()
+
+      const res = await fetch(`${PLANNER_API_BASE}/v1/planner/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+          session,
+          recentMessages,
+          hints: []
+        })
+      })
+
+      if (!res.ok) {
+        throw new Error(`API Error: ${res.status}`)
+      }
+
+      const data = await res.json() as { text: string; plan?: any; sessionEcho?: any; model_used?: string }
+      appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: data.text, createdAt: Date.now(), animate: true }, 'plan_text', true)
+      const payload = encodeURIComponent(JSON.stringify({ text: data.text, plan: data.plan, versionLabel: data.model_used || 'v1' }))
+      // プラン詳細データはローカルのみで保持（extraDataは渡さない）
+      appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: `__PLAN_CARD__:${payload}`, createdAt: Date.now() }, 'plan_json', true)
       const threadRef = doc(db, 'users', user.uid, 'eduAI_threads', threadId)
       await setDoc(threadRef, { id: threadId, title: 'Planner スレッド', agent: 'planner', updatedAt: serverTimestamp(), createdAt: serverTimestamp() }, { merge: true })
     } catch (e) {
+      console.error('Planner generate error:', e)
       appendMessage({ id: crypto.randomUUID(), role: 'assistant', content: 'プランの作成に失敗しました。再試行してください。', createdAt: Date.now() })
     } finally { setBusy(false) }
   }

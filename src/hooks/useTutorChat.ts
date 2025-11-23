@@ -10,6 +10,7 @@ import { uploadTutorImageWeb } from '@/lib/tutorImageStorage'
 import { recognizeMultiple } from '@/lib/ocr/recognize'
 import { tutorCategorize } from '@/lib/agent/tutor/categorize'
 import { generateTutorReportWithGemini } from '@/lib/ai/gemini'
+import { callTutorChatStream } from '@/lib/api/tutorCloudRunClient'
 
 export type ChatStatus = 'idle' | 'loading' | 'error' | 'receiving' | 'generating_report'
 
@@ -115,62 +116,92 @@ export function useTutorChat(threadId: string) {
     const aiMessageId = crypto.randomUUID();
 
     const userMsg: TutorChatMessage = { id: userMessageId, role: 'user', content: text || '画像を送信しました', createdAt: Date.now(), hasImage: files.length > 0, status: 'sending', retryPayload: payload };
-    const assistantPlaceholder: TutorChatMessage = { id: aiMessageId, role: 'assistant', content: '', createdAt: Date.now() + 1, status: 'sending' };
-    
-    const currentMessages = [...messages, userMsg, assistantPlaceholder];
+    const assistantPlaceholder: TutorChatMessage = { id: aiMessageId, role: 'assistant', content: '', createdAt: Date.now() + 1, status: 'sending', animate: true };
+
+    let currentMessages = [...messages, userMsg, assistantPlaceholder];
     persistMessages(currentMessages);
 
     let finalAnswer = '';
     let success = false;
 
     try {
+      // 画像アップロード
       let imageStorageUrls: string[] = [];
       if (files?.length) {
         const results = await Promise.all(files.map((f) => uploadTutorImageWeb(f, threadId, userMessageId)));
         imageStorageUrls = results.map(r => r.storageUrl);
       }
       const finalUserMessage = { ...userMsg, imageStorageUrls };
-      persistMessages(currentMessages.map(m => m.id === userMessageId ? finalUserMessage : m));
+      currentMessages = currentMessages.map(m => m.id === userMessageId ? finalUserMessage : m);
+      persistMessages(currentMessages);
 
       const historyForApi = messages.slice(-8).map(m => ({ role: m.role, content: m.content }));
-      const apiPayload = {
+      const token = await user.getIdToken();
+
+      // ストリーミングAPI呼び出し
+      await callTutorChatStream({
         threadId,
         messages: [...historyForApi, { role: 'user' as const, content: userMsg.content }],
         storageUrls: imageStorageUrls,
         quality,
-      };
-      const token = await user.getIdToken();
+        idToken: token,
+        onEvent: (event) => {
+          if (event.type === 'content') {
+            // リアルタイムでコンテンツを追加
+            finalAnswer += event.text;
+            currentMessages = currentMessages.map(m =>
+              m.id === aiMessageId ? { ...m, content: finalAnswer, animate: true } : m
+            );
+            setMessages([...currentMessages]);
+          } else if (event.type === 'done') {
+            // 完了時 - Markdown表示に切り替え
+            finalAnswer = event.full_text || finalAnswer;
+            currentMessages = currentMessages.map(m =>
+              m.id === aiMessageId ? { ...m, content: finalAnswer, animate: false } : m
+            );
+            setMessages([...currentMessages]);
+            success = true;
+          } else if (event.type === 'error') {
+            throw new Error(event.message);
+          }
+        },
+        onError: (error) => {
+          console.error('[sendMessage] Stream error:', error);
+          throw error;
+        },
+      });
 
-      const res = await fetch('/api/tutor/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(apiPayload) });
+      success = true;
+    } catch (e) {
+      console.error('[sendMessage] Error:', e);
 
-      if (res.ok) {
-        const data = await res.json();
-        finalAnswer = data?.text || '回答を生成できませんでした。';
-        success = true;
-      } else {
+      // フォールバック: Firebase Functions
+      try {
         let ocrText = '';
         if (payloadImages?.length) ocrText = await recognizeMultiple(payloadImages);
         const fallbackText = ocrText ? `${text}\n\n【画像テキスト】\n${ocrText}` : text;
         const tutorText = httpsCallable(functions, 'tutorTextAnswer');
-        const resp = await tutorText({ userText: fallbackText, history: historyForApi });
+        const resp = await tutorText({ userText: fallbackText, history: messages.slice(-8).map(m => ({ role: m.role, content: m.content })) });
         finalAnswer = (resp.data as any)?.text || '回答を生成できませんでした。';
         success = true;
+      } catch (fallbackError) {
+        console.error('[sendMessage] Fallback error:', fallbackError);
+        finalAnswer = 'エラーが発生しました。時間をおいて再試行してください。';
+        success = false;
       }
-    } catch (e) {
-      console.error('[sendMessage] Error:', e);
-      finalAnswer = 'エラーが発生しました。時間をおいて再試行してください。';
-      success = false;
     }
 
-    const userFsId = await saveMessageToFirestore(userMsg);
-    const finalAiMessage: TutorChatMessage = { ...assistantPlaceholder, content: finalAnswer, status: success ? 'sent' : 'error', animate: success };
+    // Firestoreに保存
+    const userFsId = await saveMessageToFirestore(currentMessages.find(m => m.id === userMessageId)!);
+    const finalAiMessage: TutorChatMessage = { ...assistantPlaceholder, content: finalAnswer, status: success ? 'sent' : 'error', animate: false };
     const aiFsId = await saveMessageToFirestore(finalAiMessage);
 
-    persistMessages(currentMessages.map(m => {
+    currentMessages = currentMessages.map(m => {
         if (m.id === userMessageId) return { ...m, status: success ? 'sent' : 'error', fsId: userFsId };
         if (m.id === aiMessageId) return { ...m, ...finalAiMessage, fsId: aiFsId };
         return m;
-    }));
+    });
+    persistMessages(currentMessages);
 
     setStatus('idle');
   }, [user, threadId, messages, persistMessages, quality]);
