@@ -9,6 +9,7 @@ import TutorInputBar from '@/components/agent/tutor/TutorInputBar'
 import TutorChatMessageView, { type TutorChatMessage, type TutorTag, RetryPayload } from '@/components/agent/tutor/TutorChatMessage'
 import LottieLoader from '@/components/agent/common/LottieLoader'
 import TutorReportModal from '@/components/agent/tutor/TutorReportModal'
+import TutorChatHeader from '@/components/agent/tutor/TutorChatHeader'
 import { useTutorChat } from '@/hooks/useTutorChat'
 
 export default function TutorThreadPage() {
@@ -67,6 +68,9 @@ export default function TutorThreadPage() {
 
   return (
     <div className="relative mx-auto min-h-[100dvh] max-w-7xl bg-gradient-to-b from-emerald-50/30 via-white to-teal-50/20">
+      {/* Header with quality selector */}
+      <TutorChatHeader quality={quality} setQuality={setQuality} />
+
       {/* Background decorative elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-20 left-10 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob" />
@@ -105,48 +109,6 @@ export default function TutorThreadPage() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Model quality selector (web: fast/standard only) */}
-      <div className="mx-auto max-w-3xl px-4 pt-4">
-        <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-emerald-100 bg-white/80 px-3 py-2 shadow-sm">
-          <div className="text-xs sm:text-sm text-gray-700 font-medium flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-emerald-500" />
-            <span>回答スタイル</span>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-            <button
-              type="button"
-              onClick={() => setQuality('fast')}
-              className={`rounded-full px-3 py-1 font-medium transition-all border ${
-                quality === 'fast'
-                  ? 'border-emerald-500 bg-emerald-500 text-white shadow-sm'
-                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              高速
-            </button>
-            <button
-              type="button"
-              onClick={() => setQuality('standard')}
-              className={`rounded-full px-3 py-1 font-medium transition-all border ${
-                quality === 'standard'
-                  ? 'border-emerald-500 bg-emerald-500 text-white shadow-sm'
-                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              標準
-            </button>
-            <button
-              type="button"
-              disabled
-              className="hidden sm:inline-flex rounded-full px-3 py-1 text-[11px] font-medium border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-              title="思考モードはモバイルアプリ限定です"
-            >
-              thinking（アプリ限定）
-            </button>
-          </div>
-        </div>
-      </div>
 
       <AnimatePresence>
         {error && (

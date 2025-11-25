@@ -1,5 +1,4 @@
 import { Metadata, Viewport } from 'next'
-import TutorChatHeader from '@/components/agent/tutor/TutorChatHeader'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -16,7 +15,6 @@ export const metadata: Metadata = {
 export default function TutorThreadLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
-      <TutorChatHeader />
       <main>{children}</main>
     </div>
   )

@@ -2,8 +2,14 @@
 
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { Sparkles } from 'lucide-react'
 
-export default function TutorChatHeader() {
+type TutorChatHeaderProps = {
+  quality: 'fast' | 'standard'
+  setQuality: (quality: 'fast' | 'standard') => void
+}
+
+export default function TutorChatHeader({ quality, setQuality }: TutorChatHeaderProps) {
   const router = useRouter()
   const goThreads = () => {
     try {
@@ -21,6 +27,7 @@ export default function TutorChatHeader() {
   }
   return (
     <header className="sticky top-0 z-40 border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      {/* Top row: navigation and actions */}
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2 sm:gap-3 sm:px-6 sm:py-3">
         <div className="flex min-w-0 items-center gap-2 whitespace-nowrap sm:gap-3">
           <motion.button
@@ -48,6 +55,50 @@ export default function TutorChatHeader() {
             <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 00-2 2v9.5A1.5 1.5 0 003.5 16h9a1.5 1.5 0 001.5-1.5V12h2a2 2 0 002-2V5a2 2 0 00-2-2H4zm10 3H6a1 1 0 000 2h8a1 1 0 100-2zM6 9h6a1 1 0 110 2H6a1 1 0 110-2z"/></svg>
             レポート作成
           </motion.button>
+        </div>
+      </div>
+
+      {/* Bottom row: quality selector */}
+      <div className="border-t border-gray-100">
+        <div className="mx-auto max-w-7xl px-3 py-2 sm:px-6">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-xs sm:text-sm text-gray-700 font-medium flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
+              <span>回答スタイル</span>
+            </div>
+            <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+              <button
+                type="button"
+                onClick={() => setQuality('fast')}
+                className={`rounded-full px-3 py-1 font-medium transition-all border ${
+                  quality === 'fast'
+                    ? 'border-emerald-500 bg-emerald-500 text-white shadow-sm'
+                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                高速
+              </button>
+              <button
+                type="button"
+                onClick={() => setQuality('standard')}
+                className={`rounded-full px-3 py-1 font-medium transition-all border ${
+                  quality === 'standard'
+                    ? 'border-emerald-500 bg-emerald-500 text-white shadow-sm'
+                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                標準
+              </button>
+              <button
+                type="button"
+                disabled
+                className="hidden sm:inline-flex rounded-full px-3 py-1 text-[11px] font-medium border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
+                title="思考モードはモバイルアプリ限定です"
+              >
+                thinking（アプリ限定）
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </header>

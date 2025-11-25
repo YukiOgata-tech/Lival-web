@@ -35,9 +35,14 @@ export default function ThreadsPanel({
   const [queryText, setQueryText] = useState('')
   const [filter, setFilter] = useState<'all' | AgentKind>(initialFilter)
   const [createOpen, setCreateOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  // iOS判定
+  const isIOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent)
 
   useEffect(() => {
     const load = async () => {
+      setLoading(true)
       try {
         const local = JSON.parse(localStorage.getItem(storageKey(uid)) || '[]') as AnyThread[]
         let list = local
@@ -87,7 +92,11 @@ export default function ThreadsPanel({
           localStorage.setItem(storageKey(uid), JSON.stringify(list))
         }
         setThreads(list)
-      } catch { setThreads([]) }
+      } catch {
+        setThreads([])
+      } finally {
+        setLoading(false)
+      }
     }
     load()
   }, [uid])
@@ -185,8 +194,37 @@ export default function ThreadsPanel({
         </div>
       </motion.div>
 
-      {/* 空状態 */}
-      {displayed.length === 0 && (
+      {/* ローディング状態 */}
+      {loading && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-16 bg-gradient-to-br from-gray-50 to-emerald-50 rounded-2xl border-2 border-dashed border-gray-300"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center gap-4"
+          >
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-48 h-48 object-contain"
+            >
+              <source src={isIOS ? '/webm/li-kun-OP-1-ios.mov' : '/webm/li-kun-OP-1.webm'} type={isIOS ? 'video/quicktime' : 'video/webm'} />
+            </video>
+            <div className="text-lg font-semibold text-gray-700">
+              スレッドを読み込み中...
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* 空状態（ロード完了後にスレッドがない場合のみ表示） */}
+      {!loading && displayed.length === 0 && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -203,88 +241,90 @@ export default function ThreadsPanel({
         </motion.div>
       )}
 
-      {/* スレッドグリッド */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <AnimatePresence mode="popLayout">
-          {displayed.map((t, index) => (
-            <motion.div
-              key={t.id}
-              layout
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: -20 }}
-              transition={{ delay: index * 0.05, type: "spring", bounce: 0.3 }}
-              whileHover={{ y: -4, scale: 1.02 }}
-              className="group relative rounded-2xl border border-gray-200 bg-white p-4 shadow-md hover:shadow-xl transition-all overflow-hidden"
-            >
-              {/* 背景グラデーション */}
-              <div className={`absolute top-0 left-0 right-0 h-1 ${
-                t.agent==='tutor'
-                  ? 'bg-gradient-to-r from-emerald-400 to-teal-500'
-                  : t.agent==='planner'
-                  ? 'bg-gradient-to-r from-blue-400 to-indigo-500'
-                  : 'bg-gradient-to-r from-purple-400 to-pink-500'
-              }`} />
-
-              <div className="mb-3 flex items-center justify-between">
-                <motion.span
-                  whileHover={{ scale: 1.05 }}
-                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
-                    t.agent==='tutor'
-                      ? 'bg-emerald-50 text-emerald-700'
-                      : t.agent==='planner'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'bg-purple-50 text-purple-700'
-                  }`}
-                >
-                  {t.agent === 'tutor' ? <Sparkles className="w-3 h-3" /> : <BookOpen className="w-3 h-3" />}
-                  {t.agent}
-                </motion.span>
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Calendar className="w-3 h-3" />
-                  {new Date(t.updatedAt).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
-                </div>
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                onClick={() => onOpen(t.agent, t.id)}
-                className="block w-full text-left mb-3"
+      {/* スレッドグリッド（ロード完了後のみ表示） */}
+      {!loading && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <AnimatePresence mode="popLayout">
+            {displayed.map((t, index) => (
+              <motion.div
+                key={t.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -20 }}
+                transition={{ delay: index * 0.05, type: "spring", bounce: 0.3 }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                className="group relative rounded-2xl border border-gray-200 bg-white p-4 shadow-md hover:shadow-xl transition-all overflow-hidden"
               >
-                <div className="truncate text-base font-bold text-gray-900 mb-1">
-                  {t.title || `${t.agent} スレッド`}
-                </div>
-                {t.lastMessage && (
-                  <div className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
-                    {t.lastMessage}
-                  </div>
-                )}
-              </motion.button>
+                {/* 背景グラデーション */}
+                <div className={`absolute top-0 left-0 right-0 h-1 ${
+                  t.agent==='tutor'
+                    ? 'bg-gradient-to-r from-emerald-400 to-teal-500'
+                    : t.agent==='planner'
+                    ? 'bg-gradient-to-r from-blue-400 to-indigo-500'
+                    : 'bg-gradient-to-r from-purple-400 to-pink-500'
+                }`} />
 
-              <div className="flex items-center justify-end gap-2">
+                <div className="mb-3 flex items-center justify-between">
+                  <motion.span
+                    whileHover={{ scale: 1.05 }}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${
+                      t.agent==='tutor'
+                        ? 'bg-emerald-50 text-emerald-700'
+                        : t.agent==='planner'
+                        ? 'bg-blue-50 text-blue-700'
+                        : 'bg-purple-50 text-purple-700'
+                    }`}
+                  >
+                    {t.agent === 'tutor' ? <Sparkles className="w-3 h-3" /> : <BookOpen className="w-3 h-3" />}
+                    {t.agent}
+                  </motion.span>
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <Calendar className="w-3 h-3" />
+                    {new Date(t.updatedAt).toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
+                  </div>
+                </div>
+
                 <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={()=>rename(t)}
-                  className="inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all"
+                  whileHover={{ scale: 1.01 }}
+                  onClick={() => onOpen(t.agent, t.id)}
+                  className="block w-full text-left mb-3"
                 >
-                  <Edit3 className="w-3 h-3" />
-                  名前変更
+                  <div className="truncate text-base font-bold text-gray-900 mb-1">
+                    {t.title || `${t.agent} スレッド`}
+                  </div>
+                  {t.lastMessage && (
+                    <div className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
+                      {t.lastMessage}
+                    </div>
+                  )}
                 </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={()=>remove(t)}
-                  className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 hover:border-red-300 transition-all"
-                >
-                  <Trash2 className="w-3 h-3" />
-                  削除
-                </motion.button>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+
+                <div className="flex items-center justify-end gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={()=>rename(t)}
+                    className="inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all"
+                  >
+                    <Edit3 className="w-3 h-3" />
+                    名前変更
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={()=>remove(t)}
+                    className="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 hover:border-red-300 transition-all"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    削除
+                  </motion.button>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
 
       {/* 新規作成モーダル */}
       <AnimatePresence>
