@@ -153,7 +153,14 @@ function TypeReveal({ text }: { text: string }) {
   return (
     <span className="text-gray-900">
       {shown}
-      <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-gray-900 align-middle" />
+      {/* ChatGPT風のカーソル（滑らかなアニメーション） */}
+      <span
+        className="ml-0.5 inline-block h-4 w-[2px] bg-gray-900 align-middle animate-pulse"
+        style={{
+          animationDuration: '1s',
+          animationTimingFunction: 'ease-in-out'
+        }}
+      />
     </span>
   )
 }

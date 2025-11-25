@@ -280,9 +280,18 @@ function AssistantContentWithTyping({ text, animate }: { text: string; animate: 
     return (
       <div className="whitespace-pre-wrap leading-relaxed break-words text-gray-900">
         {text}
-        <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-gray-900 align-middle" />
+        {/* ChatGPT風のカーソル（滑らかなアニメーション） */}
+        <span
+          className="ml-0.5 inline-block h-4 w-[2px] bg-gray-900 align-middle animate-pulse"
+          style={{
+            animationDuration: '1s',
+            animationTimingFunction: 'ease-in-out'
+          }}
+        />
       </div>
     )
   }
+
+  // アニメーション完了後、即座にMarkdownに切り替え（ChatGPT風）
   return <MarkdownMessage text={text} />
 }
