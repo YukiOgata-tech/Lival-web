@@ -32,7 +32,6 @@ const footerSections = [
     links: [
       { name: '個人プラン', href: '/pricing#individual' },
       { name: '塾・学校向け（エンタープライズ）', href: '/enterprise' },
-      { name: '無料体験', href: '/trial' },
       { name: 'お問い合わせ（統一窓口）', href: '/contact' },
     ]
   },
@@ -50,7 +49,6 @@ const footerSections = [
       { name: 'ヘルプセンター', href: '/help' },
       { name: 'よくある質問', href: '/faq' },
       { name: 'お問い合わせ', href: '/contact' },
-      { name: 'システム状況', href: '/status' },
     ]
   }
 ]
@@ -59,7 +57,6 @@ const socialLinks = [
   { name: 'Twitter', icon: Twitter, href: 'https://twitter.com/lival_ai' },
   { name: 'Facebook', icon: Facebook, href: 'https://facebook.com/lival_ai' },
   { name: 'Instagram', icon: Instagram, href: 'https://instagram.com/lival_ai' },
-  { name: 'YouTube', icon: Youtube, href: 'https://youtube.com/@lival_ai' },
 ]
 
 const trustBadges = [

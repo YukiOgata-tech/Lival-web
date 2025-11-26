@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import MainHeader from './MainHeader'
 import MainFooter from './MainFooter'
+import CookieConsentBanner from '@/components/ui/CookieConsentBanner'
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -23,6 +24,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <MainFooter />
+      <CookieConsentBanner />
     </>
   )
 }
