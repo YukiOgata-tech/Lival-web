@@ -180,8 +180,6 @@ const visibilityOptions = [
 ]
 
 export default function BlogSubmitForm({ categories }: BlogSubmitFormProps) {
-  // Mock user ID - in real implementation, get from auth
-  const mockUserId = 'user123'
   const router = useRouter()
   const { user, userData, isAdmin } = useAuth()
   const startedAtRef = useRef<number>(Date.now())
@@ -719,7 +717,7 @@ export default function BlogSubmitForm({ categories }: BlogSubmitFormProps) {
               <TiptapEditor
                 content={formData.content}
                 onChange={handleInputChange('content')}
-                uploaderId={mockUserId}
+                uploaderId={user?.uid || 'guest'}
               />
             )}
           </div>

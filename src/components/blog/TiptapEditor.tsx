@@ -111,6 +111,7 @@ export default function TiptapEditor({
         heading: {
           levels: [1, 2, 3],
         },
+        link: false,  // StarterKitのlinkを無効化（カスタム設定を使用）
       }),
       Image.configure({
         inline: true,
