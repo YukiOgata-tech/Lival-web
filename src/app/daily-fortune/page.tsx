@@ -9,14 +9,14 @@ import { auth, db } from '@/lib/firebase'
 import { generateDailyFortune, getTodayDate, formatDateJapanese } from '@/lib/dailyFortuneLogic'
 import { FortuneResult } from '@/types/dailyFortune'
 
-// character 1 webmファイルのリスト
+// character 1 webmファイルのリスト（拡張子なしのベース名）
 const LOADING_VIDEOS = [
-  'li-kun-AC-1.webm',
-  'li-kun-CH-1.webm',
-  'li-kun-EX-1.webm',
-  'li-kun-OP-1.webm',
-  'val-chan-SP-1.webm',
-  'val-chan-ST-1.webm',
+  'AC-1',
+  'CH-1',
+  'EX-1',
+  'OP-1',
+  'SP-1',
+  'ST-1',
 ]
 
 export default function DailyFortunePage() {
@@ -28,6 +28,7 @@ export default function DailyFortunePage() {
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [selectedVideo, setSelectedVideo] = useState('')
+  const [isVideoIOS, setIsVideoIOS] = useState(false)
 
   // ログインユーザーのデータを取得
   useEffect(() => {
@@ -74,9 +75,16 @@ export default function DailyFortunePage() {
   // ローディング処理
   useEffect(() => {
     if (step === 'loading') {
+      // iOS判定
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      setIsVideoIOS(isIOS)
+
       // ランダムに動画を選択
-      const randomVideo = LOADING_VIDEOS[Math.floor(Math.random() * LOADING_VIDEOS.length)]
-      setSelectedVideo(randomVideo)
+      const randomVideoBase = LOADING_VIDEOS[Math.floor(Math.random() * LOADING_VIDEOS.length)]
+      
+      // 拡張子とファイル名を決定
+      const videoFileName = isIOS ? `${randomVideoBase}-ios.mov` : `${randomVideoBase}.webm`
+      setSelectedVideo(videoFileName)
 
       const startTime = Date.now()
       const minLoadingTime = 3000 // 最短3秒
@@ -162,7 +170,13 @@ export default function DailyFortunePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen relative bg-slate-900">
+      {/* 背景画像レイヤー */}
+      <div 
+        className="absolute inset-0 bg-[url('/images/bg-forest.png')] bg-cover bg-center bg-fixed opacity-75"
+        aria-hidden="true"
+      />
+      
       <div className="relative z-10 container mx-auto px-4 py-4 md:py-12">
         {/* ヘッダー */}
         <motion.div
@@ -283,7 +297,7 @@ export default function DailyFortunePage() {
                         objectFit: 'contain'
                       }}
                     >
-                      <source src={`/webm/${selectedVideo}`} type="video/webm" />
+                      <source src={`/webm/${selectedVideo}`} type={isVideoIOS ? "video/quicktime" : "video/webm"} />
                     </video>
                   )}
                 </div>
@@ -329,42 +343,46 @@ export default function DailyFortunePage() {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="bg-gradient-to-br from-slate-800 to-purple-900 rounded-2xl p-4 md:p-8 shadow-2xl border-2 border-yellow-400/50"
+                className="relative bg-[url('/images/bg-study-f.png')] bg-cover bg-center bg-no-repeat rounded-2xl p-4 md:p-8 shadow-2xl border-2 border-yellow-400/50 overflow-hidden"
               >
-                <div className="text-center mb-3 md:mb-6">
-                  <h2 className="text-lg md:text-2xl font-bold text-purple-200 mb-2 md:mb-4" style={{ fontFamily: 'var(--font-mochiy-pop)' }}>
-                    {userName ? `${userName}さん` : 'あなた'}の総合学習運
-                  </h2>
+                {/* 背景オーバーレイ */}
+                <div className="absolute inset-0 bg-slate-800/80 z-0"></div>
+                <div className="relative z-10">
+                  <div className="text-center mb-3 md:mb-6">
+                    <h2 className="text-lg md:text-2xl font-bold text-purple-200 mb-2 md:mb-4" style={{ fontFamily: 'var(--font-mochiy-pop)' }}>
+                      {userName ? `${userName}さん` : 'あなた'}の総合学習運
+                    </h2>
 
-                  <div className={`text-4xl md:text-7xl font-bold bg-gradient-to-r ${getScoreColor(fortuneResult.luckScore)} bg-clip-text text-transparent mb-2 md:mb-4`} style={{ fontFamily: 'var(--font-yusei-magic)' }}>
-                    {fortuneResult.luckLabel}
+                    <div className={`text-4xl md:text-7xl font-bold bg-gradient-to-r ${getScoreColor(fortuneResult.luckScore)} bg-clip-text text-transparent mb-2 md:mb-4`} style={{ fontFamily: 'var(--font-yusei-magic)' }}>
+                      {fortuneResult.luckLabel}
+                    </div>
+
+                    <div className="flex justify-center gap-1 mb-2 md:mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Sparkles
+                          key={i}
+                          className={`w-5 h-5 md:w-8 md:h-8 ${
+                            i < getStarCount(fortuneResult.luckScore)
+                              ? 'text-yellow-400 fill-yellow-400'
+                              : 'text-gray-600'
+                          }`}
+                        />
+                      ))}
+                    </div>
+
+                    <p className="text-purple-100 text-base md:text-xl leading-relaxed" style={{ fontFamily: 'var(--font-shippori-mincho)' }}>
+                      {fortuneResult.luckMessage}
+                    </p>
                   </div>
 
-                  <div className="flex justify-center gap-1 mb-2 md:mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Sparkles
-                        key={i}
-                        className={`w-5 h-5 md:w-8 md:h-8 ${
-                          i < getStarCount(fortuneResult.luckScore)
-                            ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-600'
-                        }`}
-                      />
-                    ))}
+                  <div className="bg-slate-700/50 rounded-lg p-3 md:p-4 text-center">
+                    <p className="text-purple-300 text-xs md:text-sm" style={{ fontFamily: 'var(--font-mochiy-pop)' }}>
+                      運勢スコア
+                    </p>
+                    <p className="text-2xl md:text-3xl font-bold text-yellow-400" style={{ fontFamily: 'var(--font-yusei-magic)' }}>
+                      {fortuneResult.luckScore.toFixed(1)} / 5.0
+                    </p>
                   </div>
-
-                  <p className="text-purple-100 text-base md:text-xl leading-relaxed" style={{ fontFamily: 'var(--font-shippori-mincho)' }}>
-                    {fortuneResult.luckMessage}
-                  </p>
-                </div>
-
-                <div className="bg-slate-700/50 rounded-lg p-3 md:p-4 text-center">
-                  <p className="text-purple-300 text-xs md:text-sm" style={{ fontFamily: 'var(--font-mochiy-pop)' }}>
-                    運勢スコア
-                  </p>
-                  <p className="text-2xl md:text-3xl font-bold text-yellow-400" style={{ fontFamily: 'var(--font-yusei-magic)' }}>
-                    {fortuneResult.luckScore.toFixed(1)} / 5.0
-                  </p>
                 </div>
               </motion.div>
 

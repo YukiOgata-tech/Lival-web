@@ -65,7 +65,7 @@ export default function ExpandableLearningType({ type, index }: ExpandableLearni
   const IconComponent = iconMap[type.icon as keyof typeof iconMap] || Sparkles
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+    <div id={type.id} className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden scroll-mt-24">
       {/* ヘッダー（常に表示） */}
       <div className={`bg-gradient-to-r ${type.color} p-3 sm:p-6 md:p-8 text-white`}>
         <div className="flex items-center space-x-3 sm:space-x-4 mb-0.5 sm:mb-4">

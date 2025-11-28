@@ -159,7 +159,7 @@ export default function HomeHeroSection() {
           >
              <video
               autoPlay loop muted playsInline disablePictureInPicture
-              className="w-24 h-24 md:w-48 md:h-48 object-contain absolute top-31 right-6 md:top-28.5 md:left-98"
+              className="w-24 h-24 sm:w-48 sm:h-48 object-contain absolute top-31 right-6 sm:top-28.5 sm:left-98"
             >
                {/* iOS Safari用 - HEVCアルファ */}
                <source src="/webm/wall-1-ios.mov" type='video/quicktime; codecs="hvc1"' />
