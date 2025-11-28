@@ -159,7 +159,7 @@ export default function HomeHeroSection() {
           >
              <video
               autoPlay loop muted playsInline disablePictureInPicture
-              className="w-24 h-24 sm:w-48 sm:h-48 object-contain absolute top-31 right-6 sm:top-28.5 sm:left-98"
+              className="w-24 h-24 sm:w-48 sm:h-48 object-contain absolute top-31 right-6 sm:top-32 sm:left-13"
             >
                {/* iOS Safari用 - HEVCアルファ */}
                <source src="/webm/wall-1-ios.mov" type='video/quicktime; codecs="hvc1"' />
@@ -168,7 +168,7 @@ export default function HomeHeroSection() {
             </video>
             <Link
               href="/diagnosis"
-              className="group relative px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base md:text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 md:transform md:hover:scale-105 shadow-lg hover:shadow-xl text-cta"
+              className="group relative px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base md:text-lg font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 md:transform md:hover:scale-105 shadow-lg hover:shadow-xl text-cta"
             >
               <span className="flex items-center justify-center">
                 <Sparkles className="w-5 h-5 mr-2" />
@@ -179,7 +179,7 @@ export default function HomeHeroSection() {
 
             <Link
               href="/daily-fortune"
-              className="group flex items-center justify-center px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-base md:text-lg font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 md:transform md:hover:scale-105 shadow-lg hover:shadow-xl"
+              className="group flex items-center justify-center px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-base md:text-lg font-semibold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 md:transform md:hover:scale-105 shadow-lg hover:shadow-xl"
             >
               <Star className="w-5 h-5 mr-2" />
               今日の学習運は？
